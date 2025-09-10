@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 
+      FIX: Added Content-Security-Policy to allow connections to the Google API. 
+      This is often necessary when deploying to services like GitHub Pages.
+    -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://generativelanguage.googleapis.com;">
     <title>Sushruta - AI Health Assistant</title>
     <!-- Tailwind CSS and Google Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -806,8 +811,27 @@
 
     <script>
         // Sushruta - AI Health Assistant - Main JavaScript
-        const apiKey = "AIzaSyDY4WUNKFyJmTDKZFCi0xZjLZvoMxsNTNo"; // IMPORTANT: This will be populated by the environment.
+        
+        // FIX: Directly insert your API key here for hosting on platforms like GitHub Pages.
+        const apiKey = "AIzaSyDY4WUNKFyJmTDKZFCi0xZjLZvoMxsNTNo"; 
+
+        // --- SECURITY WARNING ---
+        // Exposing your API key in client-side code (like in this file) is a security risk.
+        // Anyone can view your website's source code and steal your key, potentially
+        // leading to unauthorized use and charges on your account.
+        // For a real-world application, it is STRONGLY recommended to use a server-side
+        // proxy to handle API requests. This keeps your key secure on a server.
+        
         const API_MODEL = "gemini-2.5-flash-preview-05-20";
+        
+        // FIX: Check if the API key has been changed from the placeholder value.
+        if (apiKey === "PASTE_YOUR_GOOGLE_AI_API_KEY_HERE") {
+            const errorElement = document.createElement('div');
+            errorElement.style.cssText = 'position:fixed;top:0;left:0;width:100%;padding:1rem;background:red;color:white;text-align:center;font-weight:bold;z-index:1000;';
+            errorElement.textContent = 'API Key is missing! Please add your API key to the script section in index.html to enable the assistant.';
+            document.body.appendChild(errorElement);
+        }
+
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${API_MODEL}:generateContent?key=${apiKey}`;
 
         const chatArea = document.getElementById('chatArea');
@@ -850,7 +874,7 @@
         // --- Core Functions ---
         function sendMessage() {
             const userMessage = messageInput.value.trim();
-            if (!userMessage) return;
+            if (!userMessage || apiKey === "PASTE_YOUR_GOOGLE_AI_API_KEY_HERE") return;
 
             // Clear the initial help message if it exists
             if (initialMessageContainer) {
@@ -1032,16 +1056,4 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
 
