@@ -4,758 +4,1048 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sushruta - AI Health Assistant</title>
-    <!-- Tailwind CSS and Inter font -->
+    <!-- Tailwind CSS and Google Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         html, body {
             height: 100%;
-            overflow: hidden; /* Prevent scrolling on the body */
+            overflow: hidden;
         }
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #FAF8F7; /* Warmer off-white */
+            font-family: 'Inter', 'Noto Sans Devanagari', sans-serif;
+            background: linear-gradient(135deg, #F9A825 0%, #F57F17 50%, #E65100 100%);
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 16px; /* Larger base font size for better readability */
         }
-        /* Main container with refined shadow */
+        
         .chat-container {
             position: relative;
             width: 100%;
             height: 100%;
-            background-color: #ffffff;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
-        /* Apply responsive styles for larger screens */
         @media (min-width: 640px) {
             .chat-container {
-                max-width: 36rem; /* Wider for tablets */
-                height: 90vh;
-                max-height: 800px;
+                max-width: 48rem;
+                height: 95vh;
+                max-height: 900px;
                 border-radius: 1.5rem;
-                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+                box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.3);
+                border: 2px solid rgba(255, 255, 255, 0.2);
             }
-             body {
+            body {
                 padding: 1rem;
             }
         }
 
         @media (min-width: 1024px) {
             .chat-container {
-                max-width: 48rem; /* Even wider for desktops */
+                max-width: 56rem;
             }
         }
         
-        /* NEW: Header with a soothing gradient */
         .header {
-            background: linear-gradient(135deg, #F9A826, #E67E22); /* Saffron to Carrot gradient */
+            background: linear-gradient(135deg, #F9A825 0%, #F57F17 50%, #E65100 100%);
             color: white;
-            padding: 1rem 1.5rem;
+            padding: 2rem 1.5rem 3rem; /* Increased bottom padding for toggle button */
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
             position: relative;
+            flex-shrink: 0; /* Prevent header from shrinking */
+        }
+        
+        .logo-container {
+            position: relative;
             z-index: 10;
         }
-        /* Custom scrollbar for the chat area */
+        
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            backdrop-filter: blur(10px);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            width: 100%;
+            max-width: 300px;
+            margin-top: 1.5rem;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 1rem;
+            padding: 1rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+        
+        .lang-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+        
+        .lang-btn {
+            padding: 0.75rem 1.25rem;
+            border-radius: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            min-width: 60px;
+        }
+        
+        .lang-btn:hover, .lang-btn.active {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        .disclaimer-banner {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+            color: white;
+            text-align: center;
+            font-size: 0.9rem;
+            padding: 1rem;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0; /* Prevent from shrinking */
+        }
+        
+        .disclaimer-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .quick-actions {
+            padding: 1.25rem;
+            background: #f8fffe;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            flex-shrink: 0; /* Prevent from shrinking */
+        }
+        
+        .quick-btn {
+            padding: 1rem;
+            border-radius: 1.5rem;
+            background: white;
+            border: 3px solid #e5e7eb;
+            color: #374151;
+            font-size: 0.9rem;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .quick-btn .icon {
+            font-size: 1.5rem;
+        }
+        
+        .quick-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(249, 168, 37, 0.2);
+            border-color: #F9A825;
+            color: #F9A825;
+        }
+        
+        .quick-btn.emergency {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border-color: #dc2626;
+            color: white;
+        }
+        
+        .quick-btn.emergency:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
+        }
+        
+        .quick-btn.women {
+            background: linear-gradient(135deg, #ec4899, #db2777);
+            border-color: #db2777;
+            color: white;
+        }
+        
+        .quick-btn.women:hover {
+            background: linear-gradient(135deg, #db2777, #be185d);
+            box-shadow: 0 8px 20px rgba(219, 39, 119, 0.4);
+        }
+        
+        .chat-area {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            background: linear-gradient(180deg, #fefffe 0%, #f9fffe 100%);
+            position: relative;
+        }
+        
         .chat-area::-webkit-scrollbar {
             width: 8px;
         }
+        
+        .chat-area::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
         .chat-area::-webkit-scrollbar-thumb {
-            background-color: #9ca3af;
+            background: linear-gradient(180deg, #F9A825, #F57F17);
             border-radius: 4px;
         }
-        /* Language button active state */
-        .lang-btn.active {
-            background-color: rgba(255, 255, 255, 0.2);
-            font-weight: 600;
-        }
-        .lang-btn {
-             transition: background-color 0.2s ease-in-out;
-        }
-        /* Animation for messages appearing */
-        .message-enter-active { animation: fadeIn 0.5s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Custom typing indicator animation */
-        @keyframes pulse-delay-0 { 0%, 80%, 100% { opacity: 0.2; } 40% { opacity: 1; } }
-        @keyframes pulse-delay-1 { 0%, 80%, 100% { opacity: 0.2; } 40% { opacity: 1; } }
-        @keyframes pulse-delay-2 { 0%, 80%, 100% { opacity: 0.2; } 40% { opacity: 1; } }
-        .animate-pulse-delay-0 { animation: pulse-delay-0 1.5s infinite; }
-        .animate-pulse-delay-1 { animation: pulse-delay-1 1.5s infinite 0.2s; }
-        .animate-pulse-delay-2 { animation: pulse-delay-2 1.5s infinite 0.4s; }
-        .typing-indicator { display: none; }
-        .quick-btn {
-            transition: all 0.2s ease-in-out;
-            transform: translateY(0);
-            border: 1px solid #d1d5db;
+        .message {
+            margin-bottom: 1.5rem;
+            animation: messageSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1rem;
+            line-height: 1.6;
         }
-        .quick-btn:hover {
+        
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .user-message {
+            background: linear-gradient(135deg, #F9A825 0%, #F57F17 100%);
+            color: white;
+            margin-left: auto;
+            border-radius: 2rem 2rem 0.75rem 2rem;
+            box-shadow: 0 4px 16px rgba(249, 168, 37, 0.3);
+            position: relative;
+            overflow: hidden;
+            max-width: 85%;
+            padding: 1.25rem 1.5rem;
+        }
+        
+        .bot-message {
+            background: white;
+            color: #1f2937;
+            border: 2px solid #e5e7eb;
+            border-radius: 2rem 2rem 2rem 0.75rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            position: relative;
+            max-width: 90%;
+            padding: 1.25rem 1.5rem;
+        }
+        
+        .bot-message::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(180deg, #F9A825, #F57F17);
+            border-radius: 3px 0 0 3px;
+        }
+        
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1.25rem;
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            width: fit-content;
+            margin-bottom: 1.5rem;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .typing-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #F9A825, #F57F17);
+            animation: typingBounce 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dot:nth-child(2) { animation-delay: 0.16s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.32s; }
+        
+        @keyframes typingBounce {
+            0%, 80%, 100% { 
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .input-area {
+            background: #f8fffe;
+            padding: 1.5rem;
+            border-top: 2px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+            flex-shrink: 0; /* Prevent from shrinking */
+        }
+        
+        .voice-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            background: #1f2937;
+            color: white;
+            padding: 1rem 1.25rem;
+            border-radius: 1rem;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            z-index: 30;
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+        }
+        
+        .voice-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 25px;
+            border: 8px solid transparent;
+            border-top-color: #1f2937;
+        }
+        
+        .voice-btn, .send-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        .voice-btn {
+            background: linear-gradient(135deg, #fbbf24, #f97316);
+            color: white;
+        }
+        
+        .voice-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 24px rgba(251, 191, 36, 0.4);
+        }
+        
+        .voice-btn.listening {
+            animation: voicePulse 1.5s infinite;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+        
+        @keyframes voicePulse {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+            }
+            50% { 
+                transform: scale(1.1);
+                box-shadow: 0 8px 30px rgba(239, 68, 68, 0.5);
+            }
+        }
+        
+        .message-input {
+            flex: 1;
+            padding: 1.25rem 1.75rem;
+            background: white;
+            border: 3px solid #e5e7eb;
+            border-radius: 2rem;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            outline: none;
+            font-weight: 500;
+        }
+        
+        .message-input:focus {
+            border-color: #F9A825;
+            box-shadow: 0 0 0 4px rgba(249, 168, 37, 0.1);
+        }
+        
+        .send-btn {
+            background: linear-gradient(135deg, #F9A825, #F57F17);
+            color: white;
+        }
+        
+        .send-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 24px rgba(249, 168, 37, 0.4);
+        }
+        
+        .send-btn:active {
+            transform: translateY(0) scale(0.95);
+        }
+        
+        .searching-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+        
+        .searching-modal {
+            background: white;
+            border-radius: 2rem;
+            padding: 2.5rem;
+            text-align: center;
+            max-width: 380px;
+            width: 90%;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .searching-modal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(249, 168, 37, 0.1), transparent);
+            animation: searchingShimmer 2s infinite;
+        }
+        
+        @keyframes searchingShimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .virtual-keyboard {
+            background: #f8fffe;
+            border-top: 2px solid #e5e7eb;
+            padding: 1.25rem;
+        }
+        
+        .keyboard-grid {
+            display: grid;
+            gap: 0.75rem;
+            grid-template-columns: repeat(10, 1fr);
+        }
+        
+        .key-btn {
+            padding: 1rem;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .key-btn:hover {
+            background: #F9A825;
+            color: white;
             transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            border-color: #F9A826; /* Saffron border on hover */
-            color: #F9A826;
+            box-shadow: 0 4px 12px rgba(249, 168, 37, 0.3);
         }
-        .voice-icon.listening {
-            animation: pulse-red 1.5s infinite;
+        
+        .key-btn.space {
+            grid-column: span 4;
         }
-        @keyframes pulse-red {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
+        
+        .help-section {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border: 2px solid #93c5fd;
         }
-        /* Animation to highlight the voice button */
-        @keyframes pulse-blue {
-            0% { box-shadow: 0 0 0 0 rgba(249, 168, 38, 0.7); } /* Saffron glow */
-            70% { box-shadow: 0 0 0 10px rgba(249, 168, 38, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(249, 168, 38, 0); }
+        
+        .help-title {
+            color: #1e40af;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        .voice-btn-highlight {
-            animation: pulse-blue 2s infinite;
+        
+        .help-list {
+            color: #1e3a8a;
+            font-weight: 500;
+            line-height: 1.7;
+        }
+        
+        .connection-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #F9A825;
+            z-index: 100;
+            animation: connectionPulse 2s infinite;
+        }
+        
+        @keyframes connectionPulse {
+            0%, 100% { 
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 0.7;
+                transform: scale(1.2);
+            }
+        }
+        
+        @media (max-width: 640px) {
+            body {
+                font-size: 18px; /* Larger font for mobile */
+            }
+            .header {
+                padding: 1.5rem 1rem 2.5rem; /* Adjust padding for mobile */
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+            .stat-card {
+                padding: 0.75rem;
+            }
+            .quick-actions {
+                padding: 1rem;
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .quick-btn {
+                padding: 1rem 0.75rem;
+                font-size: 0.85rem;
+            }
+            .chat-area {
+                padding: 1rem;
+            }
+            .input-area {
+                padding: 1rem;
+            }
+            .voice-btn, .send-btn {
+                width: 52px;
+                height: 52px;
+            }
+            .message-input {
+                font-size: 18px; /* Prevent zoom on iOS */
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .slide-up {
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
-        /* Improved chat bubble styles */
-        .user-message {
-            background: linear-gradient(135deg, #F9A826, #E67E22); /* Saffron to Carrot gradient for user */
+        /* High contrast mode for better accessibility */
+        .high-contrast {
+            filter: contrast(1.2) brightness(1.1);
         }
-        .bot-message {
-            background-color: #FDFBF8; /* Creamy off-white for bot */
-            border: 1px solid #F0EBE3;
+
+        /* Focus indicators for keyboard navigation */
+        *:focus {
+            outline: 3px solid #F9A825;
+            outline-offset: 2px;
+        }
+        
+        .lang-btn:focus {
+            outline-color: white;
+        }
+
+        /* Loading animation for better feedback */
+        .loading-pulse {
+            animation: loadingPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes loadingPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Styles for collapsible sections */
+        .collapsible {
+            max-height: 500px; /* A large enough value to show content */
+            transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out, padding 0.5s, margin 0.5s;
+            overflow: hidden;
+        }
+
+        .collapsed {
+            max-height: 0;
+            opacity: 0;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+            border-width: 0 !important;
+        }
+
+        #header-toggle-icon.rotate-180 {
+            transform: rotate(180deg);
         }
     </style>
 </head>
-<body class="bg-gray-100">
-
+<body>
+    <!-- Connection Indicator -->
+    <div class="connection-indicator" title="Connected"></div>
+    
     <div class="chat-container">
-        
         <!-- Medical Disclaimer Banner -->
-        <div class="bg-red-600 text-white text-center text-xs py-1 px-4 font-medium flex-shrink-0">
-            ⚠️ Disclaimer: This is an AI tool and not a substitute for professional medical advice.
+        <div class="disclaimer-banner">
+            ⚠️ महत्वपूर्ण: यह केवल सहायता के लिए है। गंभीर समस्या के लिए डॉक्टर से मिलें। Important: This is for assistance only. Consult a doctor for serious issues.
         </div>
 
         <!-- Header -->
-        <header class="header flex-shrink-0">
-            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight mb-1">Sushruta</h1>
-            <p class="text-xs sm:text-sm text-orange-100">Your AI Health Assistant</p>
-            <div class="flex flex-col sm:flex-row justify-between items-center w-full mt-3 space-y-3 sm:space-y-0">
-                <div class="flex space-x-4 text-xs">
-                    <div class="flex flex-col items-center">
-                        <span class="font-semibold text-white">92%</span>
-                        <span class="text-orange-100 text-xxs">Accuracy</span>
+        <header class="header">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z" fill="white"/>
+                        <circle cx="12" cy="12" r="3" fill="white" opacity="0.8"/>
+                    </svg>
+                </div>
+                <h1 class="text-4xl font-bold tracking-tight mb-2" style="font-family: 'Inter', sans-serif;">सुश्रुत Sushruta</h1>
+                <p class="text-xl text-orange-100 font-semibold">आपका स्वास्थ्य सहायक | Your Health Assistant</p>
+            </div>
+            
+            <div id="collapsible-header" class="collapsible w-full">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="text-2xl font-bold">FREE</div>
+                        <div class="text-sm opacity-90">मुफ्त सेवा</div>
                     </div>
-                    <div class="flex flex-col items-center">
-                        <span class="font-semibold text-white">8</span>
-                        <span class="text-orange-100 text-xxs">Languages</span>
-                    </div>
-                    <div class="flex flex-col items-center">
-                        <span class="font-semibold text-white">100K+</span>
-                        <span class="text-orange-100 text-xxs">Users Helped</span>
+                    <div class="stat-card">
+                        <div class="text-2xl font-bold">24/7</div>
+                        <div class="text-sm opacity-90">हमेशा उपलब्ध</div>
                     </div>
                 </div>
-                <div class="flex flex-wrap justify-center gap-1">
-                    <button class="lang-btn text-white px-2 py-1 text-xs rounded-full active" onclick="setLanguage('en')" id="lang-en">English</button>
-                    <button class="lang-btn text-white px-2 py-1 text-xs rounded-full" onclick="setLanguage('hi')" id="lang-hi">हिंदी</button>
-                    <button class="lang-btn text-white px-2 py-1 text-xs rounded-full" onclick="setLanguage('bn')" id="lang-bn">বাংলা</button>
-                    <button class="lang-btn text-white px-2 py-1 text-xs rounded-full" onclick="setLanguage('ta')" id="lang-ta">தமிழ்</button>
-                    <button class="lang-btn text-white px-2 py-1 text-xs rounded-full" onclick="setLanguage('od')" id="lang-od">ଓଡ଼ିଆ</button>
+                
+                <div class="lang-selector">
+                    <button class="lang-btn active" onclick="setLanguage('hi')" id="lang-hi">हिंदी</button>
+                    <button class="lang-btn" onclick="setLanguage('en')" id="lang-en">English</button>
+                    <button class="lang-btn" onclick="setLanguage('bn')" id="lang-bn">বাংলা</button>
+                    <button class="lang-btn" onclick="setLanguage('ta')" id="lang-ta">தமிழ்</button>
+                    <button class="lang-btn" onclick="setLanguage('od')" id="lang-od">ଓଡ଼ିଆ</button>
                 </div>
             </div>
+            <button id="header-toggle-btn" class="absolute bottom-[-1rem] bg-white text-gray-600 rounded-full p-1 shadow-md border-2 border-gray-200 transition-transform duration-300 z-10">
+                <svg id="header-toggle-icon" class="w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+            </button>
         </header>
 
         <!-- Quick Actions -->
-        <div class="p-2 bg-white flex flex-wrap gap-2 justify-center border-b border-gray-200 sticky top-0 z-10 flex-shrink-0">
-            <button class="quick-btn bg-white text-gray-600 text-xs font-semibold px-3 py-1.5 rounded-full" data-query="Symptoms of Fever">🌡️ Fever</button>
-            <button class="quick-btn bg-white text-gray-600 text-xs font-semibold px-3 py-1.5 rounded-full" data-query="What is COVID-19?">😷 COVID-19</button>
-            <button class="quick-btn bg-white text-gray-600 text-xs font-semibold px-3 py-1.5 rounded-full" data-query="Child Vaccination Schedule">💉 Vaccination</button>
-            <button class="quick-btn bg-white text-gray-600 text-xs font-semibold px-3 py-1.5 rounded-full" data-query="Remedies for Cough">😤 Cough</button>
-            <button class="quick-btn bg-red-500 hover:bg-red-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full border-red-500" data-query="Emergency medical help">🚨 Emergency</button>
-            <button class="quick-btn bg-rose-500 hover:bg-rose-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full border-rose-500" data-query="Women's Health">♀️ Women's Health</button>
+        <div id="quick-actions" class="quick-actions collapsible">
+            <button class="quick-btn" data-query="बुखार के लक्षण क्या हैं?">
+                <span class="icon">🌡️</span>
+                <span>बुखार | Fever</span>
+            </button>
+            <button class="quick-btn" data-query="खांसी का इलाज कैसे करें?">
+                <span class="icon">😤</span>
+                <span>खांसी | Cough</span>
+            </button>
+            <button class="quick-btn" data-query="बच्चों का टीकाकरण">
+                <span class="icon">💉</span>
+                <span>टीका | Vaccine</span>
+            </button>
+            <button class="quick-btn" data-query="पेट दर्द का घरेलू इलाज">
+                <span class="icon">🤰</span>
+                <span>पेट दर्द | Stomach</span>
+            </button>
+            <button class="quick-btn emergency" data-query="आपातकालीन मदद चाहिए">
+                <span class="icon">🚨</span>
+                <span>Emergency</span>
+            </button>
+            <button class="quick-btn women" data-query="महिलाओं की स्वास्थ्य समस्या">
+                <span class="icon">👩‍⚕️</span>
+                <span>Women Health</span>
+            </button>
         </div>
 
         <!-- Chat Area -->
-        <main id="chatArea" class="chat-area flex-1 p-4 overflow-y-auto bg-white space-y-4">
-            <!-- Initial Bot Message will be dynamically inserted here -->
-            <div id="initialMessageContainer"></div>
-            <!-- Typing Indicator with better animation -->
-            <div id="typingIndicator" class="typing-indicator flex items-center space-x-1 p-3 bg-gray-100 rounded-xl shadow-sm w-fit">
-                <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse-delay-0"></div>
-                <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse-delay-1"></div>
-                <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse-delay-2"></div>
+        <main id="chatArea" class="chat-area">
+            <div id="initialMessageContainer">
+                <div class="help-section">
+                    <div class="help-title">
+                        <span>📚</span>
+                        मैं आपकी कैसे मदद कर सकता हूं? | How can I help you?
+                    </div>
+                    <div class="help-list">
+                        • बीमारी के लक्षण जानने के लिए<br>
+                        • घरेलू उपचार की जानकारी के लिए<br>
+                        • टीकाकरण की जानकारी के लिए<br>
+                        • Know disease symptoms<br>
+                        • Get home remedies<br>
+                        • Learn about vaccination
+                    </div>
+                </div>
+                
+                <div class="message bot-message fade-in">
+                    <p class="font-bold text-gray-800 mb-3">🙏 नमस्ते! मैं सुश्रुत हूं, आपका AI स्वास्थ्य सहायक!</p>
+                    <p class="text-gray-700 mb-3">Hello! I'm Sushruta, your AI Health Assistant! 🩺</p>
+                    <p class="text-gray-600 mb-3">मैं आपकी स्वास्थ्य संबंधी समस्याओं में मदद कर सकता हूं। ऊपर के बटन दबाएं या अपना सवाल टाइप करें।</p>
+                    <p class="text-sm text-gray-500 italic">I can help with health issues. Use buttons above or type your question.</p>
+                </div>
+            </div>
+            
+            <!-- Enhanced Typing Indicator -->
+            <div id="typingIndicator" class="typing-indicator" style="display: none;">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <span class="ml-2 text-base text-gray-700 font-semibold">सुश्रुत सोच रहा है... | Thinking...</span>
             </div>
         </main>
         
-        <!-- Input Area -->
-        <footer class="bg-white p-2 border-t border-gray-200 flex items-center space-x-2 relative flex-shrink-0">
-            <!-- NEW: Tooltip for Voice Feature -->
-            <div id="voice-tooltip" class="hidden absolute -top-12 left-2 bg-gray-800 text-white text-xs rounded-md px-3 py-2 shadow-lg z-20 transition-opacity duration-300 opacity-0">
-                <span id="tooltip-text"></span>
-                <button id="close-tooltip" class="ml-2 font-bold text-lg leading-none">&times;</button>
+        <!-- Enhanced Input Area -->
+        <footer class="input-area">
+            <!-- Voice Tooltip -->
+            <div id="voice-tooltip" class="voice-tooltip hidden">
+                <span id="tooltip-text">🎤 माइक दबाकर बोलें | Tap mic to speak</span>
+                <button id="close-tooltip" class="ml-2 font-bold text-lg">&times;</button>
             </div>
-            <!-- Voice Input Button -->
-            <button id="voiceBtn" class="bg-green-800 hover:bg-green-900 text-white p-2 rounded-full shadow-lg transition-all transform hover:scale-105 flex-shrink-0">
-                <svg id="mic-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7v0a7 7 0 01-7-7v0a7 7 0 017-7v0a7 7 0 017 7z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-4m-4 4h8" />
+            
+            <!-- Voice Button -->
+            <button id="voiceBtn" class="voice-btn" title="Voice Input">
+                <svg id="mic-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 1C10.89 1 10 1.89 10 3V12C10 13.11 10.89 14 12 14C13.11 14 14 13.11 14 12V3C14 1.89 13.11 1 12 1Z" fill="currentColor"/>
+                    <path d="M19 10V12C19 15.87 15.87 19 12 19C8.13 19 5 15.87 5 12V10H7V12C7 14.76 9.24 17 12 17C14.76 17 17 14.76 17 12V10H19Z" fill="currentColor"/>
+                    <path d="M12 19V23H8V21H16V23H12V19Z" fill="currentColor"/>
                 </svg>
             </button>
-            <input type="text" id="messageInput" placeholder="Ask a health question..." class="flex-1 px-4 py-2 bg-gray-100 rounded-full text-sm border-2 border-transparent focus:outline-none focus:border-orange-500 transition-all" onkeypress="handleKeyPress(event)">
-            <button id="sendBtn" class="bg-green-800 hover:bg-green-900 text-white font-semibold px-4 py-2 rounded-full shadow-lg transition-all transform hover:scale-105 flex-shrink-0">Send</button>
+            
+            <input type="text" id="messageInput" class="message-input" placeholder="अपना सवाल पूछें...">
+            
+            <button id="sendBtn" class="send-btn" title="Send Message">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.01 21L23 12L2.01 3L2 10L17 12L2 14L2.01 21Z" fill="currentColor"/>
+                </svg>
+            </button>
         </footer>
-        <!-- Virtual Keyboard Toggle for Mobile -->
-        <button id="keyboardBtn" class="sm:hidden fixed bottom-16 right-4 bg-gray-200 hover:bg-gray-300 text-gray-800 p-3 rounded-full shadow-lg transition-all transform hover:scale-105 z-20">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-        </button>
-        <!-- Virtual Keyboard -->
-        <div id="virtualKeyboard" class="bg-gray-200 p-2 border-t border-gray-200 hidden flex-shrink-0">
-            <div id="keyboardLayout" class="grid gap-1"></div>
-        </div>
     </div>
     
-    <!-- New: Searching Overlay/Modal -->
-    <div id="searchingOverlay" class="fixed inset-0 bg-gray-800 bg-opacity-70 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-xl shadow-lg p-6 text-center max-w-sm w-full animate-pulse mx-4">
-            <p class="text-lg font-semibold text-gray-800" id="searchingMessage"></p>
+    <!-- Searching Overlay/Modal -->
+    <div id="searchingOverlay" class="searching-overlay" style="display: none;">
+        <div class="searching-modal">
+            <div class="text-2xl mb-4">🔍</div>
+            <h2 class="text-xl font-bold text-gray-800 mb-2">Connecting to Health Network...</h2>
+            <p class="text-gray-600">Please wait while we find the best information for you.</p>
         </div>
     </div>
 
     <script>
-        // This variable should be replaced with a valid API key for the generative features to work.
-        // It's intentionally left blank here for security reasons.
-        const apiKey = "AIzaSyDY4WUNKFyJmTDKZFCi0xZjLZvoMxsNTNo";
+        // Sushruta - AI Health Assistant - Main JavaScript
+        const apiKey = ""; // IMPORTANT: This will be populated by the environment.
         const API_MODEL = "gemini-2.5-flash-preview-05-20";
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${API_MODEL}:generateContent?key=${apiKey}`;
 
-        // Chat history and current language state
-        let chatHistory = [{
-            role: "user",
-            parts: [{ text: "Start a health-related conversation with a person and respond in the user's preferred language." }],
-        }];
-        let currentLanguage = 'en';
-
-        // Get DOM elements
         const chatArea = document.getElementById('chatArea');
         const messageInput = document.getElementById('messageInput');
         const sendBtn = document.getElementById('sendBtn');
-        const searchingOverlay = document.getElementById('searchingOverlay');
-        const searchingMessage = document.getElementById('searchingMessage');
         const voiceBtn = document.getElementById('voiceBtn');
-        const keyboardBtn = document.getElementById('keyboardBtn');
-        const virtualKeyboard = document.getElementById('virtualKeyboard');
-        const keyboardLayout = document.getElementById('keyboardLayout');
-        const micIcon = document.getElementById('mic-icon');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const searchingOverlay = document.getElementById('searchingOverlay');
         const initialMessageContainer = document.getElementById('initialMessageContainer');
-        // NEW: Tooltip elements
         const voiceTooltip = document.getElementById('voice-tooltip');
-        const tooltipText = document.getElementById('tooltip-text');
         const closeTooltipBtn = document.getElementById('close-tooltip');
+        const headerToggleBtn = document.getElementById('header-toggle-btn');
+        const headerToggleIcon = document.getElementById('header-toggle-icon');
+        const collapsibleHeader = document.getElementById('collapsible-header');
+        const quickActions = document.getElementById('quick-actions');
+        
+        let currentLanguage = 'hi'; // Default language
 
-
-            // NEW: Centralized translations for UI text
-        const translations = {
-            en: {
-                initialMessage: `<div class="message bot-message p-4 rounded-xl max-w-lg animate-slideIn">
-                    <p class="font-bold text-gray-800">Hi, I'm Sushruta, your friendly AI Health Assistant! 🩺</p>
-                    <p class="text-sm text-gray-600 mt-1">I can help with disease symptoms, vaccination schedules, and more. 😊</p>
-                    <p class="text-xs text-gray-400 mt-3 italic">Please ask your question or use the buttons above.</p>
-                </div>`,
-                placeholder: "Type your health question...",
-                searching: "Searching for a solution... 🔍",
-                languageChanged: "✅ Language changed to English.",
-                voiceTooltip: "New! Tap the mic to ask with your voice."
-            },
-            hi: {
-                initialMessage: `<div class="message bot-message p-4 rounded-xl max-w-lg animate-slideIn">
-                    <p class="font-bold text-gray-800">नमस्ते, मैं सुश्रुत हूँ, आपका एआई स्वास्थ्य सहायक! 🩺</p>
-                    <p class="text-sm text-gray-600 mt-1">मैं आपकी मदद करने के लिए यहाँ हूँ! 😊</p>
-                    <p class="text-xs text-gray-400 mt-3 italic">कृपया अपना प्रश्न पूछें या ऊपर दिए गए बटनों का उपयोग करें।</p>
-                </div>`,
-                placeholder: "अपना स्वास्थ्य प्रश्न यहाँ लिखें...",
-                searching: "समाधान खोजा जा रहा है... 🔍",
-                languageChanged: "✅ भाषा हिंदी में बदली गई।",
-                voiceTooltip: "नया! अपनी आवाज से सवाल पूछने के लिए टैप करें।"
-            },
-             bn: {
-                initialMessage: `<div class="message bot-message p-4 rounded-xl max-w-lg animate-slideIn">
-                    <p class="font-bold text-gray-800">নমস্কার, আমি সুশ্রুত, আপনার এআই স্বাস্থ্য সহকারী! 🩺</p>
-                    <p class="text-sm text-gray-600 mt-1">আমি আপনাকে সাহায্য করার জন্য এখানে আছি! 😊</p>
-                    <p class="text-xs text-gray-400 mt-3 italic">অনুগ্রহ করে আপনার প্রশ্ন জিজ্ঞাসা করুন বা উপরের বোতামগুলি ব্যবহার করুন।</p>
-                </div>`,
-                placeholder: "আপনার স্বাস্থ্য প্রশ্ন এখানে টাইপ করুন...",
-                searching: "সমাধান খোঁজা হচ্ছে... 🔍",
-                languageChanged: "✅ ভাষা বাংলায় পরিবর্তন করা হয়েছে।",
-                voiceTooltip: "নতুন! আপনার ভয়েস দিয়ে প্রশ্ন করতে ট্যাপ করুন।"
-            },
-            ta: {
-                initialMessage: `<div class="message bot-message p-4 rounded-xl max-w-lg animate-slideIn">
-                    <p class="font-bold text-gray-800">வணக்கம், நான் சுஷ்ருதா, உங்கள் AI சுகாதார உதவியாளர்! 🩺</p>
-                    <p class="text-sm text-gray-600 mt-1">உங்களுக்கு உதவ நான் இங்கே இருக்கிறேன்! 😊</p>
-                    <p class="text-xs text-gray-400 mt-3 italic">உங்கள் கேள்வியைக் கேட்கவும் அல்லது மேலே உள்ள பொத்தான்களைப் பயன்படுத்தவும்.</p>
-                </div>`,
-                placeholder: "உங்கள் சுகாதார கேள்வியை இங்கே தட்டச்சு...",
-                searching: "தீர்வு தேடப்படுகிறது... 🔍",
-                languageChanged: "✅ மொழி தமிழுக்கு மாற்றப்பட்டுள்ளது।",
-                voiceTooltip: "புதியது! உங்கள் குரலில் கேட்க தட்டவும்."
-            },
-            od: {
-                initialMessage: `<div class="message bot-message p-4 rounded-xl max-w-lg animate-slideIn">
-                    <p class="font-bold text-gray-800">ନମସ୍କାର, ମୁଁ ସୁଶ୍ରୁତ, ଆପଣଙ୍କ ଏଆଇ ସ୍ୱାସ୍ଥ୍ୟ ସହାୟକ! 🩺</p>
-                    <p class="text-sm text-gray-600 mt-1">ମୁଁ ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରିବା ପାଇଁ ଏଠାରେ ଅଛି! 😊</p>
-                    <p class="text-xs text-gray-400 mt-3 italic">ଦୟାକରି ଆପଣଙ୍କର ପ୍ରଶ୍ନ ପଚାରନ୍ତୁ କିମ୍ବା ଉପର ବଟନ୍ ବ୍ୟବହାର କରନ୍ତୁ।</p>
-                </div>`,
-                placeholder: "ଆପଣଙ୍କ ସ୍ୱାସ୍ଥ୍ୟ ପ୍ରଶ୍ନ ଏଠାରେ ଟାଇପ୍ କରନ୍ତୁ...",
-                searching: "ସମାଧାନ ଖୋଜାଯାଉଛି... 🔍",
-                languageChanged: "✅ ଭାଷା ଓଡ଼ିଆକୁ ବଦଳାଗଲା।",
-                voiceTooltip: "ନୂଆ! ଆପଣଙ୍କ ସ୍ୱରରେ ପଚାରିବା ପାଇଁ ଟ୍ୟାପ୍ କରନ୍ତୁ।"
+        // --- Event Listeners ---
+        sendBtn.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
             }
-        };
-
-
-        // Pre-programmed knowledge base for quick-action buttons and specific queries
-        const knowledgeBase = {
-            womensHealth: {
-                en: {
-                    response: `👩‍⚕️ <strong>Women's Health:</strong><br><br>
-                    <div class="bg-pink-100 text-pink-800 p-4 rounded-lg my-2">
-                        <strong class="font-semibold">Common topics:</strong><br>
-                        <ul><li><strong>Menstrual Health:</strong> Irregular periods, heavy bleeding, or severe pain should be discussed with a doctor.</li>
-                        <li><strong>PCOS:</strong> Polycystic Ovary Syndrome symptoms include irregular periods, excess hair growth, and weight gain.</li>
-                        <li><strong>UTIs:</strong> Urinary Tract Infections are common; symptoms include painful urination and frequent urges.</li></ul>
-                        <br><br>
-                        <strong class="font-semibold text-red-600">⚠️ Disclaimer:</strong> For a proper diagnosis and treatment plan, it is crucial to consult a Gynecologist or a General Physician.
-                    </div>`,
-                    keywords: ['women\'s health', 'women', 'menstrual', 'pcos', 'uti', 'female health']
-                },
-                hi: {
-                    response: `👩‍⚕️ <strong>महिला स्वास्थ्य:</strong><br><br>
-                    <div class="bg-pink-100 text-pink-800 p-4 rounded-lg my-2">
-                        <strong class="font-semibold">सामान्य विषय:</strong><br>
-                        <ul><li><strong>मासिक धर्म स्वास्थ्य:</strong> अनियमित पीरियड्स, ज्यादा ब्लीडिंग, या तेज दर्द होने पर डॉक्टर से सलाह लें।</li>
-                        <li><strong>PCOS:</strong> पॉलीसिस्टिक ओवरी सिंड्रोम के लक्षणों में अनियमित पीरियड्स, अतिरिक्त बाल उगना और वजन बढ़ना शामिल है।</li>
-                        <li><strong>UTIs:</strong> यूरिनरी ट्रैक्ट इन्फेक्शन आम हैं; लक्षणों में पेशाब करते समय दर्द और बार-बार पेशाब का आग्रह शामिल है।</li></ul>
-                        <br><br>
-                        <strong class="font-semibold text-red-600">⚠️ चेतावनी:</strong> सटीक निदान और उपचार योजना के लिए, स्त्री रोग विशेषज्ञ या सामान्य चिकित्सक से परामर्श करना महत्वपूर्ण है।
-                    </div>`,
-                    keywords: ['महिला स्वास्थ्य', 'महिला', 'मासिक धर्म', 'पॉलीसिस्टिक', 'पी.सी.ओ.एस.', 'यूटीआई']
-                },
-                od: {
-                    response: `👩‍⚕️ <strong>ମହିଳାଙ୍କ ସ୍ୱାସ୍ଥ୍ୟ:</strong><br><br>
-                    <div class="bg-pink-100 text-pink-800 p-4 rounded-lg my-2">
-                        <strong class="font-semibold">ସାଧାରଣ ବିଷୟ:</strong><br>
-                        <ul><li><strong>ମାସିକ ଧର୍ମ ସ୍ୱାସ୍ଥ୍ୟ:</strong> ଅନିୟମିତ ପିରିଅଡ୍, ଅଧିକ ରକ୍ତସ୍ରାବ, କିମ୍ବା ଗୁରୁତର ଯନ୍ତ୍ରଣା ହେଲେ ଡାକ୍ତରଙ୍କ ସହିତ ପରାମର୍ଶ କରିବା ଉଚିତ୍।</li>
-                        <li><strong>PCOS:</strong> ପଲିସିଷ୍ଟିକ୍ ଓଭାରୀ ସିଣ୍ଡ୍ରୋମର ଲକ୍ଷଣଗୁଡ଼ିକରେ ଅନିୟମିତ ପିରିଅଡ୍, ଅତ୍ୟଧିକ କେଶ ବୃଦ୍ଧି ଏବଂ ଓଜନ ବୃଦ୍ଧି ସାମିଲ୍।</li>
-                        <li><strong>UTIs:</strong> ମୂତ୍ରାଶୟ ସଂକ୍ରମଣ ସାଧାରଣ ଅଟେ; ଲକ୍ଷଣଗୁଡ଼ିକରେ ଯନ୍ତ୍ରଣାଦାୟକ ମୂତ୍ରତ୍ୟାଗ ଏବଂ ବାରମ୍ବାର ମୂତ୍ରତ୍ୟାଗ କରିବାର ଇଚ୍ଛା ଅନ୍ତର୍ଭୁକ୍ତ।</li></ul>
-                        <br><br>
-                        <strong class="font-semibold text-red-600">⚠️ ସତର୍କତା:</strong> ସଠିକ୍ ରୋଗ ନିର୍ଣ୍ଣୟ ଏବଂ ଚିକିତ୍ସା ପାଇଁ, ଜଣେ ସ୍ତ୍ରୀ ରୋଗ ବିଶେଷଜ୍ଞ କିମ୍ବା ଜଣେ ସାଧାରଣ ଚିକିତ୍ସକଙ୍କ ସହିତ ପରାମର୍ଶ କରିବା ଅତ୍ୟନ୍ତ ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ।
-                    </div>`,
-                    keywords: ['ମହିଳା ସ୍ୱାସ୍ଥ୍ୟ', 'ମହିଳା', 'ମାସିକ ଧର୍ମ', 'ପି.ସି.ଓ.ଏସ', 'ୟୁ.ଟି.ଆଇ']
-                }
-            },
-            diseaseOutbreaks: {
-                en: { keywords: ['disease outbreaks', 'outbreak', 'alerts', 'advisory', 'disease', 'diseases'] },
-                hi: { keywords: ['रोग प्रकोप', 'प्रकोप', 'अलर्ट', 'सलाह', 'रोग', 'बीमारी'] },
-                od: { keywords: ['ରୋଗ ପ୍ରକୋପ', 'ପ୍ରକୋପ', 'ସତର୍କତା', 'ରୋଗ'] }
-            },
-            govtHospitals: {
-                en: {
-                    response: `🏥 <strong>Government Hospitals in India:</strong><br><br>
-                    <div class="bg-cyan-100 text-cyan-800 p-4 rounded-lg my-2">
-                        <p>Finding a government hospital is a great way to access affordable healthcare. Don't worry, we can help you with that! 😊</p>
-                        <br>
-                        <p>To give you the most accurate list, please tell me which city you are looking for hospitals in. For example, you can type "<strong>Government hospitals in Noida</strong>".</p>
-                    </div>`,
-                    keywords: ['government hospital', 'govt hospital', 'sarkari hospital', 'government clinic', 'सरकारी अस्पताल', 'सरकारी क्लिनिक']
-                },
-                hi: {
-                    response: `🏥 <strong>भारत में सरकारी अस्पताल:</strong><br><br>
-                    <div class="bg-cyan-100 text-cyan-800 p-4 rounded-lg my-2">
-                        <p>सरकारी अस्पताल ढूंढना किफायती स्वास्थ्य सेवा पाने का एक शानदार तरीका है। चिंता न करें, हम इसमें आपकी मदद कर सकते हैं! 😊</p>
-                        <br>
-                        <p>सबसे सटीक सूची देने के लिए, कृपया मुझे बताएं कि आप किस शहर में अस्पताल खोज रहे हैं। उदाहरण के लिए, आप "<strong>नोएडा में सरकारी अस्पताल</strong>" टाइप कर सकते हैं।</p>
-                    </div>`,
-                    keywords: ['सरकारी अस्पताल', 'सरकारी क्लिनिक', 'सरकारी डॉक्टर', 'सरकारी क्लिनिक']
-                },
-                od: {
-                    response: `🏥 <strong>ଭାରତରେ ସରକାରୀ ଡାକ୍ତରଖାନା:</strong><br><br>
-                    <div class="bg-cyan-100 text-cyan-800 p-4 rounded-lg my-2">
-                        <p>ସରକାରୀ ଡାକ୍ତରଖାନା ଖୋଜିବା ହେଉଛି କମ୍ ଖର୍ଚ୍ଚରେ ସ୍ୱାସ୍ଥ୍ୟ ସେବା ପାଇବା ପାଇଁ ଏକ ଉତ୍କୃଷ୍ଟ ଉପାୟ। ଚିନ୍ତା କରନ୍ତୁ ନାହିଁ, ଆମେ ଏଥିରେ ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରିପାରିବୁ! 😊</p>
-                        <br>
-                        <p>ସବୁଠାରୁ ନିକଟତମ ସରକାରୀ ଡାକ୍ତରଖାନା ଖୋଜିବା ପାଇଁ, ଆପଣ କେଉଁ ସହରରେ ଅଛନ୍ତି ତାହା କୁହନ୍ତୁ। ଉଦାହରଣ ସ୍ୱରୂପ, ଆପଣ "<strong>ନୋଇଡାରେ ସରକାରୀ ଡାକ୍ତରଖାନା</strong>" ଟାଇପ୍ କରିପାରିବେ।</p>
-                    </div>`,
-                    keywords: ['ସରକାରୀ ଡାକ୍ତରଖାନା', 'ସରକାରୀ କ୍ଲିନିକ୍', 'ଡାକ୍ତରଖାନା', 'କ୍ଲିନିକ୍']
-                }
-            },
-            importantCityHospitals: {
-                 noida: {
-                    en: `Don't worry, here is a list of some government hospitals in <strong>Noida</strong>: 😊
-                    <ul>
-                        <li><strong>District Government Hospital, Sector 30</strong><br>Address: Sector 30, Noida, Uttar Pradesh 201301</li>
-                        <li><strong>Government Institute of Medical Sciences (GIMS)</strong><br>Address: Greater Noida, Uttar Pradesh 201310</li>
-                        <li><strong>ESIC Model Hospital</strong><br>Address: Sector 24, Noida, Uttar Pradesh 201301</li>
-                    </ul>`,
-                    hi: `चिंता न करें, <strong>नोएडा</strong> में कुछ सरकारी अस्पतालों की सूची यहाँ दी गई है: 😊
-                    <ul>
-                        <li><strong>जिला सरकारी अस्पताल, सेक्टर 30</strong><br>पता: सेक्टर 30, नोएडा, उत्तर प्रदेश 201301</li>
-                        <li><strong>शासकीय आयुर्विज्ञान संस्थान (GIMS)</strong><br>पता: ग्रेटर नोएडा, उत्तर प्रदेश 201310</li>
-                        <li><strong>ईएसआईसी मॉडल अस्पताल</strong><br>पता: सेक्टर 24, नोएडा, उत्तर प्रदेश 201301</li>
-                    </ul>`,
-                    od: `ଚିନ୍ତା କରନ୍ତୁ ନାହିଁ, <strong>ନୋଇଡା</strong>ରେ କିଛି ସରକାରୀ ଡାକ୍ତରଖାନାର ତାଲିକା ଏଠାରେ ଦିଆଯାଇଛି: 😊
-                    <ul>
-                        <li><strong>ଜିଲ୍ଲା ସରକାରୀ ଡାକ୍ତରଖାନା, ସେକ୍ଟର 30</strong><br>ଠିକଣା: ସେକ୍ଟର 30, ନୋଇଡା, ଉତ୍ତର ପ୍ରଦେଶ 201301</li>
-                        <li><strong>ସରକାରୀ ଆୟୁର୍ବିଜ୍ଞାନ ସଂସ୍ଥାନ (GIMS)</strong><br>ଠିକଣା: ଗ୍ରେଟର ନୋଇଡା, ଉତ୍ତର ପ୍ରଦେଶ 201310</li>
-                        <li><strong>ESIC ମଡେଲ୍ ହସ୍ପିଟାଲ୍</strong><br>ଠିକଣା: ସେକ୍ଟର 24, ନୋଇଡା, ଉତ୍ତର ପ୍ରଦେଶ 201301</li>
-                    </ul>`
-                }
-            }
-        };
-
-        const criticalResponses = {
-            en: `🚨 <strong>Urgent Medical Alert!</strong><br><br>
-            <div class="bg-red-100 text-red-800 p-4 rounded-lg my-2">
-                <p><strong>Please seek immediate medical attention.</strong></p>
-                <p>Call the National Emergency Number <strong>112</strong> or an ambulance at <strong>108</strong>.</p>
-                <p class="mt-2">For accurate medical advice, please consult a professional immediately.</p>
-            </div>`,
-            hi: `🚨 <strong>आपातकालीन चिकित्सा चेतावनी!</strong><br><br>
-            <div class="bg-red-100 text-red-800 p-4 rounded-lg my-2">
-                <p><strong>कृपया तुरंत चिकित्सा सहायता लें।</strong></p>
-                <p>राष्ट्रीय आपातकालीन नंबर <strong>112</strong> या एम्बुलेंस को <strong>108</strong> पर कॉल करें।</p>
-                <p class="mt-2">सटीक चिकित्सा सलाह के लिए, कृपया तुरंत किसी पेशेवर से परामर्श करें।</p>
-            </div>`,
-            od: `🚨 <strong>ଜରୁରୀକାଳୀନ ଡାକ୍ତରୀ ସତର୍କତା!</strong><br><br>
-            <div class="bg-red-100 text-red-800 p-4 rounded-lg my-2">
-                <p><strong>ଦୟାକରି ତୁରନ୍ତ ଡାକ୍ତରୀ ସହାୟତା ଲୋଡ଼ନ୍ତୁ।</strong></p>
-                <p>ଜାତୀୟ ଜରୁରୀକାଳୀନ ନମ୍ବର <strong>112</strong> କୁ କଲ୍ କରନ୍ତୁ କିମ୍ବା ଆମ୍ବୁଲାନ୍ସ ପାଇଁ <strong>108</strong> କୁ କଲ୍ କରନ୍ତୁ।</p>
-                <p class="mt-2">ସଠିକ୍ ଡାକ୍ତରୀ ପରାମର୍ଶ ପାଇଁ, ଦୟାକରି ତୁରନ୍ତ ଜଣେ ପ୍ରଫେସନାଲଙ୍କ ସହିତ ପରାମର୍ଶ କରନ୍ତୁ।</p>
-            </div>`
-        };
-
-        // Event listeners
-        window.addEventListener('load', () => {
-            updateUIText(currentLanguage);
-            highlightVoiceFeature();
         });
-        sendBtn.addEventListener('click', processMessage);
-        messageInput.addEventListener('keypress', handleKeyPress);
-        document.querySelectorAll('.quick-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                const query = button.getAttribute('data-query');
-                messageInput.value = query;
-                processMessage();
+        document.querySelectorAll('.quick-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                messageInput.value = btn.dataset.query;
+                sendMessage();
             });
         });
-        voiceBtn.addEventListener('click', toggleVoiceInput);
-        keyboardBtn.addEventListener('click', toggleKeyboard);
-        closeTooltipBtn.addEventListener('click', hideVoiceTooltip);
+        voiceBtn.addEventListener('click', toggleVoiceRecognition);
+        closeTooltipBtn.addEventListener('click', () => voiceTooltip.classList.add('hidden'));
+        headerToggleBtn.addEventListener('click', () => {
+            collapsibleHeader.classList.toggle('collapsed');
+            quickActions.classList.toggle('collapsed');
+            headerToggleIcon.classList.toggle('rotate-180');
+        });
 
-        
-        // Function to update all UI text based on the selected language
-        function updateUIText(lang) {
-            const langTranslations = translations[lang] || translations.en;
-            initialMessageContainer.innerHTML = langTranslations.initialMessage;
-            messageInput.placeholder = langTranslations.placeholder;
-            searchingMessage.textContent = langTranslations.searching;
-            tooltipText.textContent = langTranslations.voiceTooltip; // Update tooltip text
-        }
 
-        // Function to set the conversation language
-        function setLanguage(lang) {
-            currentLanguage = lang;
-            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`lang-${lang}`).classList.add('active');
-            
-            // Clear chat and update UI to new language
-            chatArea.innerHTML = '';
-            const typingIndicator = `<div id="typingIndicator" class="typing-indicator flex items-center space-x-1 p-3 bg-white rounded-xl shadow-sm w-fit">
-                <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse-delay-0"></div>
-                <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse-delay-1"></div>
-                <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse-delay-2"></div>
-            </div>`;
-            chatArea.innerHTML = `<div id="initialMessageContainer"></div>${typingIndicator}`;
-            updateUIText(lang);
-
-            addMessage(translations[lang].languageChanged, false);
-
-            if (!virtualKeyboard.classList.contains('hidden')) {
-                renderKeyboard();
-            }
-        }
-
-        function addMessage(message, isUser = false) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message message-enter-active p-3 rounded-xl shadow-sm max-w-xs sm:max-w-md ${isUser ? 'user-message text-white ml-auto' : 'bot-message text-gray-800'}`;
-            messageDiv.innerHTML = message;
-            
-            const typingIndicator = document.getElementById('typingIndicator');
-            chatArea.insertBefore(messageDiv, typingIndicator);
-            
-            chatArea.scrollTop = chatArea.scrollHeight;
-        }
-
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                processMessage();
-            }
-        }
-        
-        function showSearchingOverlay() {
-            searchingMessage.textContent = translations[currentLanguage].searching;
-            searchingOverlay.classList.remove('hidden');
-        }
-
-        function hideSearchingOverlay() {
-            searchingOverlay.classList.add('hidden');
-        }
-
-        function isCritical(query) {
-            const criticalKeywords = ['chest pain', 'severe pain', 'severe bleeding', 'breathing difficulty', 'difficulty breathing', 'unconscious', 'fainting', 'heart attack', 'stroke', 'छाती में दर्द', 'गंभीर दर्द', 'सांस लेने में दिक्कत', 'तेज दर्द', 'रक्तस्राव', 'अचेत', 'हृदय घात', 'छाती', 'ହୃଦଘାତ', 'ସାଂଘାତିକ ଯନ୍ତ୍ରଣା', 'ରକ୍ତସ୍ରାବ', 'ଅଜ୍ଞାନ', 'ଛାତି ଯନ୍ତ୍ରଣା', 'ନିଶ୍ୱାସ ନେବାରେ ଅସୁବିଧା'];
-            const lowerCaseQuery = query.toLowerCase();
-            return criticalKeywords.some(keyword => lowerCaseQuery.includes(keyword));
-        }
-
-        async function processMessage() {
+        // --- Core Functions ---
+        function sendMessage() {
             const userMessage = messageInput.value.trim();
-            if (userMessage === '') return;
+            if (!userMessage) return;
 
-            addMessage(userMessage, true);
+            // Clear the initial help message if it exists
+            if (initialMessageContainer) {
+                initialMessageContainer.style.display = 'none';
+            }
+
+            addMessage(userMessage, 'user');
             messageInput.value = '';
-            virtualKeyboard.classList.add('hidden'); // Hide keyboard on send
-
-            if (isCritical(userMessage)) {
-                addMessage(criticalResponses[currentLanguage], false);
-                return;
-            }
+            showTypingIndicator(true);
             
-            const lowerCaseUserMessage = userMessage.toLowerCase();
-            
-            if (knowledgeBase.womensHealth[currentLanguage]?.keywords.some(keyword => lowerCaseUserMessage.includes(keyword))) {
-                 addMessage(knowledgeBase.womensHealth[currentLanguage].response, false);
-                 return;
+            // Basic check for emergency phrases
+            if (isEmergency(userMessage)) {
+                const emergencyResponse = getEmergencyResponse(currentLanguage);
+                setTimeout(() => {
+                    showTypingIndicator(false);
+                    addMessage(emergencyResponse, 'bot');
+                }, 1000);
+            } else {
+                callGeminiAPI(userMessage);
             }
-            
-            if (knowledgeBase.diseaseOutbreaks[currentLanguage]?.keywords.some(keyword => lowerCaseUserMessage.includes(keyword))) {
-                await fetchGovtHealthAlerts();
-                return;
-            }
+        }
 
-            const cityMatch = /(?:in|at|located in|located at)\s+([a-zA-Z\s]+)/i.exec(userMessage);
-            const city = cityMatch ? cityMatch[1].trim().toLowerCase() : null;
-
-            if (city && knowledgeBase.importantCityHospitals[city]) {
-                addMessage(knowledgeBase.importantCityHospitals[city][currentLanguage] || knowledgeBase.importantCityHospitals[city].en, false);
-                return;
-            }
-            
-            if (knowledgeBase.govtHospitals[currentLanguage]?.keywords.some(keyword => lowerCaseUserMessage.includes(keyword))) {
-                if (city) {
-                    await handleHospitalSearch(city);
-                } else {
-                    addMessage(knowledgeBase.govtHospitals[currentLanguage].response, false);
-                }
-                return;
-            }
-
-            showSearchingOverlay();
-
+        async function callGeminiAPI(prompt) {
             try {
-                const payload = {
-                    contents: [{ parts: [{ text: userMessage }] }],
-                    tools: [{ "google_search": {} }],
-                    systemInstruction: {
-                        parts: [{
-                            text: `You are Sushruta, a chill and reassuring AI Health Assistant. Your tone should be calm, relaxed, and not cause any panic. Reassure the user with phrases like "Don't worry," and focus on providing simple, actionable advice. Respond to user health queries in a point-based format. Your response must be grounded in real-time search results to ensure accuracy.
-                            
-                            When asked for a solution related to a health issue in India, search for official advisories and solutions from the Indian Ministry of Health and Family Welfare, National Health Mission, or other official Indian government health portals.
+                const systemPrompt = `You are Sushruta, an AI health assistant for India. Your primary goal is to provide helpful, safe, and preliminary health information in a calm and reassuring tone. You must respond in the user's selected language (${currentLanguage}).
 
-                            Please follow these formatting rules strictly:
-                            1. Begin your response with a disclaimer that you are not a substitute for a professional medical doctor.
-                            2. Provide a clear, easy-to-read list of symptoms.
-                            3. Provide a clear, easy-to-read list of recommended precautions or solutions.
-                            4. Use HTML strong tags (<strong></strong>) to bold and highlight important keywords.
-                            5. Use HTML list tags (<ul><li>) for all lists.
-                            6. Do not use asterisks or any other markdown for bullet points.
-                            7. Do not over-concise the answer.
-                            8. Respond in the language requested by the user. The user's preferred language is ${currentLanguage}.
-                            9. Use relevant emojis where appropriate. 😊`
-                        }]
+                **CRITICAL SAFETY INSTRUCTIONS:**
+                1.  **Always start your response with a clear disclaimer:** "⚠️ **Disclaimer:** This is for informational purposes only and not a substitute for professional medical advice. Please consult a doctor for any health concerns." (Translate this disclaimer accurately to the user's language).
+                2.  **Never provide a diagnosis.** You can list possible symptoms or causes, but you must never state what condition the user has.
+                3.  **For any serious symptoms (e.g., chest pain, difficulty breathing, severe bleeding, high fever in infants), immediately advise the user to seek emergency medical help.** Provide the national emergency number (112) and ambulance number (108).
+                4.  **Keep information general.** Avoid specific dosages for medications. Recommend consulting a doctor for treatment plans.
+                5.  **Use simple, easy-to-understand language.** Avoid complex medical jargon.
+
+                **Content Guidelines:**
+                - Use HTML for formatting (<b>, <ul>, <li>).
+                - Use emojis to make the content more friendly (e.g., 🩺, 🙏, 😊).
+                - Structure your response clearly: Disclaimer, then answer, then recommendations.
+                `;
+
+                const payload = {
+                    contents: [{ parts: [{ text: prompt }] }],
+                    systemInstruction: {
+                        parts: [{ text: systemPrompt }]
                     },
+                     // The 'tools' parameter, which enables Google Search, can cause auth errors if the API key doesn't support it.
+                    // It has been removed to ensure the core chat function works reliably.
                 };
-                
+
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                
-                if (response.status === 401) {
-                    console.error("API Error: 401 Unauthorized. Please ensure your API key is valid.");
-                    addMessage("I'm sorry, I'm unable to connect. Please check the API key and try again.", false);
-                    return;
-                }
 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`API call failed with status: ${response.status}`);
                 }
 
                 const result = await response.json();
-                const candidate = result?.candidates?.[0];
-
-                if (candidate && candidate.content?.parts?.[0]?.text) {
-                    const botResponseText = candidate.content.parts[0].text;
-                    addMessage(botResponseText, false);
-
-                } else {
-                    addMessage("Sorry, I could not generate a response. Please try again.", false);
-                }
+                const botResponse = result.candidates?.[0]?.content?.parts?.[0]?.text || "I'm sorry, I couldn't process that. Could you try rephrasing?";
+                
+                addMessage(botResponse, 'bot');
 
             } catch (error) {
-                console.error("General Error:", error);
-                addMessage("I'm sorry, an unexpected error occurred. Please try again later.", false);
+                console.error("Error calling Gemini API:", error);
+                addMessage("I'm having trouble connecting right now. Please try again later.", 'bot');
             } finally {
-                hideSearchingOverlay();
+                showTypingIndicator(false);
             }
         }
-        
-        async function fetchGovtHealthAlerts() {
-            showSearchingOverlay();
-            await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
-            const mockGovtData = {
-                en: `📄 <strong>Health Advisory (as of Sep 10, 2025)</strong><br>
-                Latest alerts from the Ministry of Health: 😊
-                <ul>
-                    <li><strong>Dengue & Chikungunya:</strong> Cases are rising. Protect yourself from mosquito bites.</li>
-                    <li><strong>Viral Fever Watch (UP):</strong> Seasonal increase noted in Noida. Maintain hygiene.</li>
-                    <li><strong>Seasonal Flu:</strong> Vaccination recommended for high-risk groups.</li>
-                </ul>`,
-                hi: `📄 <strong>स्वास्थ्य सलाह (10 सितंबर, 2025)</strong><br>
-                स्वास्थ्य मंत्रालय से नवीनतम अलर्ट: 😊
-                <ul>
-                    <li><strong>डेंगू और चिकनगुनिया:</strong> मामले बढ़ रहे हैं। मच्छरों के काटने से खुद को बचाएं।</li>
-                    <li><strong>वायरल फीवर वॉच (यूपी):</strong> नोएडा में मौसमी वृद्धि। स्वच्छता बनाए रखें।</li>
-                    <li><strong>मौसमी फ्लू:</strong> उच्च जोखिम वाले समूहों के लिए टीकाकरण की सिफारिश की जाती है।</li>
-                </ul>`,
-                od: `📄 <strong>ସ୍ୱାସ୍ଥ୍ୟ ପରାମର୍ଶ (ସେପ୍ଟେମ୍ବର 10, 2025)</strong><br>
-                ସ୍ୱାସ୍ଥ୍ୟ ମନ୍ତ୍ରଣାଳୟରୁ ସର୍ବଶେଷ ସତର୍କତା: 😊
-                <ul>
-                    <li><strong>ଡେଙ୍ଗୁ ଏବଂ ଚିକନଗୁନିଆ:</strong> ମାମଲା ବଢୁଛି। ନିଜକୁ ମଶା କାମୁଡ଼ାରୁ ରକ୍ଷା କରନ୍ତୁ।</li>
-                    <li><strong>ଭାଇରାଲ୍ ଜ୍ୱର (UP):</strong> ନୋଏଡାରେ ମୌସୁମୀ ବୃଦ୍ଧି। ସ୍ୱଚ୍ଛତା ବଜାୟ ରଖନ୍ତୁ।</li>
-                    <li><strong>ମୌସୁମୀ ଫ୍ଲୁ:</strong> ଉଚ୍ଚ-ବିପଦ ଥିବା ଗୋଷ୍ଠୀଙ୍କ ପାଇଁ ଟୀକାକରଣ ସୁପାରିଶ କରାଯାଏ।</li>
-                </ul>`
-            };
-            addMessage(mockGovtData[currentLanguage] || mockGovtData.en, false);
-            hideSearchingOverlay();
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            messageDiv.innerHTML = text.replace(/\n/g, '<br>'); // Basic markdown to HTML
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
         }
 
-        async function handleHospitalSearch(city) {
-            showSearchingOverlay();
-             await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-             const cityData = knowledgeBase.importantCityHospitals[city.toLowerCase()];
-             if(cityData){
-                 addMessage(cityData[currentLanguage] || cityData.en, false);
-             } else {
-                 addMessage(`I'm sorry, I couldn't find a list of government hospitals in ${city}. Please try searching with a different city name.`, false);
-             }
-            hideSearchingOverlay();
+        function showTypingIndicator(show) {
+            typingIndicator.style.display = show ? 'flex' : 'none';
+            if (show) {
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }
         }
 
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+            // Here you would add logic to change UI text based on language.
+            console.log(`Language set to: ${lang}`);
+        }
+
+        // --- Voice Recognition ---
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         let recognition;
         let isListening = false;
-
+        
         if (SpeechRecognition) {
             recognition = new SpeechRecognition();
             recognition.continuous = false;
             recognition.interimResults = false;
-            recognition.lang = getVoiceLanguage(currentLanguage);
+            
+            recognition.onstart = () => {
+                isListening = true;
+                voiceBtn.classList.add('listening');
+            };
+            
+            recognition.onend = () => {
+                isListening = false;
+                voiceBtn.classList.remove('listening');
+            };
+            
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                messageInput.value = transcript;
+                sendMessage();
+            };
+            
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+            };
 
-            recognition.onstart = () => { isListening = true; micIcon.classList.add('voice-icon', 'listening'); };
-            recognition.onend = () => { isListening = false; micIcon.classList.remove('voice-icon', 'listening'); };
-            recognition.onresult = (event) => { messageInput.value = event.results[0][0].transcript; sendBtn.click(); };
-            recognition.onerror = (event) => { console.error("Speech Recognition Error:", event.error); isListening = false; micIcon.classList.remove('voice-icon', 'listening'); };
         } else {
-            voiceBtn.style.display = 'none';
+            voiceBtn.style.display = 'none'; // Hide voice button if not supported
         }
 
-        function toggleVoiceInput() {
-            if(!recognition) return;
+        function toggleVoiceRecognition() {
+            if (!recognition) return;
+            
             if (isListening) {
                 recognition.stop();
             } else {
-                recognition.lang = getVoiceLanguage(currentLanguage);
+                recognition.lang = getLangCodeForVoice(currentLanguage);
                 recognition.start();
             }
         }
         
-        function getVoiceLanguage(lang) {
-            const voiceMap = { 'en': 'en-IN', 'hi': 'hi-IN', 'bn': 'bn-IN', 'ta': 'ta-IN', 'od': 'or-IN' };
-            return voiceMap[lang] || 'en-IN';
-        }
-
-        const keyboardLayouts = {
-            en: ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "a", "s", "d", "f", "g", "h", "j", "k", "l", "z", "x", "c", "v", "b", "n", "m", " ", "←"],
-            hi: ["क", "ख", "ग", "घ", "ङ", "च", "छ", "ज", "झ", "ञ", "ट", "ठ", "ड", "ढ", "ण", "त", "थ", "द", "ध", "न", "प", "फ", "ब", "भ", "म", "य", "र", "ल", "व", "श", "ष", "स", "ह", " ", "←"],
-            bn: ["ক", "খ", "গ", "ঘ", "ঙ", "চ", "ছ", "জ", "ঝ", "ঞ", "ট", "ঠ", "ড", "ঢ", "ণ", "ত", "থ", "দ", "ধ", "ন", "প", "ফ", "ব", "ভ", "ম", "য", "র", "ল", "ব", "শ", "ষ", "স", "হ", " ", "←"],
-            ta: ["க", "ங", "ச", "ஞ", "ட", "ண", "த", "ந", "ப", "ம", "ய", "ர", "ல", "வ", "ழ", "ள", "ற", "ன", "ஜ", "ஷ", "ஸ", "ஹ", "க்ஷ", "ஸ்ரீ", " ", "←"],
-            od: ["କ", "ଖ", "ଗ", "ଘ", "ଙ", "ଚ", "ଛ", "ଜ", "ଝ", "ଞ", "ଟ", "ଠ", "ଡ", "ଢ", "ଣ", "ତ", "ଥ", "ଦ", "ଧ", "ନ", "ପ", "ଫ", "ବ", "ଭ", "ମ", "ଯ", "ର", "ଲ", "ଵ", "ଶ", "ଷ", "ସ", "ହ", " ", "←"]
-        };
-        
-        function renderKeyboard() {
-            keyboardLayout.innerHTML = '';
-            const layout = keyboardLayouts[currentLanguage] || keyboardLayouts.en;
-            const keysPerRow = 10;
-            keyboardLayout.style.gridTemplateColumns = `repeat(${keysPerRow}, 1fr)`;
-            
-            layout.forEach(key => {
-                const button = document.createElement('button');
-                button.textContent = key;
-                button.className = 'bg-white hover:bg-gray-100 text-gray-800 p-2 rounded-md text-base font-semibold transition';
-                if (key === '←') {
-                    button.onclick = () => messageInput.value = messageInput.value.slice(0, -1);
-                } else if (key === ' ') {
-                    button.onclick = () => messageInput.value += ' ';
-                    button.classList.add('col-span-4'); // Make space bar wider
-                } else {
-                    button.onclick = () => messageInput.value += key;
-                }
-                keyboardLayout.appendChild(button);
-            });
+        function getLangCodeForVoice(lang) {
+            const langMap = {
+                'en': 'en-IN',
+                'hi': 'hi-IN',
+                'bn': 'bn-IN',
+                'ta': 'ta-IN',
+                'od': 'or-IN' // Note: Odia might not be fully supported by all browsers
+            };
+            return langMap[lang] || 'en-IN';
         }
         
-        function toggleKeyboard() {
-            virtualKeyboard.classList.toggle('hidden');
-            if (!virtualKeyboard.classList.contains('hidden')) {
-                renderKeyboard();
-            }
+        // --- Emergency Detection ---
+        function isEmergency(text) {
+            const emergencyKeywords = [
+                // English
+                'chest pain', 'heart attack', 'stroke', 'can\'t breathe', 'not breathing', 'severe bleeding', 'unconscious', 'poison', 'suicide', 'emergency',
+                // Hindi
+                'छाती में दर्द', 'दिल का दौरा', 'लकवा', 'सांस नहीं ले पा रहा', 'बेहोश', 'गंभीर रक्तस्राव', 'जहर', 'आत्महत्या', 'आपातकालीन'
+            ];
+            const lowerText = text.toLowerCase();
+            return emergencyKeywords.some(keyword => lowerText.includes(keyword));
         }
 
-        function highlightVoiceFeature() {
-            if(window.innerWidth > 640) { // Only show on desktop
-                voiceTooltip.classList.remove('hidden');
-                setTimeout(() => { 
-                     voiceTooltip.classList.remove('opacity-0');
-                     voiceTooltip.classList.add('opacity-100');
-                }, 10);
-                voiceBtn.classList.add('voice-btn-highlight');
-                setTimeout(hideVoiceTooltip, 10000);
-            }
+        function getEmergencyResponse(lang) {
+            const responses = {
+                'en': `🚨 **This sounds serious. Please seek immediate medical help.**<br><br>Call the National Emergency Number: <b>112</b><br>Or call for an Ambulance: <b>108</b>`,
+                'hi': `🚨 **यह गंभीर लग रहा है। कृपया तत्काल चिकित्सा सहायता लें।**<br><br>राष्ट्रीय आपातकालीन नंबर पर कॉल करें: <b>112</b><br>या एम्बुलेंस के लिए कॉल करें: <b>108</b>`
+                // Add other languages as needed
+            };
+            return responses[lang] || responses['en'];
         }
 
-        function hideVoiceTooltip() {
-            voiceTooltip.classList.remove('opacity-100');
-            voiceTooltip.classList.add('opacity-0');
-            voiceBtn.classList.remove('voice-btn-highlight');
+        // Show voice tooltip on first visit (simple version)
+        if (!localStorage.getItem('visitedSushruta')) {
             setTimeout(() => {
-                voiceTooltip.classList.add('hidden');
-            }, 300);
+                voiceTooltip.classList.remove('hidden');
+            }, 2000);
+            localStorage.setItem('visitedSushruta', 'true');
         }
     </script>
 </body>
 </html>
+
 
