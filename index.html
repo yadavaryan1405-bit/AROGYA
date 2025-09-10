@@ -57,7 +57,7 @@
         .header {
             background: linear-gradient(135deg, #F9A825 0%, #F57F17 50%, #E65100 100%);
             color: white;
-            padding: 2rem 1.5rem 3rem; /* Increased bottom padding for toggle button */
+            padding: 1rem 1rem 2rem; /* Further reduced padding */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -90,7 +90,7 @@
             gap: 1rem;
             width: 100%;
             max-width: 300px;
-            margin-top: 1.5rem;
+            margin: 0.75rem auto 0; /* Further reduced margin */
         }
         
         .stat-card {
@@ -113,7 +113,7 @@
             flex-wrap: wrap;
             gap: 0.75rem;
             justify-content: center;
-            margin-top: 1.5rem;
+            margin-bottom: 1rem;
         }
         
         .lang-btn {
@@ -158,32 +158,35 @@
             animation: shimmer 3s infinite;
         }
         
-        @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-        
         .quick-actions {
-            padding: 1.25rem;
+            padding: 0.75rem;
             background: #f8fffe;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 1rem;
+            display: flex;
+            overflow-x: auto;
+            flex-wrap: nowrap;
+            justify-content: center;
+            gap: 0.75rem;
             border-bottom: 2px solid #e5e7eb;
             position: sticky;
             top: 0;
             z-index: 20;
             flex-shrink: 0; /* Prevent from shrinking */
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
+        .quick-actions::-webkit-scrollbar {
+            display: none;
         }
         
         .quick-btn {
-            padding: 1rem;
-            border-radius: 1.5rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 1rem;
             background: white;
             border: 3px solid #e5e7eb;
             color: #374151;
-            font-size: 0.9rem;
-            font-weight: 700;
+            font-size: 0.8rem;
+            font-weight: 600;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             white-space: nowrap;
             position: relative;
@@ -191,13 +194,14 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.25rem;
             text-align: center;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            flex-shrink: 0; /* Prevent buttons from shrinking */
         }
         
         .quick-btn .icon {
-            font-size: 1.5rem;
+            font-size: 1.25rem;
         }
         
         .quick-btn:hover {
@@ -567,7 +571,7 @@
                 font-size: 18px; /* Larger font for mobile */
             }
             .header {
-                padding: 1.5rem 1rem 2.5rem; /* Adjust padding for mobile */
+                padding: 1rem 1rem 2rem; /* Adjust padding for mobile */
             }
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -575,14 +579,6 @@
             }
             .stat-card {
                 padding: 0.75rem;
-            }
-            .quick-actions {
-                padding: 1rem;
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .quick-btn {
-                padding: 1rem 0.75rem;
-                font-size: 0.85rem;
             }
             .chat-area {
                 padding: 1rem;
@@ -683,17 +679,15 @@
         <!-- Header -->
         <header class="header">
             <div class="logo-container">
-                <div class="logo-icon">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z" fill="white"/>
-                        <circle cx="12" cy="12" r="3" fill="white" opacity="0.8"/>
-                    </svg>
+                <div class="lang-selector">
+                    <button class="lang-btn active" onclick="setLanguage('hi')" id="lang-hi">हिंदी</button>
+                    <button class="lang-btn" onclick="setLanguage('en')" id="lang-en">English</button>
+                    <button class="lang-btn" onclick="setLanguage('bn')" id="lang-bn">বাংলা</button>
+                    <button class="lang-btn" onclick="setLanguage('ta')" id="lang-ta">தமிழ்</button>
+                    <button class="lang-btn" onclick="setLanguage('od')" id="lang-od">ଓଡ଼ିଆ</button>
                 </div>
-                <h1 class="text-4xl font-bold tracking-tight mb-2" style="font-family: 'Inter', sans-serif;">सुश्रुत Sushruta</h1>
-                <p class="text-xl text-orange-100 font-semibold">आपका स्वास्थ्य सहायक | Your Health Assistant</p>
-            </div>
-            
-            <div id="collapsible-header" class="collapsible w-full">
+                <h1 class="text-2xl font-bold tracking-tight mb-1" style="font-family: 'Inter', sans-serif;">सुश्रुत Sushruta</h1>
+                <p class="text-base text-orange-100 font-semibold">आपका स्वास्थ्य सहायक | Your Health Assistant</p>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="text-2xl font-bold">FREE</div>
@@ -704,15 +698,8 @@
                         <div class="text-sm opacity-90">हमेशा उपलब्ध</div>
                     </div>
                 </div>
-                
-                <div class="lang-selector">
-                    <button class="lang-btn active" onclick="setLanguage('hi')" id="lang-hi">हिंदी</button>
-                    <button class="lang-btn" onclick="setLanguage('en')" id="lang-en">English</button>
-                    <button class="lang-btn" onclick="setLanguage('bn')" id="lang-bn">বাংলা</button>
-                    <button class="lang-btn" onclick="setLanguage('ta')" id="lang-ta">தமிழ்</button>
-                    <button class="lang-btn" onclick="setLanguage('od')" id="lang-od">ଓଡ଼ିଆ</button>
-                </div>
             </div>
+            
             <button id="header-toggle-btn" class="absolute bottom-[-1rem] bg-white text-gray-600 rounded-full p-1 shadow-md border-2 border-gray-200 transition-transform duration-300 z-10">
                 <svg id="header-toggle-icon" class="w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
             </button>
@@ -834,7 +821,6 @@
         const closeTooltipBtn = document.getElementById('close-tooltip');
         const headerToggleBtn = document.getElementById('header-toggle-btn');
         const headerToggleIcon = document.getElementById('header-toggle-icon');
-        const collapsibleHeader = document.getElementById('collapsible-header');
         const quickActions = document.getElementById('quick-actions');
         
         let currentLanguage = 'hi'; // Default language
@@ -856,7 +842,6 @@
         voiceBtn.addEventListener('click', toggleVoiceRecognition);
         closeTooltipBtn.addEventListener('click', () => voiceTooltip.classList.add('hidden'));
         headerToggleBtn.addEventListener('click', () => {
-            collapsibleHeader.classList.toggle('collapsed');
             quickActions.classList.toggle('collapsed');
             headerToggleIcon.classList.toggle('rotate-180');
         });
@@ -1047,5 +1032,16 @@
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
 
 
