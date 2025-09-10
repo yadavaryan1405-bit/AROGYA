@@ -10,35 +10,53 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        html, body {
+            height: 100%;
+            overflow: hidden; /* Prevent scrolling on the body */
+        }
         body {
             font-family: 'Inter', sans-serif;
             background-color: #FAF8F7; /* Warmer off-white */
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            padding: 1rem;
         }
         /* Main container with refined shadow */
         .chat-container {
             position: relative;
             width: 100%;
-            max-width: 2xl;
+            height: 100%;
             background-color: #ffffff;
-            border-radius: 1.5rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
             display: flex;
             flex-direction: column;
-            height: 90vh;
             overflow: hidden;
         }
+
+        /* Apply responsive styles for larger screens */
+        @media (min-width: 640px) {
+            .chat-container {
+                max-width: 36rem; /* Wider for tablets */
+                height: 90vh;
+                max-height: 800px;
+                border-radius: 1.5rem;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            }
+             body {
+                padding: 1rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .chat-container {
+                max-width: 48rem; /* Even wider for desktops */
+            }
+        }
+        
         /* NEW: Header with a soothing gradient */
         .header {
             background: linear-gradient(135deg, #F9A826, #E67E22); /* Saffron to Carrot gradient */
             color: white;
-            padding: 2rem 1.5rem 1.5rem;
-            border-top-left-radius: 1.5rem;
-            border-top-right-radius: 1.5rem;
+            padding: 1rem 1.5rem;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -112,58 +130,56 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+<body class="bg-gray-100">
 
     <div class="chat-container">
         
         <!-- Medical Disclaimer Banner -->
-        <div class="bg-red-600 text-white text-center text-xs py-2 px-4 font-medium">
-            ⚠️ Disclaimer: This is an AI tool for informational purposes only and is not a substitute for professional medical advice.
+        <div class="bg-red-600 text-white text-center text-xs py-1 px-4 font-medium flex-shrink-0">
+            ⚠️ Disclaimer: This is an AI tool and not a substitute for professional medical advice.
         </div>
 
         <!-- Header -->
-        <header class="header">
-            <h1 class="text-3xl font-bold tracking-tight mb-1">Sushruta</h1>
-            <p class="text-sm text-orange-100">Your AI Health Assistant</p>
-            <div class="flex flex-col sm:flex-row justify-between items-center w-full mt-4 space-y-4 sm:space-y-0">
+        <header class="header flex-shrink-0">
+            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight mb-1">Sushruta</h1>
+            <p class="text-xs sm:text-sm text-orange-100">Your AI Health Assistant</p>
+            <div class="flex flex-col sm:flex-row justify-between items-center w-full mt-3 space-y-3 sm:space-y-0">
                 <div class="flex space-x-4 text-xs">
                     <div class="flex flex-col items-center">
                         <span class="font-semibold text-white">92%</span>
-                        <span class="text-orange-100">Accuracy</span>
+                        <span class="text-orange-100 text-xxs">Accuracy</span>
                     </div>
                     <div class="flex flex-col items-center">
                         <span class="font-semibold text-white">8</span>
-                        <span class="text-orange-100">Languages</span>
+                        <span class="text-orange-100 text-xxs">Languages</span>
                     </div>
                     <div class="flex flex-col items-center">
                         <span class="font-semibold text-white">100K+</span>
-                        <span class="text-orange-100">Users Helped</span>
+                        <span class="text-orange-100 text-xxs">Users Helped</span>
                     </div>
                 </div>
-                <div class="flex flex-wrap justify-center space-x-2">
-                    <button class="lang-btn text-white px-3 py-1 text-xs rounded-full active" onclick="setLanguage('en')" id="lang-en">English</button>
-                    <button class="lang-btn text-white px-3 py-1 text-xs rounded-full" onclick="setLanguage('hi')" id="lang-hi">हिंदी</button>
-                    <button class="lang-btn text-white px-3 py-1 text-xs rounded-full" onclick="setLanguage('bn')" id="lang-bn">বাংলা</button>
-                    <button class="lang-btn text-white px-3 py-1 text-xs rounded-full" onclick="setLanguage('ta')" id="lang-ta">தமிழ்</button>
-                    <button class="lang-btn text-white px-3 py-1 text-xs rounded-full" onclick="setLanguage('od')" id="lang-od">ଓଡ଼ିଆ</button>
+                <div class="flex flex-wrap justify-center gap-1">
+                    <button class="lang-btn text-white px-2 py-1 text-xs rounded-full active" onclick="setLanguage('en')" id="lang-en">English</button>
+                    <button class="lang-btn text-white px-2 py-1 text-xs rounded-full" onclick="setLanguage('hi')" id="lang-hi">हिंदी</button>
+                    <button class="lang-btn text-white px-2 py-1 text-xs rounded-full" onclick="setLanguage('bn')" id="lang-bn">বাংলা</button>
+                    <button class="lang-btn text-white px-2 py-1 text-xs rounded-full" onclick="setLanguage('ta')" id="lang-ta">தமிழ்</button>
+                    <button class="lang-btn text-white px-2 py-1 text-xs rounded-full" onclick="setLanguage('od')" id="lang-od">ଓଡ଼ିଆ</button>
                 </div>
             </div>
         </header>
 
         <!-- Quick Actions -->
-        <div class="p-4 bg-white flex flex-wrap gap-2 justify-center border-b border-gray-200 sticky top-0 z-10">
-            <button class="quick-btn bg-white text-gray-600 text-xs font-semibold px-4 py-2 rounded-full" data-query="Symptoms of Fever">🌡️ Fever</button>
-            <button class="quick-btn bg-white text-gray-600 text-xs font-semibold px-4 py-2 rounded-full" data-query="What is COVID-19?">😷 COVID-19</button>
-            <button class="quick-btn bg-white text-gray-600 text-xs font-semibold px-4 py-2 rounded-full" data-query="Child Vaccination Schedule">💉 Vaccination</button>
-            <button class="quick-btn bg-white text-gray-600 text-xs font-semibold px-4 py-2 rounded-full" data-query="Remedies for Cough">😤 Cough</button>
-            <button class="quick-btn bg-red-500 hover:bg-red-600 text-white text-xs font-semibold px-4 py-2 rounded-full border-red-500" data-query="Emergency medical help">🚨 Emergency</button>
-            <button class="quick-btn bg-rose-500 hover:bg-rose-600 text-white text-xs font-semibold px-4 py-2 rounded-full border-rose-500" data-query="Women's Health">♀️ Women's Health</button>
-            <button class="quick-btn bg-white text-gray-600 text-xs font-semibold px-4 py-2 rounded-full" data-query="Government hospitals in India">🏥 Govt Hospitals</button>
-            <button class="quick-btn bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold px-4 py-2 rounded-full border-amber-500" data-query="Disease Outbreaks">🦠 Disease Alerts</button>
+        <div class="p-2 bg-white flex flex-wrap gap-2 justify-center border-b border-gray-200 sticky top-0 z-10 flex-shrink-0">
+            <button class="quick-btn bg-white text-gray-600 text-xs font-semibold px-3 py-1.5 rounded-full" data-query="Symptoms of Fever">🌡️ Fever</button>
+            <button class="quick-btn bg-white text-gray-600 text-xs font-semibold px-3 py-1.5 rounded-full" data-query="What is COVID-19?">😷 COVID-19</button>
+            <button class="quick-btn bg-white text-gray-600 text-xs font-semibold px-3 py-1.5 rounded-full" data-query="Child Vaccination Schedule">💉 Vaccination</button>
+            <button class="quick-btn bg-white text-gray-600 text-xs font-semibold px-3 py-1.5 rounded-full" data-query="Remedies for Cough">😤 Cough</button>
+            <button class="quick-btn bg-red-500 hover:bg-red-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full border-red-500" data-query="Emergency medical help">🚨 Emergency</button>
+            <button class="quick-btn bg-rose-500 hover:bg-rose-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full border-rose-500" data-query="Women's Health">♀️ Women's Health</button>
         </div>
 
         <!-- Chat Area -->
-        <main id="chatArea" class="chat-area flex-1 p-6 overflow-y-auto bg-white space-y-4">
+        <main id="chatArea" class="chat-area flex-1 p-4 overflow-y-auto bg-white space-y-4">
             <!-- Initial Bot Message will be dynamically inserted here -->
             <div id="initialMessageContainer"></div>
             <!-- Typing Indicator with better animation -->
@@ -175,38 +191,37 @@
         </main>
         
         <!-- Input Area -->
-        <footer class="bg-white p-4 border-t border-gray-200 flex items-center space-x-3 relative">
+        <footer class="bg-white p-2 border-t border-gray-200 flex items-center space-x-2 relative flex-shrink-0">
             <!-- NEW: Tooltip for Voice Feature -->
             <div id="voice-tooltip" class="hidden absolute -top-12 left-2 bg-gray-800 text-white text-xs rounded-md px-3 py-2 shadow-lg z-20 transition-opacity duration-300 opacity-0">
                 <span id="tooltip-text"></span>
                 <button id="close-tooltip" class="ml-2 font-bold text-lg leading-none">&times;</button>
             </div>
             <!-- Voice Input Button -->
-            <button id="voiceBtn" class="bg-green-800 hover:bg-green-900 text-white p-3 rounded-full shadow-lg transition-all transform hover:scale-105">
-                <svg id="mic-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24" stroke="currentColor" stroke-width="2">
+            <button id="voiceBtn" class="bg-green-800 hover:bg-green-900 text-white p-2 rounded-full shadow-lg transition-all transform hover:scale-105 flex-shrink-0">
+                <svg id="mic-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7v0a7 7 0 01-7-7v0a7 7 0 017-7v0a7 7 0 017 7z" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-4m-4 4h8" />
                 </svg>
             </button>
-            <input type="text" id="messageInput" placeholder="Type your health question here..." class="flex-1 px-5 py-3 bg-gray-100 rounded-full text-sm border-2 border-transparent focus:outline-none focus:border-orange-500 transition-all" onkeypress="handleKeyPress(event)">
-            <!-- Keyboard Toggle Button -->
-            <button id="keyboardBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 p-3 rounded-full shadow-lg transition-all transform hover:scale-105">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 5a1 1 0 011-1h6a1 1 0 011 1v2a1 1 0 01-1 1h-6a1 1 0 01-1-1v-2z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 19a1 1 0 011-1h.01a1 1 0 011 1v.01a1 1 0 01-1 1h-.01a1 1 0 01-1-1v-.01zM8 19a1 1 0 011-1h.01a1 1 0 011 1v.01a1 1 0 01-1 1h-.01a1 1 0 01-1-1v-.01z" />
-                </svg>
-            </button>
-            <button id="sendBtn" class="bg-green-800 hover:bg-green-900 text-white font-semibold px-6 py-3 rounded-full shadow-lg transition-all transform hover:scale-105">Send</button>
+            <input type="text" id="messageInput" placeholder="Ask a health question..." class="flex-1 px-4 py-2 bg-gray-100 rounded-full text-sm border-2 border-transparent focus:outline-none focus:border-orange-500 transition-all" onkeypress="handleKeyPress(event)">
+            <button id="sendBtn" class="bg-green-800 hover:bg-green-900 text-white font-semibold px-4 py-2 rounded-full shadow-lg transition-all transform hover:scale-105 flex-shrink-0">Send</button>
         </footer>
+        <!-- Virtual Keyboard Toggle for Mobile -->
+        <button id="keyboardBtn" class="sm:hidden fixed bottom-16 right-4 bg-gray-200 hover:bg-gray-300 text-gray-800 p-3 rounded-full shadow-lg transition-all transform hover:scale-105 z-20">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+        </button>
         <!-- Virtual Keyboard -->
-        <div id="virtualKeyboard" class="bg-gray-100 p-4 border-t border-gray-200 hidden">
+        <div id="virtualKeyboard" class="bg-gray-200 p-2 border-t border-gray-200 hidden flex-shrink-0">
             <div id="keyboardLayout" class="grid gap-1"></div>
         </div>
     </div>
     
     <!-- New: Searching Overlay/Modal -->
     <div id="searchingOverlay" class="fixed inset-0 bg-gray-800 bg-opacity-70 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-xl shadow-lg p-6 text-center max-w-sm w-full animate-pulse">
+        <div class="bg-white rounded-xl shadow-lg p-6 text-center max-w-sm w-full animate-pulse mx-4">
             <p class="text-lg font-semibold text-gray-800" id="searchingMessage"></p>
         </div>
     </div>
@@ -248,87 +263,57 @@
             en: {
                 initialMessage: `<div class="message bot-message p-4 rounded-xl max-w-lg animate-slideIn">
                     <p class="font-bold text-gray-800">Hi, I'm Sushruta, your friendly AI Health Assistant! 🩺</p>
-                    <p class="text-sm text-gray-600 mt-1">I'm here to help you feel your best, so let's get started! 😊</p>
-                    <ul class="list-disc list-inside text-sm text-gray-600 mt-2 space-y-1">
-                        <li>Disease symptoms and treatment</li>
-                        <li>Vaccination schedules</li>
-                        <li>Emergency information</li>
-                        <li>Medical tests</li>
-                    </ul>
+                    <p class="text-sm text-gray-600 mt-1">I can help with disease symptoms, vaccination schedules, and more. 😊</p>
                     <p class="text-xs text-gray-400 mt-3 italic">Please ask your question or use the buttons above.</p>
                 </div>`,
-                placeholder: "Type your health question here...",
-                searching: "Searching for a solution... Please wait. 🔍",
-                languageChanged: "✅ Language changed to English. You can now ask questions in English.",
-                voiceTooltip: "New! Click the mic to ask questions with your voice."
+                placeholder: "Type your health question...",
+                searching: "Searching for a solution... 🔍",
+                languageChanged: "✅ Language changed to English.",
+                voiceTooltip: "New! Tap the mic to ask with your voice."
             },
             hi: {
                 initialMessage: `<div class="message bot-message p-4 rounded-xl max-w-lg animate-slideIn">
                     <p class="font-bold text-gray-800">नमस्ते, मैं सुश्रुत हूँ, आपका एआई स्वास्थ्य सहायक! 🩺</p>
                     <p class="text-sm text-gray-600 mt-1">मैं आपकी मदद करने के लिए यहाँ हूँ! 😊</p>
-                    <ul class="list-disc list-inside text-sm text-gray-600 mt-2 space-y-1">
-                        <li>रोगों के लक्षण और उपचार</li>
-                        <li>टीकाकरण कार्यक्रम</li>
-                        <li>आपातकालीन जानकारी</li>
-                        <li>चिकित्सा परीक्षण</li>
-                    </ul>
                     <p class="text-xs text-gray-400 mt-3 italic">कृपया अपना प्रश्न पूछें या ऊपर दिए गए बटनों का उपयोग करें।</p>
                 </div>`,
                 placeholder: "अपना स्वास्थ्य प्रश्न यहाँ लिखें...",
-                searching: "समाधान खोजा जा रहा है... कृपया प्रतीक्षा करें। 🔍",
-                languageChanged: "✅ भाषा हिंदी में बदली गई। आप अब हिंदी में सवाल पूछ सकते हैं।",
-                voiceTooltip: "नया! अपनी आवाज से सवाल पूछने के लिए यहां क्लिक करें।"
+                searching: "समाधान खोजा जा रहा है... 🔍",
+                languageChanged: "✅ भाषा हिंदी में बदली गई।",
+                voiceTooltip: "नया! अपनी आवाज से सवाल पूछने के लिए टैप करें।"
             },
              bn: {
                 initialMessage: `<div class="message bot-message p-4 rounded-xl max-w-lg animate-slideIn">
                     <p class="font-bold text-gray-800">নমস্কার, আমি সুশ্রুত, আপনার এআই স্বাস্থ্য সহকারী! 🩺</p>
                     <p class="text-sm text-gray-600 mt-1">আমি আপনাকে সাহায্য করার জন্য এখানে আছি! 😊</p>
-                    <ul class="list-disc list-inside text-sm text-gray-600 mt-2 space-y-1">
-                        <li>রোগের লক্ষণ এবং চিকিৎসা</li>
-                        <li>টিকা দেওয়ার সময়সূচী</li>
-                        <li>জরুরী তথ্য</li>
-                        <li>চিকিৎসা পরীক্ষা</li>
-                    </ul>
                     <p class="text-xs text-gray-400 mt-3 italic">অনুগ্রহ করে আপনার প্রশ্ন জিজ্ঞাসা করুন বা উপরের বোতামগুলি ব্যবহার করুন।</p>
                 </div>`,
                 placeholder: "আপনার স্বাস্থ্য প্রশ্ন এখানে টাইপ করুন...",
-                searching: "সমাধান খোঁজা হচ্ছে... অনুগ্রহ করে অপেক্ষা করুন। 🔍",
-                languageChanged: "✅ ভাষা বাংলায় পরিবর্তন করা হয়েছে। আপনি এখন বাংলায় প্রশ্ন করতে পারেন।",
-                voiceTooltip: "নতুন! আপনার ভয়েস দিয়ে প্রশ্ন জিজ্ঞাসা করতে এখানে ক্লিক করুন।"
+                searching: "সমাধান খোঁজা হচ্ছে... 🔍",
+                languageChanged: "✅ ভাষা বাংলায় পরিবর্তন করা হয়েছে।",
+                voiceTooltip: "নতুন! আপনার ভয়েস দিয়ে প্রশ্ন করতে ট্যাপ করুন।"
             },
             ta: {
                 initialMessage: `<div class="message bot-message p-4 rounded-xl max-w-lg animate-slideIn">
                     <p class="font-bold text-gray-800">வணக்கம், நான் சுஷ்ருதா, உங்கள் AI சுகாதார உதவியாளர்! 🩺</p>
                     <p class="text-sm text-gray-600 mt-1">உங்களுக்கு உதவ நான் இங்கே இருக்கிறேன்! 😊</p>
-                    <ul class="list-disc list-inside text-sm text-gray-600 mt-2 space-y-1">
-                        <li>நோய் அறிகுறிகள் மற்றும் சிகிச்சை</li>
-                        <li>தடுப்பூசி அட்டவணைகள்</li>
-                        <li>அவசர தகவல்</li>
-                        <li>மருத்துவ பரிசோதனைகள்</li>
-                    </ul>
                     <p class="text-xs text-gray-400 mt-3 italic">உங்கள் கேள்வியைக் கேட்கவும் அல்லது மேலே உள்ள பொத்தான்களைப் பயன்படுத்தவும்.</p>
                 </div>`,
-                placeholder: "உங்கள் சுகாதார கேள்வியை இங்கே தட்டச்சு செய்யவும்...",
-                searching: "தீர்வு தேடப்படுகிறது... தயவுசெய்து காத்திருக்கவும்। 🔍",
-                languageChanged: "✅ மொழி தமிழுக்கு மாற்றப்பட்டுள்ளது। நீங்கள் இப்போது தமிழில் கேள்விகள் கேட்கலாம்.",
-                voiceTooltip: "புதியது! உங்கள் குரலில் கேள்விகளைக் கேட்க இங்கே கிளிக் செய்யவும்."
+                placeholder: "உங்கள் சுகாதார கேள்வியை இங்கே தட்டச்சு...",
+                searching: "தீர்வு தேடப்படுகிறது... 🔍",
+                languageChanged: "✅ மொழி தமிழுக்கு மாற்றப்பட்டுள்ளது।",
+                voiceTooltip: "புதியது! உங்கள் குரலில் கேட்க தட்டவும்."
             },
             od: {
                 initialMessage: `<div class="message bot-message p-4 rounded-xl max-w-lg animate-slideIn">
                     <p class="font-bold text-gray-800">ନମସ୍କାର, ମୁଁ ସୁଶ୍ରୁତ, ଆପଣଙ୍କ ଏଆଇ ସ୍ୱାସ୍ଥ୍ୟ ସହାୟକ! 🩺</p>
                     <p class="text-sm text-gray-600 mt-1">ମୁଁ ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରିବା ପାଇଁ ଏଠାରେ ଅଛି! 😊</p>
-                    <ul class="list-disc list-inside text-sm text-gray-600 mt-2 space-y-1">
-                        <li>ରୋଗର ଲକ୍ଷଣ ଏବଂ ଚିକିତ୍ସା</li>
-                        <li>ଟୀକାକରଣ କାର୍ଯ୍ୟସୂଚୀ</li>
-                        <li>ଜରୁରୀକାଳୀନ ସୂଚନା</li>
-                        <li>ଡାକ୍ତରୀ ପରୀକ୍ଷା</li>
-                    </ul>
                     <p class="text-xs text-gray-400 mt-3 italic">ଦୟାକରି ଆପଣଙ୍କର ପ୍ରଶ୍ନ ପଚାରନ୍ତୁ କିମ୍ବା ଉପର ବଟନ୍ ବ୍ୟବହାର କରନ୍ତୁ।</p>
                 </div>`,
                 placeholder: "ଆପଣଙ୍କ ସ୍ୱାସ୍ଥ୍ୟ ପ୍ରଶ୍ନ ଏଠାରେ ଟାଇପ୍ କରନ୍ତୁ...",
-                searching: "ସମାଧାନ ଖୋଜାଯାଉଛି... ଦୟାକରି ଅପେକ୍ଷା କରନ୍ତୁ। 🔍",
-                languageChanged: "✅ ଭାଷା ଓଡ଼ିଆକୁ ବଦଳାଗଲା। ଆପଣ ବର୍ତ୍ତମାନ ଓଡ଼ିଆରେ ପ୍ରଶ୍ନ ପଚାରିପାରିବେ।",
-                voiceTooltip: "ନୂଆ! ଆପଣଙ୍କ ସ୍ୱରରେ ପ୍ରଶ୍ନ ପଚାରିବା ପାଇଁ ଏଠାରେ କ୍ଲିକ୍ କରନ୍ତୁ।"
+                searching: "ସମାଧାନ ଖୋଜାଯାଉଛି... 🔍",
+                languageChanged: "✅ ଭାଷା ଓଡ଼ିଆକୁ ବଦଳାଗଲା।",
+                voiceTooltip: "ନୂଆ! ଆପଣଙ୍କ ସ୍ୱରରେ ପଚାରିବା ପାଇଁ ଟ୍ୟାପ୍ କରନ୍ତୁ।"
             }
         };
 
@@ -427,118 +412,6 @@
                         <li><strong>ସରକାରୀ ଆୟୁର୍ବିଜ୍ଞାନ ସଂସ୍ଥାନ (GIMS)</strong><br>ଠିକଣା: ଗ୍ରେଟର ନୋଇଡା, ଉତ୍ତର ପ୍ରଦେଶ 201310</li>
                         <li><strong>ESIC ମଡେଲ୍ ହସ୍ପିଟାଲ୍</strong><br>ଠିକଣା: ସେକ୍ଟର 24, ନୋଇଡା, ଉତ୍ତର ପ୍ରଦେଶ 201301</li>
                     </ul>`
-                },
-                lucknow: {
-                    en: `Don't worry, here is a list of some government hospitals in <strong>Lucknow</strong>: 😊
-                    <ul>
-                        <li><strong>King George's Medical University (KGMU)</strong><br>Address: Shah Mina Rd, Chowk, Lucknow, Uttar Pradesh 226003</li>
-                        <li><strong>Sanjay Gandhi Postgraduate Institute of Medical Sciences (SGPGI)</strong><br>Address: Rae Bareli Rd, Lucknow, Uttar Pradesh 226014</li>
-                        <li><strong>Civil Hospital (Syama Prasad Mukerji Civil Hospital)</strong><br>Address: 11, Mahatma Gandhi Marg, Sadullah Nagar, Hazratganj, Lucknow, Uttar Pradesh 226001</li>
-                        <li><strong>Balrampur Hospital</strong><br>Address: Station Road, Kaiserbagh, Lucknow, Uttar Pradesh 226001</li>
-                    </ul>`,
-                    hi: `चिंता न करें, <strong>लखनऊ</strong> में कुछ सरकारी अस्पतालों की सूची यहाँ दी गई है: 😊
-                    <ul>
-                        <li><strong>किंग जॉर्ज चिकित्सा विश्वविद्यालय (KGMU)</strong><br>पता: शाह मीना रोड, चौक, लखनऊ, उत्तर प्रदेश 226003</li>
-                        <li><strong>संजय गांधी स्नातकोत्तर आयुर्विज्ञान संस्थान (SGPGI)</strong><br>पता: रायबरेली रोड, लखनऊ, उत्तर प्रदेश 226014</li>
-                        <li><strong>सिविल अस्पताल (श्यामा प्रसाद मुखर्जी सिविल अस्पताल)</strong><br>पता: 11, महात्मा गांधी मार्ग, सआदत नगर, हजरतगंज, लखनऊ, उत्तर प्रदेश 226001</li>
-                        <li><strong>बलरामपुर अस्पताल</strong><br>पता: स्टेशन रोड, कैसरबाग, लखनऊ, उत्तर प्रदेश 226001</li>
-                    </ul>`,
-                    od: `ଚିନ୍ତା କରନ୍ତୁ ନାହିଁ, <strong>ଲକ୍ଷ୍ନୌ</strong>ରେ କିଛି ସରକାରୀ ଡାକ୍ତରଖାନାର ତାଲିକା ଏଠାରେ ଦିଆଯାଇଛି: 😊
-                    <ul>
-                        <li><strong>କିଙ୍ଗ ଜର୍ଜ ମେଡିକାଲ୍ ୟୁନିଭର୍ସିଟି (KGMU)</strong><br>ଠିକଣା: ଶାହ ମୀନା ରୋଡ୍, ଚୌକ୍, ଲକ୍ଷ୍ନୌ, ଉତ୍ତର ପ୍ରଦେଶ 226003</li>
-                        <li><strong>ସଞ୍ଜୟ ଗାନ୍ଧୀ ପୋଷ୍ଟଗ୍ରାଡୁଏଟ୍ ଇନଷ୍ଟିଚ୍ୟୁଟ୍ ଅଫ୍ ମେଡିକାଲ୍ ସାଇନ୍ସେସ୍ (SGPGI)</strong><br>ଠିକଣା: ରାଏ ବରେଲୀ ରୋଡ୍, ଲକ୍ଷ୍ନୌ, ଉତ୍ତର ପ୍ରଦେଶ 226014</li>
-                        <li><strong>ସିଭିଲ୍ ହସ୍ପିଟାଲ୍ (ଶ୍ୟାମା ପ୍ରସାଦ ମୁଖାର୍ଜୀ ସିଭିଲ୍ ହସ୍ପିଟାଲ୍)</strong><br>ଠିକଣା: 11, ମହାତ୍ମା ଗାନ୍ଧୀ ମାର୍ଗ, ସାଦୁଲ୍ଲା ନଗର, ହଜରତଗଞ୍ଜ, ଲକ୍ଷ୍ନୌ, ଉତ୍ତର ପ୍ରଦେଶ 226001</li>
-                        <li><strong>ବଲରାମପୁର ହସ୍ପିଟାଲ୍</strong><br>ଠିକଣା: ଷ୍ଟେସନ ରୋଡ୍, କୈସରବାଗ, ଲକ୍ଷ୍ନୌ, ଉତ୍ତର ପ୍ରଦେଶ 226001</li>
-                    </ul>`
-                },
-                puri: {
-                    en: `Don't worry, here is a list of some government hospitals in <strong>Puri</strong>: 😊
-                    <ul>
-                        <li><strong>District Headquarters Hospital</strong><br>Address: Grand Rd, Badasankha, Puri, Odisha 752002</li>
-                        <li><strong>Puri Sadar Hospital</strong><br>Address: Puri-Bhubaneswar Rd, Puri, Odisha 752002</li>
-                        <li><strong>Gopabandhu Ayurved Mahavidyalaya & Hospital</strong><br>Address: Near Baliguali, Puri, Odisha 752002</li>
-                    </ul>`,
-                    hi: `चिंता न करें, <strong>पुरी</strong> में कुछ सरकारी अस्पतालों की सूची यहाँ दी गई है: 😊
-                    <ul>
-                        <li><strong>जिला मुख्यालय अस्पताल</strong><br>पता: ग्रैंड रोड, बदशंख, पुरी, ओडिशा 752002</li>
-                        <li><strong>पुरी सदर अस्पताल</strong><br>पता: पुरी-भुवनेश्वर रोड, पुरी, ओडिशा 752002</li>
-                        <li><strong>गोपबंधु आयुर्वेद महाविद्यालय एवं अस्पताल</strong><br>पता: बालिगुआली के पास, पुरी, ओडिशा 752002</li>
-                    </ul>`,
-                    od: `ଚିନ୍ତା କରନ୍ତୁ ନାହିଁ, <strong>ପୁରୀ</strong>ରେ କିଛି ସରକାରୀ ଡାକ୍ତରଖାନାର ତାଲିକା ଏଠାରେ ଦିଆଯାଇଛି: 😊
-                    <ul>
-                        <li><strong>ଜିଲ୍ଲା ମୁଖ୍ୟାଳୟ ଡାକ୍ତରଖାନା</strong><br>ଠିକଣା: ଗ୍ରାଣ୍ଡ ରୋଡ୍, ବଡସଙ୍ଖ, ପୁରୀ, ଓଡ଼ିଶା 752002</li>
-                        <li><strong>ପୁରୀ ସଦର ଡାକ୍ତରଖାନା</strong><br>ଠିକଣା: ପୁରୀ-ଭୁବନେଶ୍ୱର ରୋଡ୍, ପୁରୀ, ଓଡ଼ିଶା 752002</li>
-                        <li><strong>ଗୋପବନ୍ଧୁ ଆୟୁର୍ବେଦ ମହାବିଦ୍ୟାଳୟ ଏବଂ ଡାକ୍ତରଖାନା</strong><br>ଠିକଣା: ବାଲିଗୁଆଳି ନିକଟରେ, ପୁରୀ, ଓଡ଼ିଶା 752002</li>
-                    </ul>`
-                },
-                delhi: {
-                    en: `Don't worry, here is a list of some government hospitals in <strong>Delhi</strong>: 😊
-                    <ul>
-                        <li><strong>All India Institute of Medical Sciences (AIIMS)</strong><br>Address: Ansari Nagar, New Delhi, Delhi 110029</li>
-                        <li><strong>Safdarjung Hospital</strong><br>Address: Ring Rd, Safdarjung Enclave, New Delhi, Delhi 110029</li>
-                        <li><strong>Ram Manohar Lohia Hospital (RML)</strong><br>Address: Baba Kharak Singh Marg, New Delhi, Delhi 110001</li>
-                        <li><strong>Lady Hardinge Medical College</strong><br>Address: Shaheed Bhagat Singh Marg, New Delhi, Delhi 110001</li>
-                    </ul>`,
-                    hi: `चिंता न करें, <strong>दिल्ली</strong> में कुछ सरकारी अस्पतालों की सूची यहाँ दी गई है: 😊
-                    <ul>
-                        <li><strong>अखिल भारतीय आयुर्विज्ञान संस्थान (AIIMS)</strong><br>पता: अंसारी नगर, नई दिल्ली, दिल्ली 110029</li>
-                        <li><strong>सफदरजंग अस्पताल</strong><br>पता: रिंग रोड, सफदरजंग एन्क्लेव, नई दिल्ली, दिल्ली 110029</li>
-                        <li><strong>राम मनोहर लोहिया अस्पताल (RML)</strong><br>पता: बाबा खड़क सिंह मार्ग, नई दिल्ली, दिल्ली 110001</li>
-                        <li><strong>लेडी हार्डिंग मेडिकल कॉलेज</strong><br>पता: शहीद भगत सिंह मार्ग, नई दिल्ली, दिल्ली 110001</li>
-                    </ul>`,
-                    od: `ଚିନ୍ତା କରନ୍ତୁ ନାହିଁ, <strong>ଦିଲ୍ଲୀ</strong>ରେ କିଛି ସରକାରୀ ଡାକ୍ତରଖାନାର ତାଲିକା ଏଠାରେ ଦିଆଯାଇଛି: 😊
-                    <ul>
-                        <li><strong>ଅଖିଳ ଭାରତୀୟ ଆୟୁର୍ବିଜ୍ଞାନ ସଂସ୍ଥାନ (AIIMS)</strong><br>ଠିକଣା: ଅନସାରୀ ନଗର, ନୂଆ ଦିଲ୍ଲୀ, ଦିଲ୍ଲୀ 110029</li>
-                        <li><strong>ସଫଦରଜଙ୍ଗ ହସ୍ପିଟାଲ୍</strong><br>ଠିକଣା: ରିଙ୍ଗ ରୋଡ୍, ସଫଦରଜଙ୍ଗ ଏନକ୍ଲେଭ, ନୂଆ ଦିଲ୍ଲୀ, ଦିଲ୍ଲୀ 110029</li>
-                        <li><strong>ରାମ ମନୋହର ଲୋହିଆ ହସ୍ପିଟାଲ୍ (RML)</strong><br>ଠିକଣା: ବାବା ଖଡ଼କ ସିଂହ ମାର୍ଗ, ନୂଆ ଦିଲ୍ଲୀ, ଦିଲ୍ଲୀ 110001</li>
-                        <li><strong>ଲେଡି ହାର୍ଡିଙ୍ଗ୍ ମେଡିକାଲ୍ କଲେଜ୍</strong><br>ଠିକଣା: ଶହୀଦ ଭଗତ ସିଂହ ମାର୍ଗ, ନୂଆ ଦିଲ୍ଲୀ, ଦିଲ୍ଲୀ 110001</li>
-                    </ul>`
-                },
-                mumbai: {
-                    en: `Don't worry, here is a list of some government hospitals in <strong>Mumbai</strong>: 😊
-                    <ul>
-                        <li><strong>King Edward Memorial Hospital (KEM)</strong><br>Address: Acharya Donde Marg, Parel, Mumbai, Maharashtra 400012</li>
-                        <li><strong>Lokmanya Tilak Municipal General Hospital (Sion Hospital)</strong><br>Address: Sion, Mumbai, Maharashtra 400022</li>
-                        <li><strong>Sir J.J. Hospital</strong><br>Address: Byculla, Mumbai, Maharashtra 400008</li>
-                        <li><strong>Grant Medical College and Sir J. J. Group of Hospitals</strong><br>Address: J.J. Hospital Rd, Byculla, Mumbai, Maharashtra 400008</li>
-                    </ul>`,
-                    hi: `चिंता न करें, <strong>मुंबई</strong> में कुछ सरकारी अस्पतालों की सूची यहाँ दी गई है: 😊
-                    <ul>
-                        <li><strong>किंग एडवर्ड मेमोरियल अस्पताल (KEM)</strong><br>पता: आचार्य डोंडे मार्ग, परेल, मुंबई, महाराष्ट्र 400012</li>
-                        <li><strong>लोकमान्य तिलक नगर सामान्य अस्पताल (साइन अस्पताल)</strong><br>पता: साइन, मुंबई, महाराष्ट्र 400022</li>
-                        <li><strong>सर जे.जे. अस्पताल</strong><br>पता: बायकुला, मुंबई, महाराष्ट्र 400008</li>
-                        <li><strong>ग्रांट मेडिकल कॉलेज और सर जे.जे. ग्रुप ऑफ हॉस्पिटल्स</strong><br>पता: जे.जे. अस्पताल रोड, बायकुला, मुंबई, महाराष्ट्र 400008</li>
-                    </ul>`,
-                    od: `ଚିନ୍ତା କରନ୍ତୁ ନାହିଁ, <strong>ମୁମ୍ବାଇ</strong>ରେ କିଛି ସରକାରୀ ଡାକ୍ତରଖାନାର ତାଲିକା ଏଠାରେ ଦିଆଯାଇଛି: 😊
-                    <ul>
-                        <li><strong>କିଙ୍ଗ ଏଡୱାର୍ଡ ମେମୋରିଆଲ ହସ୍ପିଟାଲ୍ (KEM)</strong><br>ଠିକଣା: ଆଚାର୍ଯ୍ୟ ଡୋଣ୍ଡେ ମାର୍ଗ, ପରେଲ, ମୁମ୍ବାଇ, ମହାରାଷ୍ଟ୍ର 400012</li>
-                        <li><strong>ଲୋକମାନ୍ୟ ତିଲକ ମ୍ୟୁନିସିପାଲ୍ ଜେନେରାଲ୍ ହସ୍ପିଟାଲ୍ (ସିଅନ ହସ୍ପିଟାଲ୍)</strong><br>ଠିକଣା: ସିଅନ, ମୁମ୍ବାଇ, ମହାରାଷ୍ଟ୍ର 400022</li>
-                        <li><strong>ସାର୍ ଜେ.ଜେ. ହସ୍ପିଟାଲ୍</strong><br>ଠିକଣା: ବାଇକୁଲା, ମୁମ୍ବାଇ, ମହାରାଷ୍ଟ୍ର 400008</li>
-                        <li><strong>ଗ୍ରାଣ୍ଟ୍ ମେଡିକାଲ୍ କଲେଜ୍ ଏବଂ ସାର୍ ଜେ. ଜେ. ଗ୍ରୁପ୍ ଅଫ୍ ହସ୍ପିଟାଲ୍ସ</strong><br>ଠିକଣା: ଜେ.ଜେ. ହସ୍ପିଟାଲ୍ ରୋଡ୍, ବାଇକୁଲା, ମୁମ୍ବାଇ, ମହାରାଷ୍ଟ୍ର 400008</li>
-                    </ul>`
-                },
-                chennai: {
-                    en: `Don't worry, here is a list of some government hospitals in <strong>Chennai</strong>: 😊
-                    <ul>
-                        <li><strong>Rajiv Gandhi Government General Hospital</strong><br>Address: Poonamallee High Rd, Park Town, Chennai, Tamil Nadu 600003</li>
-                        <li><strong>Government Stanley Hospital</strong><br>Address: Old Jail Rd, Chennai, Tamil Nadu 600001</li>
-                        <li><strong>Kilpauk Medical College Hospital</strong><br>Address: E V R Periyar Salai, Chennai, Tamil Nadu 600010</li>
-                        <li><strong>Royapettah Government Hospital</strong><br>Address: 120, General Patters Rd, Royapettah, Chennai, Tamil Nadu 600014</li>
-                    </ul>`,
-                    hi: `चिंता न करें, <strong>चेन्नई</strong> में कुछ सरकारी अस्पतालों की सूची यहाँ दी गई है: 😊
-                    <ul>
-                        <li><strong>राजीव गांधी सरकारी सामान्य अस्पताल</strong><br>पता: पूनमल्ली हाई रोड, पार्क टाउन, चेन्नई, तमिलनाडु 600003</li>
-                        <li><strong>सरकारी स्टेनली अस्पताल</strong><br>पता: ओल्ड जेल रोड, चेन्नई, तमिलनाडु 600001</li>
-                        <li><strong>किल्पॉक मेडिकल कॉलेज अस्पताल</strong><br>पता: ईवीआर पेरियार सलाई, चेन्नई, तमिलनाडु 600010</li>
-                        <li><strong>रॉयपेट्टा सरकारी अस्पताल</strong><br>पता: 120, जनरल पैटर्स रोड, रॉयपेट्टा, चेन्नई, तमिलनाडु 600014</li>
-                    </ul>`,
-                    od: `ଚିନ୍ତା କରନ୍ତୁ ନାହିଁ, <strong>ଚେନ୍ନାଇ</strong>ରେ କିଛି ସରକାରୀ ଡାକ୍ତରଖାନାର ତାଲିକା ଏଠାରେ ଦିଆଯାଇଛି: 😊
-                    <ul>
-                        <li><strong>ରାଜୀବ ଗାନ୍ଧୀ ସରକାରୀ ଜେନେରାଲ୍ ହସ୍ପିଟାଲ୍</strong><br>ଠିକଣା: ପୁନମାଲ୍ଲୀ ହାଇ ରୋଡ୍, ପାର୍କ ଟାଉନ୍, ଚେନ୍ନାଇ, ତାମିଲନାଡୁ 600003</li>
-                        <li><strong>ସରକାରୀ ଷ୍ଟାନଲି ହସ୍ପିଟାଲ୍</strong><br>ଠିକଣା: ଓଲ୍ଡ ଜେଲ୍ ରୋଡ୍, ଚେନ୍ନାଇ, ତାମିଲନାଡୁ 600001</li>
-                        <li><strong>କିଲପାକ୍ ମେଡିକାଲ୍ କଲେଜ୍ ହସ୍ପିଟାଲ୍</strong><br>ଠିକଣା: ଇ.ଭି.ଆର୍. ପେରିୟାର ସାଲାଇ, ଚେନ୍ନାଇ, ତାମିଲନାଡୁ 600010</li>
-                        <li><strong>ରୟାପେଟ୍ଟା ସରକାରୀ ହସ୍ପିଟାଲ୍</strong><br>ଠିକଣା: 120, ଜେନେରାଲ୍ ପ୍ୟାଟର୍ସ ରୋଡ୍, ରୟାପେଟ୍ଟା, ଚେନ୍ନାଇ, ତାମିଲନାଡୁ 600014</li>
-                    </ul>`
                 }
             }
         };
@@ -547,50 +420,20 @@
             en: `🚨 <strong>Urgent Medical Alert!</strong><br><br>
             <div class="bg-red-100 text-red-800 p-4 rounded-lg my-2">
                 <p><strong>Please seek immediate medical attention.</strong></p>
-                <p>Call the National Emergency Number <strong>112</strong> or one of the following numbers:</p>
-                <ul class="list-disc list-inside mt-2 space-y-1">
-                    <li><strong>Emergency Response:</strong> 112 (Police, Fire, and Ambulance)</li>
-                    <li><strong>Ambulance:</strong> 108</li>
-                    <li><strong>Police:</strong> 100</li>
-                    <li><strong>Fire:</strong> 101</li>
-                    <li><strong>Women Helpline:</strong> 1091</li>
-                    <li><strong>Children in Difficult Situation:</strong> 1098</li>
-                    <li><strong>Road Accident Emergency:</strong> 1073</li>
-                </ul>
-                <p class="mt-2"><strong>Recommended Tests:</strong> ECG, Blood Pressure Check, Blood Sugar Test, Ultrasound, MRI Scan.</p>
-                <p class="text-xs mt-2 italic">This is not a diagnosis. For accurate medical advice, please consult a professional immediately.</p>
+                <p>Call the National Emergency Number <strong>112</strong> or an ambulance at <strong>108</strong>.</p>
+                <p class="mt-2">For accurate medical advice, please consult a professional immediately.</p>
             </div>`,
             hi: `🚨 <strong>आपातकालीन चिकित्सा चेतावनी!</strong><br><br>
             <div class="bg-red-100 text-red-800 p-4 rounded-lg my-2">
                 <p><strong>कृपया तुरंत चिकित्सा सहायता लें।</strong></p>
-                <p>राष्ट्रीय आपातकालीन नंबर <strong>112</strong> पर कॉल करें या निम्नलिखित में से किसी एक नंबर पर:</p>
-                <ul class="list-disc list-inside mt-2 space-y-1">
-                    <li><strong>आपातकालीन प्रतिक्रिया:</strong> 112 (पुलिस, फायर और एम्बुलेंस)</li>
-                    <li><strong>एम्बुलेंस:</strong> 108</li>
-                    <li><strong>पुलिस:</strong> 100</li>
-                    <li><strong>फायर:</strong> 101</li>
-                    <li><strong>महिला हेल्पलाइन:</strong> 1091</li>
-                    <li><strong>बच्चों के लिए सहायता:</strong> 1098</li>
-                    <li><strong>सड़क दुर्घटना आपातकाल:</strong> 1073</li>
-                </ul>
-                <p class="mt-2"><strong>सुझाए गए टेस्ट:</strong> ईसीजी, रक्तचाप जांच, रक्त शर्करा परीक्षण, अल्ट्रासाउंड, एमआरआई स्कैन।</p>
-                <p class="text-xs mt-2 italic">यह कोई निदान नहीं है। सटीक चिकित्सा सलाह के लिए, कृपया तुरंत किसी पेशेवर से परामर्श करें।</p>
+                <p>राष्ट्रीय आपातकालीन नंबर <strong>112</strong> या एम्बुलेंस को <strong>108</strong> पर कॉल करें।</p>
+                <p class="mt-2">सटीक चिकित्सा सलाह के लिए, कृपया तुरंत किसी पेशेवर से परामर्श करें।</p>
             </div>`,
             od: `🚨 <strong>ଜରୁରୀକାଳୀନ ଡାକ୍ତରୀ ସତର୍କତା!</strong><br><br>
             <div class="bg-red-100 text-red-800 p-4 rounded-lg my-2">
                 <p><strong>ଦୟାକରି ତୁରନ୍ତ ଡାକ୍ତରୀ ସହାୟତା ଲୋଡ଼ନ୍ତୁ।</strong></p>
-                <p>ଜାତୀୟ ଜରୁରୀକାଳୀନ ନମ୍ବର <strong>112</strong> କୁ କଲ୍ କରନ୍ତୁ କିମ୍ବା ନିମ୍ନଲିଖିତ ମଧ୍ୟରୁ ଯେକୌଣସି ଏକ ନମ୍ବରକୁ:</p>
-                <ul class="list-disc list-inside mt-2 space-y-1">
-                    <li><strong>ଜରୁରୀକାଳୀନ ପ୍ରତିକ୍ରିୟା:</strong> 112 (ପୋଲିସ୍, ଫାୟାର୍ ଏବଂ ଆମ୍ବୁଲାନ୍ସ)</li>
-                    <li><strong>ଆମ୍ବୁଲାନ୍ସ:</strong> 108</li>
-                    <li><strong>ପୋଲିସ୍:</strong> 100</li>
-                    <li><strong>ଅଗ୍ନିଶମ:</strong> 101</li>
-                    <li><strong>ମହିଳା ହେଲ୍ପଲାଇନ୍:</strong> 1091</li>
-                    <li><strong>ଅସୁବିଧାରେ ଥିବା ପିଲାମାନଙ୍କ ପାଇଁ:</strong> 1098</li>
-                    <li><strong>ସଡ଼କ ଦୁର୍ଘଟଣା ଜରୁରୀକାଳୀନ:</strong> 1073</li>
-                </ul>
-                <p class="mt-2"><strong>ସୁପାରିଶ କରାଯାଇଥିବା ପରୀକ୍ଷା:</strong> ଇସିଜି, ରକ୍ତଚାପ ଯାଞ୍ଚ, ରକ୍ତ ଶର୍କରା ପରୀକ୍ଷା, ଅଲଟ୍ରାସାଉଣ୍ଡ, ଏମଆରଆଇ ସ୍କାନ୍।</p>
-                <p class="text-xs mt-2 italic">ଏହା ଏକ ନିଦାନ ନୁହେଁ। ସଠିକ୍ ଡାକ୍ତରୀ ପରାମର୍ଶ ପାଇଁ, ଦୟାକରି ତୁରନ୍ତ ଜଣେ ପ୍ରଫେସନାଲଙ୍କ ସହିତ ପରାମର୍ଶ କରନ୍ତୁ।</p>
+                <p>ଜାତୀୟ ଜରୁରୀକାଳୀନ ନମ୍ବର <strong>112</strong> କୁ କଲ୍ କରନ୍ତୁ କିମ୍ବା ଆମ୍ବୁଲାନ୍ସ ପାଇଁ <strong>108</strong> କୁ କଲ୍ କରନ୍ତୁ।</p>
+                <p class="mt-2">ସଠିକ୍ ଡାକ୍ତରୀ ପରାମର୍ଶ ପାଇଁ, ଦୟାକରି ତୁରନ୍ତ ଜଣେ ପ୍ରଫେସନାଲଙ୍କ ସହିତ ପରାମର୍ଶ କରନ୍ତୁ।</p>
             </div>`
         };
 
@@ -647,7 +490,7 @@
 
         function addMessage(message, isUser = false) {
             const messageDiv = document.createElement('div');
-            messageDiv.className = `message message-enter-active p-4 rounded-xl shadow-sm ${isUser ? 'user-message text-white ml-auto' : 'bot-message text-gray-800'}`;
+            messageDiv.className = `message message-enter-active p-3 rounded-xl shadow-sm max-w-xs sm:max-w-md ${isUser ? 'user-message text-white ml-auto' : 'bot-message text-gray-800'}`;
             messageDiv.innerHTML = message;
             
             const typingIndicator = document.getElementById('typingIndicator');
@@ -683,6 +526,7 @@
 
             addMessage(userMessage, true);
             messageInput.value = '';
+            virtualKeyboard.classList.add('hidden'); // Hide keyboard on send
 
             if (isCritical(userMessage)) {
                 addMessage(criticalResponses[currentLanguage], false);
@@ -752,15 +596,12 @@
                 
                 if (response.status === 401) {
                     console.error("API Error: 401 Unauthorized. Please ensure your API key is valid.");
-                    addMessage("I'm sorry, I'm unable to connect to the health knowledge base. It appears there is an authentication issue. Please try again later.", false);
+                    addMessage("I'm sorry, I'm unable to connect. Please check the API key and try again.", false);
                     return;
                 }
 
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error(`API Error: HTTP status ${response.status}`, errorText);
-                    addMessage(`An error occurred while fetching information. Status: ${response.status}. Please try again later.`, false);
-                    return;
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
                 const result = await response.json();
@@ -768,29 +609,10 @@
 
                 if (candidate && candidate.content?.parts?.[0]?.text) {
                     const botResponseText = candidate.content.parts[0].text;
-                    const groundingAttributions = candidate.groundingMetadata;
-
-                    let sourcesHtml = '';
-                    if (groundingAttributions && groundingAttributions.groundingAttributions?.length > 0) {
-                        const sources = groundingAttributions.groundingAttributions.map(attribution => ({
-                            uri: attribution.web?.uri,
-                            title: attribution.web?.title,
-                        })).filter(source => source.uri && source.title);
-
-                        if (sources.length > 0) {
-                            sourcesHtml = `<div class="text-xs text-gray-500 mt-2">
-                                <p class="font-semibold">Sources:</p>
-                                <ul class="list-disc list-inside mt-1 space-y-0.5">
-                                    ${sources.map(source => `<li><a href="${source.uri}" target="_blank" class="text-blue-500 hover:underline">${source.title}</a></li>`).join('')}
-                                </ul>
-                            </div>`;
-                        }
-                    }
-
-                    addMessage(`${botResponseText}<br>${sourcesHtml}`, false);
+                    addMessage(botResponseText, false);
 
                 } else {
-                    addMessage("Sorry, I could not generate a response. Please try again or rephrase your question.", false);
+                    addMessage("Sorry, I could not generate a response. Please try again.", false);
                 }
 
             } catch (error) {
@@ -803,87 +625,44 @@
         
         async function fetchGovtHealthAlerts() {
             showSearchingOverlay();
-
-            await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 500));
-
+            await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
             const mockGovtData = {
-                en: `📄 <strong>Health Advisory (as of September 10, 2025)</strong><br>
-                Don't worry, here are the latest health alerts from the Ministry of Health and Family Welfare: 😊
+                en: `📄 <strong>Health Advisory (as of Sep 10, 2025)</strong><br>
+                Latest alerts from the Ministry of Health: 😊
                 <ul>
-                    <li><strong>Dengue & Chikungunya Alert:</strong> Due to the monsoon season, cases are rising, especially in urban areas. Protect yourself from mosquito bites.</li>
-                    <li><strong>Uttar Pradesh - Viral Fever Watch:</strong> A seasonal increase in viral fever cases has been noted in Noida and surrounding areas. Maintain hygiene and consult a doctor if fever persists.</li>
-                    <li><strong>Seasonal Flu Advisory:</strong> Vaccination is recommended for high-risk groups (elderly, children, and those with comorbidities).</li>
+                    <li><strong>Dengue & Chikungunya:</strong> Cases are rising. Protect yourself from mosquito bites.</li>
+                    <li><strong>Viral Fever Watch (UP):</strong> Seasonal increase noted in Noida. Maintain hygiene.</li>
+                    <li><strong>Seasonal Flu:</strong> Vaccination recommended for high-risk groups.</li>
                 </ul>`,
-                hi: `📄 <strong>स्वास्थ्य सलाह (10 सितंबर, 2025 तक)</strong><br>
-                चिंता न करें, स्वास्थ्य और परिवार कल्याण मंत्रालय से नवीनतम स्वास्थ्य अलर्ट यहां दिए गए हैं: 😊
+                hi: `📄 <strong>स्वास्थ्य सलाह (10 सितंबर, 2025)</strong><br>
+                स्वास्थ्य मंत्रालय से नवीनतम अलर्ट: 😊
                 <ul>
-                    <li><strong>डेंगू और चिकनगुनिया अलर्ट:</strong> मानसून के मौसम के कारण, खासकर शहरी क्षेत्रों में मामले बढ़ रहे हैं। खुद को मच्छरों के काटने से बचाएं।</li>
-                    <li><strong>उत्तर प्रदेश - वायरल फीवर वॉच:</strong> नोएडा और आसपास के इलाकों में वायरल फीवर के मामलों में मौसमी वृद्धि देखी गई है। स्वच्छता बनाए रखें और बुखार बने रहने पर डॉक्टर से सलाह लें।</li>
-                    <li><strong>मौसमी फ्लू सलाह:</strong> उच्च जोखिम वाले समूहों (बुजुर्ग, बच्चे और अन्य बीमारियों वाले लोग) के लिए टीकाकरण की सिफारिश की जाती है।</li>
+                    <li><strong>डेंगू और चिकनगुनिया:</strong> मामले बढ़ रहे हैं। मच्छरों के काटने से खुद को बचाएं।</li>
+                    <li><strong>वायरल फीवर वॉच (यूपी):</strong> नोएडा में मौसमी वृद्धि। स्वच्छता बनाए रखें।</li>
+                    <li><strong>मौसमी फ्लू:</strong> उच्च जोखिम वाले समूहों के लिए टीकाकरण की सिफारिश की जाती है।</li>
                 </ul>`,
-                od: `📄 <strong>ସ୍ୱାସ୍ଥ୍ୟ ପରାମର୍ଶ (ସେପ୍ଟେମ୍ବର 10, 2025 ସୁଦ୍ଧା)</strong><br>
-                ଚିନ୍ତା କରନ୍ତୁ ନାହିଁ, ସ୍ୱାସ୍ଥ୍ୟ ଓ ପରିବାର କଲ୍ୟାଣ ମନ୍ତ୍ରଣାଳୟରୁ ସର୍ବଶେଷ ସ୍ୱାସ୍ଥ୍ୟ ସତର୍କତା ଏଠାରେ ଦିଆଯାଇଛି: 😊
+                od: `📄 <strong>ସ୍ୱାସ୍ଥ୍ୟ ପରାମର୍ଶ (ସେପ୍ଟେମ୍ବର 10, 2025)</strong><br>
+                ସ୍ୱାସ୍ଥ୍ୟ ମନ୍ତ୍ରଣାଳୟରୁ ସର୍ବଶେଷ ସତର୍କତା: 😊
                 <ul>
-                    <li><strong>ଡେଙ୍ଗୁ ଏବଂ ଚିକନଗୁନିଆ ସତର୍କତା:</strong> ମୌସୁମୀ ଋତୁ ହେତୁ, ବିଶେଷକରି ସହରାଞ୍ଚଳରେ ମାମଲା ବଢୁଛି। ନିଜକୁ ମଶା କାମୁଡ଼ାରୁ ରକ୍ଷା କରନ୍ତୁ।</li>
-                    <li><strong>ଉତ୍ତର ପ୍ରଦେଶ - ଭାଇରାଲ୍ ଜ୍ୱର ସତର୍କତା:</strong> ନୋଏଡା ଏବଂ ଆଖପାଖ ଅଞ୍ଚଳରେ ଭାଇରାଲ୍ ଜ୍ୱର ମାମଲାରେ ଏକ ମୌସୁମୀ ବୃଦ୍ଧି ଦେଖାଯାଇଛି। ସ୍ୱଚ୍ଛତା ବଜାୟ ରଖନ୍ତୁ ଏବଂ ଜ୍ୱର ଲାଗି ରହିଲେ ଡାକ୍ତରଙ୍କ ସହିତ ପରାମର୍ଶ କରନ୍ତୁ।</li>
-                    <li><strong>ମୌସୁମୀ ଫ୍ଲୁ ପରାମର୍ଶ:</strong> ଉଚ୍ଚ-ବିପଦ ଥିବା ଗୋଷ୍ଠୀ (ବୃଦ୍ଧ, ପିଲା ଏବଂ ଅନ୍ୟ ରୋଗରେ ପୀଡିତ ଲୋକ) ପାଇଁ ଟୀକାକରଣ ସୁପାରିଶ କରାଯାଏ।</li>
+                    <li><strong>ଡେଙ୍ଗୁ ଏବଂ ଚିକନଗୁନିଆ:</strong> ମାମଲା ବଢୁଛି। ନିଜକୁ ମଶା କାମୁଡ଼ାରୁ ରକ୍ଷା କରନ୍ତୁ।</li>
+                    <li><strong>ଭାଇରାଲ୍ ଜ୍ୱର (UP):</strong> ନୋଏଡାରେ ମୌସୁମୀ ବୃଦ୍ଧି। ସ୍ୱଚ୍ଛତା ବଜାୟ ରଖନ୍ତୁ।</li>
+                    <li><strong>ମୌସୁମୀ ଫ୍ଲୁ:</strong> ଉଚ୍ଚ-ବିପଦ ଥିବା ଗୋଷ୍ଠୀଙ୍କ ପାଇଁ ଟୀକାକରଣ ସୁପାରିଶ କରାଯାଏ।</li>
                 </ul>`
             };
-
             addMessage(mockGovtData[currentLanguage] || mockGovtData.en, false);
             hideSearchingOverlay();
         }
 
         async function handleHospitalSearch(city) {
             showSearchingOverlay();
-            try {
-                const payload = {
-                    contents: [{ parts: [{ text: `List government hospitals with their addresses in ${city}, India.` }] }],
-                    tools: [{ "google_search": {} }],
-                    systemInstruction: {
-                        parts: [{
-                            text: `You are Sushruta, a helpful and reassuring AI Health Assistant. When asked for government hospitals in a specific city, perform a search and list the names and addresses of the hospitals clearly. Respond in a point-based format.
-                            
-                            Please follow these formatting rules strictly:
-                            1. Begin your response with a friendly, reassuring statement like "Don't worry, here is a list of government hospitals in ${city}."
-                            2. Use HTML strong tags (<strong>) to highlight the hospital name and address.
-                            3. Use HTML list tags (<ul><li>) for the list of hospitals.
-                            4. Do not use asterisks or any other markdown for bullet points.
-                            5. Do not include any disclaimer or other information outside of the hospital list.
-                            6. Respond in the language requested by the user. The user's preferred language is ${currentLanguage}.
-                            7. Use relevant emojis where appropriate. 😊`
-                        }]
-                    },
-                };
-                
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (response.status === 401) {
-                    addMessage("I'm sorry, I'm unable to connect to the health knowledge base. It appears there is an authentication issue. Please try again later.", false);
-                    return;
-                }
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const result = await response.json();
-                const candidate = result?.candidates?.[0];
-
-                if (candidate && candidate.content?.parts?.[0]?.text) {
-                    addMessage(candidate.content.parts[0].text, false);
-                } else {
-                    addMessage(`I'm sorry, I couldn't find a list of government hospitals in ${city}. Please try searching with a different city name.`, false);
-                }
-            } catch (error) {
-                console.error("Error during hospital search:", error);
-                addMessage("I'm sorry, an error occurred while trying to find hospitals. Please try again later.", false);
-            } finally {
-                hideSearchingOverlay();
-            }
+             await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+             const cityData = knowledgeBase.importantCityHospitals[city.toLowerCase()];
+             if(cityData){
+                 addMessage(cityData[currentLanguage] || cityData.en, false);
+             } else {
+                 addMessage(`I'm sorry, I couldn't find a list of government hospitals in ${city}. Please try searching with a different city name.`, false);
+             }
+            hideSearchingOverlay();
         }
 
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -896,33 +675,16 @@
             recognition.interimResults = false;
             recognition.lang = getVoiceLanguage(currentLanguage);
 
-            recognition.onstart = () => {
-                isListening = true;
-                micIcon.classList.add('voice-icon', 'listening');
-            };
-
-            recognition.onend = () => {
-                isListening = false;
-                micIcon.classList.remove('voice-icon', 'listening');
-            };
-
-            recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                messageInput.value = transcript;
-                sendBtn.click();
-            };
-
-            recognition.onerror = (event) => {
-                console.error("Speech Recognition Error:", event.error);
-                micIcon.classList.remove('voice-icon', 'listening');
-                isListening = false;
-                addMessage("I'm sorry, there was an error with voice input. Please try again or type your message.", false);
-            };
+            recognition.onstart = () => { isListening = true; micIcon.classList.add('voice-icon', 'listening'); };
+            recognition.onend = () => { isListening = false; micIcon.classList.remove('voice-icon', 'listening'); };
+            recognition.onresult = (event) => { messageInput.value = event.results[0][0].transcript; sendBtn.click(); };
+            recognition.onerror = (event) => { console.error("Speech Recognition Error:", event.error); isListening = false; micIcon.classList.remove('voice-icon', 'listening'); };
         } else {
             voiceBtn.style.display = 'none';
         }
 
         function toggleVoiceInput() {
+            if(!recognition) return;
             if (isListening) {
                 recognition.stop();
             } else {
@@ -932,9 +694,7 @@
         }
         
         function getVoiceLanguage(lang) {
-            const voiceMap = {
-                'en': 'en-IN', 'hi': 'hi-IN', 'bn': 'bn-IN', 'ta': 'ta-IN', 'od': 'or-IN'
-            };
+            const voiceMap = { 'en': 'en-IN', 'hi': 'hi-IN', 'bn': 'bn-IN', 'ta': 'ta-IN', 'od': 'or-IN' };
             return voiceMap[lang] || 'en-IN';
         }
 
@@ -949,17 +709,18 @@
         function renderKeyboard() {
             keyboardLayout.innerHTML = '';
             const layout = keyboardLayouts[currentLanguage] || keyboardLayouts.en;
-            keyboardLayout.style.gridTemplateColumns = `repeat(10, 1fr)`;
+            const keysPerRow = 10;
+            keyboardLayout.style.gridTemplateColumns = `repeat(${keysPerRow}, 1fr)`;
             
             layout.forEach(key => {
                 const button = document.createElement('button');
                 button.textContent = key;
-                button.className = 'bg-gray-300 hover:bg-gray-400 text-gray-800 p-3 rounded-md text-lg font-semibold transition';
+                button.className = 'bg-white hover:bg-gray-100 text-gray-800 p-2 rounded-md text-base font-semibold transition';
                 if (key === '←') {
                     button.onclick = () => messageInput.value = messageInput.value.slice(0, -1);
                 } else if (key === ' ') {
                     button.onclick = () => messageInput.value += ' ';
-                    button.classList.add('col-span-3'); // Make space bar wider
+                    button.classList.add('col-span-4'); // Make space bar wider
                 } else {
                     button.onclick = () => messageInput.value += key;
                 }
@@ -974,25 +735,22 @@
             }
         }
 
-        // NEW: Functions to highlight and hide the voice feature tooltip
         function highlightVoiceFeature() {
-            voiceTooltip.classList.remove('hidden');
-            setTimeout(() => { // Allow display property to apply before starting transition
-                 voiceTooltip.classList.remove('opacity-0');
-                 voiceTooltip.classList.add('opacity-100');
-            }, 10);
-           
-            voiceBtn.classList.add('voice-btn-highlight');
-
-            // Automatically hide after 10 seconds
-            setTimeout(hideVoiceTooltip, 10000);
+            if(window.innerWidth > 640) { // Only show on desktop
+                voiceTooltip.classList.remove('hidden');
+                setTimeout(() => { 
+                     voiceTooltip.classList.remove('opacity-0');
+                     voiceTooltip.classList.add('opacity-100');
+                }, 10);
+                voiceBtn.classList.add('voice-btn-highlight');
+                setTimeout(hideVoiceTooltip, 10000);
+            }
         }
 
         function hideVoiceTooltip() {
             voiceTooltip.classList.remove('opacity-100');
             voiceTooltip.classList.add('opacity-0');
             voiceBtn.classList.remove('voice-btn-highlight');
-            // Use setTimeout to allow the fade-out animation to complete before hiding
             setTimeout(() => {
                 voiceTooltip.classList.add('hidden');
             }, 300);
@@ -1000,6 +758,4 @@
     </script>
 </body>
 </html>
-
-
 
