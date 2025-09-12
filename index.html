@@ -150,19 +150,32 @@
             display: flex;
             overflow-x: auto;
             flex-wrap: nowrap;
-            justify-content: center;
+            justify-content: flex-start; /* Changed for better scroll alignment */
             gap: 0.75rem;
             border-bottom: 2px solid #e5e7eb;
             position: sticky;
             top: 0;
             z-index: 20;
             flex-shrink: 0;
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+            /* Removed properties that hide scrollbar for cross-browser visibility */
         }
         
         .quick-actions::-webkit-scrollbar {
-            display: none;
+            height: 8px; /* Made scrollbar visible */
+        }
+        
+        /* Added styles for a custom scrollbar */
+        .quick-actions::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        
+        .quick-actions::-webkit-scrollbar-thumb {
+            background: #fbbf24;
+            border-radius: 4px;
+        }
+        .quick-actions::-webkit-scrollbar-thumb:hover {
+            background: #f59e0b;
         }
         
         .quick-btn {
@@ -627,6 +640,7 @@
                     <button class="lang-btn" onclick="setLanguage('bn')" id="lang-bn">বাংলা</button>
                     <button class="lang-btn" onclick="setLanguage('ta')" id="lang-ta">தமிழ்</button>
                     <button class="lang-btn" onclick="setLanguage('od')" id="lang-od">ଓଡ଼ିଆ</button>
+                    <button class="lang-btn" onclick="setLanguage('te')" id="lang-te">తెలుగు</button>
                 </div>
                 <h1 id="main-title" class="text-2xl font-bold tracking-tight mb-1" style="font-family: 'Inter', sans-serif;"></h1>
                 <p id="sub-title" class="text-base text-orange-100 font-semibold"></p>
@@ -698,11 +712,11 @@
             
             <button id="keyboardBtn" class="keyboard-btn" title="Toggle Keyboard">
                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                    <line x1="7" y1="7" x2="7" y2="7"></line><line x1="12" y1="7" x2="12" y2="7"></line><line x1="17" y1="7" x2="17" y2="7"></line>
-                    <line x1="7" y1="12" x2="7" y2="12"></line><line x1="12" y1="12" x2="12" y2="12"></line><line x1="17" y1="12" x2="17" y2="12"></line>
-                    <line x1="7" y1="17" x2="12" y2="17"></line>
-                </svg>
+                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                     <line x1="7" y1="7" x2="7" y2="7"></line><line x1="12" y1="7" x2="12" y2="7"></line><line x1="17" y1="7" x2="17" y2="7"></line>
+                     <line x1="7" y1="12" x2="7" y2="12"></line><line x1="12" y1="12" x2="12" y2="12"></line><line x1="17" y1="12" x2="17" y2="12"></line>
+                     <line x1="7" y1="17" x2="12" y2="17"></line>
+                 </svg>
             </button>
 
             <!-- Voice Button -->
@@ -732,7 +746,9 @@
     <script>
         // Sushruta - AI Health Assistant - Main JavaScript
         
-        const apiKey = "AIzaSyDY4WUNKFyJmTDKZFCi0xZjLZvoMxsNTNo"; 
+        // --- IMPORTANT: For the app to work, you must replace this with your own Google AI API Key. ---
+        // You can get a key from the Google AI Studio: https://makersuite.google.com/
+        const apiKey = ""; // If you want to use models other than gemini-2.5-flash-preview-05-20 or imagen-3.0-generate-002, provide an API key here. Otherwise, leave this as-is.
         
         const API_MODEL = "gemini-2.5-flash-preview-05-20";
         
@@ -953,6 +969,44 @@
                 diseaseAlertDengueInfo: "ପରିବେଶକୁ ସଫା ରଖି ଏବଂ ପାଣି ଜମିବାକୁ ନ ଦେଇ ମଶାଙ୍କ ବଂଶବୃଦ୍ଧିକୁ ରୋକନ୍ତୁ।",
                 diseaseAlertViralTitle: "ଋତୁକାଳୀନ ଭାଇରାଲ୍ ଜ୍ୱର",
                 diseaseAlertViralInfo: "ଏକ ସୁସ୍ଥ ଖାଦ୍ୟ ସହିତ ରୋଗ ପ୍ରତିରୋଧକ ଶକ୍ତି ବଢାନ୍ତୁ ଏବଂ ହାଇଡ୍ରେଟେଡ୍ ରୁହନ୍ତୁ। ଯଦି ଜ୍ୱର ଲାଗିରହେ ତେବେ ଡାକ୍ତରଙ୍କ ସହିତ ପରାମର୍ଶ କରନ୍ତୁ।"
+            },
+            te: {
+                disclaimer: "⚠️ ముఖ్య గమనిక: ఇది సహాయం కోసం మాత్రమే. తీవ్రమైన సమస్యల కోసం వైద్యుడిని సంప్రదించండి.",
+                mainTitle: "సుశ్రుత",
+                subTitle: "మీ ఆరోగ్య సహాయకుడు",
+                statFreeValue: "ఉచితం",
+                statFreeLabel: "సేవ",
+                stat247Value: "24/7",
+                stat247Label: "అందుబాటులో ఉంది",
+                quickBtnFever: "జ్వరం",
+                quickBtnCough: "దగ్గు",
+                quickBtnVaccine: "టీకా",
+                quickBtnStomach: "కడుపు నొప్పి",
+                quickBtnDiet: "ఆహార ప్రణాళిక",
+                quickBtnMentalHealth: "మానసిక ఆరోగ్యం",
+                quickBtnWomen: "మహిళల ఆరోగ్యం",
+                quickBtnEmergency: "అత్యవసరం",
+                queryFever: "జ్వరం యొక్క లక్షణాలు ఏమిటి?",
+                queryCough: "దగ్గును ఎలా తగ్గించాలి?",
+                queryVaccine: "పిల్లల టీకాల గురించి",
+                queryStomach: "కడుపు నొప్పికి ఇంటి నివారణలు",
+                queryDiet: "ఆరోగ్యకరమైన ఆహారం కోసం సాధారణ సలహా",
+                queryMentalHealth: "మానసిక క్షేమాన్ని ఎలా మెరుగుపరచుకోవాలి?",
+                queryWomen: "మహిళల సాధారణ ఆరోగ్య సమస్యలు",
+                queryEmergency: "నాకు అత్యవసర సహాయం కావాలి",
+                helpTitle: "<span>📚</span> నేను మీకు ఎలా సహాయపడగలను?",
+                helpList: `• వ్యాధి లక్షణాలను తెలుసుకోండి<br>• ఇంటి నివారణలను పొందండి<br>• టీకాల గురించి తెలుసుకోండి`,
+                initialBotGreeting: "🙏 నమస్కారం! నేను సుశ్రుత, మీ AI ఆరోగ్య సహాయకుడిని!",
+                initialBotInstruction: "నేను ఆరోగ్య సమస్యలతో సహాయపడగలను. పై బటన్లను ఉపయోగించండి లేదా మీ ప్రశ్నను టైప్ చేయండి.",
+                typingText: "సుశ్రుత ఆలోచిస్తోంది...",
+                inputPlaceholder: "మీ ప్రశ్నను అడగండి...",
+                tooltipText: "🎤 మాట్లాడటానికి మైక్‌ను నొక్కండి",
+                emergencyResponse: `🚨 **ఇది తీవ్రంగా ఉంది. దయచేసి తక్షణ వైద్య సహాయం తీసుకోండి.**<br><br>జాతీయ అత్యవసర నంబర్‌కు కాల్ చేయండి: <b>112</b><br>లేదా అంబులెన్స్ కోసం కాల్ చేయండి: <b>108</b>`,
+                diseaseAlertTitle: "మీ ప్రాంతానికి ఆరోగ్య హెచ్చరికలు",
+                diseaseAlertDengueTitle: "డెంగ్యూ జ్వరం కేసులు పెరుగుతున్నాయి",
+                diseaseAlertDengueInfo: "పరిసరాలను శుభ్రంగా ఉంచడం మరియు నీరు నిలిచిపోకుండా చూడటం ద్వారా దోమల వ్యాప్తిని నివారించండి.",
+                diseaseAlertViralTitle: "సీజనల్ వైరల్ జ్వరం",
+                diseaseAlertViralInfo: "ఆరోగ్యకరమైన ఆహారంతో రోగనిరోధక శక్తిని పెంచుకోండి మరియు హైడ్రేటెడ్‌గా ఉండండి. జ్వరం తగ్గకపోతే వైద్యుడిని సంప్రదించండి."
             }
         };
 
@@ -1097,7 +1151,73 @@
                     1.  Mandatory Disclaimer (Translated).
                     2.  Empathetic acknowledgment of the user's query.
                     3.  Clear, structured answer using Markdown.
-                    4.  Actionable, safe recommendations (e.g., "Consider speaking to a doctor," "You might find it helpful to...").`;
+                    4.  Actionable, safe recommendations (e.g., "Consider speaking to a doctor," "You might find it helpful to...").
+
+                **NEW INSTRUCTION: PROVIDING DOCTOR INFORMATION**
+                After you provide the health information for the user's query, you MUST add a new section titled "### 🩺 Find a Specialist (Examples)".
+                In this section, you must:
+                1.  Identify the relevant medical specialty for the user's query (e.g., for a skin rash, the specialty is Dermatology; for a heart issue, it's Cardiology; for fever or cold, it is General Medicine).
+                2.  Search the "INTERNAL KNOWLEDGE BASE" provided below for doctors or departments matching that specialty.
+                3.  List a few relevant examples of doctors or departments you find. Include their name, designation, and hospital.
+                4.  **CRITICALLY IMPORTANT:** You MUST include the following disclaimer at the end of this section: "Please note: This is a sample list based on publicly available data and may not be current or complete. Please contact the hospital directly to confirm doctor availability and book an appointment." (Translate this disclaimer to the user's language).
+                5.  If you cannot find a relevant specialist in the knowledge base, state that you don't have specific doctor information for this condition and recommend contacting a major government hospital for a referral.
+
+                ---
+
+                **INTERNAL KNOWLEDGE BASE: DOCTOR DIRECTORY (SAMPLE DATA)**
+
+                **1. Nil Ratan Sircar (NRS) Medical College & Hospital, Kolkata, West Bengal (Heads of Departments)**
+                - Anaesthesiology: Dr. Dipankar Mukherjee
+                - Anatomy: Dr. Sudeshna Majumdar
+                - Biochemistry: Dr. Indranil Dawn
+                - Cardiac Anaesthesiology: Dr. Sampa Dutta Gupta
+                - Cardio Thoracic & Vascular Surgery: Dr. Binay Krishna Sarkar
+                - Cardiology: Prof. (Dr.) Manoranjan Mandal
+                - Community Medicine: Dr. Dibakar Haldar
+                - Dentistry: Dr. Subhas Chakraborty
+                - Dermatology: Dr. Arun Achar
+                - Endocrinology: Dr. Nilanjan Sengupta
+                - Forensic Medicine & Toxicology: Dr. Saurabh Chattopadhyay
+                - Gastroenterology: Dr. Manas Kumar Mondal
+                - General Medicine: Dr. Milan Chakraborty
+                - General Surgery: Dr. Sankar Das Chattopadhyay
+                - Gynecology & Obstetrics: Dr. Runa Bal
+                - Haematology: Dr. Tuphan Kanti Dolai
+                - Microbiology: Prof. (Dr) Jayanta Bikash Dey
+                - Nephrology: Dr. Pinaki Mukhopadhyay
+                - Neuro Surgery: Dr. Kaushik Roy
+                - Neurology: Prof. (Dr) Kartik Chandra Ghosh
+                - Ophthalmology: Dr. Udayaditya Mukhopadhyay
+                - Orthopedics: Dr. Gopinath Maiti
+                - Otorhinolaryngology (ENT): Dr. Sumanta Kumar Dutta
+                - Paediatric Surgery: Dr. Kalyani Saha Basu
+                - Paediatrics Medicine: Dr. Asim Kr Mallick
+                - Pathology: Dr. Gopinath Barui
+                - Pharmacology: Dr. Pragnadyuti Mandal
+                - Physical Medicine & Rehabilitation: Dr. Partha Pratim Das
+                - Physiology: Dr. Suranjana Sur Mukherjee
+                - Plastic Surgery: Dr. Dibyendu Das
+                - Psychiatry: Dr. Asish Mukhopadhyay
+                - Radio Diagnosis: Dr. Runa Das
+                - Radio Therapy (Radiation Oncology): Dr. Suman Ghorai
+                - Respiratory Medicine: Dr. Jaydip Deb
+                - Urology: Dr. Tapan Kumar Mandal
+
+                **2. Sheikh Bhikhari Medical College & Hospital, Hazaribag, Jharkhand**
+                - **Medicine:** DR S K SINGH (Professor & Principal), DR S. K. SINHA (Professor & HOD), DR SMITA PRIYADARSHINI (Assistant Professor), DR HIMANSHU KR. BHAIYA (Assistant Professor), DR SOMA ORAON (Assistant Professor), DR ANIL KUMAR (Assistant Professor).
+                - **Surgery:** DR VINOD KUMAR (Professor), DR OM PRAKASH SRIVASTAVA (Associate Professor), DR A. K. CHOUDHARY (Associate Professor), DR GAUTAM CHANDRA DR ABHISHEK KUMAR (Assistant Professor), DR UTKRISHT KANT (Assistant Professor), DR SUMEGHA RANA (Assistant Professor), DR ANJANA GANDHI DR VIVEK BHASKER (Assistant Professor), DR MRIGENDRA RAI (Assistant Professor).
+                - **Obstetrics & Gynecology (OBGY):** DR SWETA LAL (Assistant Professor), Dr Rameshwari Beck (Assistant Professor).
+                - **Eye (Ophthalmology):** DR K. K. LAL (Professor).
+                - **Ear, Nose, and Throat (ENT):** DR PRADEEP KUMAR SINGGH (Professor), Dr. RAKHI KUMARI (Assistant Professor).
+                - **Paediatrics:** DR CHITIZ ANAND (Assistant Professor).
+                - **Skin & VD (Dermatology):** DR. FIRDOUS JAHAN (Assistant Professor).
+                - **Orthopaedics:** DR. PAWAN KUMAR (Professor), DR RUPESH KUMAR (Associate Professor), DR. SHANKAR NIWAS (Assistant Professor), DR SHASHI KANT SINGH (Assistant Professor).
+                - **Anaesthesia:** DR. SHASHI DINKAR MINZ (Professor), DR. SANJEEV KUMAR (Associate Professor), DR. PIYUSH KUMAR SENGAR (Assistant Professor), DR INDRAJIT GUPTA (Assistant Professor).
+                - **Psychiatry:** DR. RAJSHREE (Assistant Professor), DR SHAHANAWAJ ZAFAR (Assistant Professor).
+                - **Dentistry:** DR KOYNA MITRA (Professor), DR RATHORE DHANANJAY GOVIND SINGH (Associate Professor).
+
+                **3. MKCG Medical College & Hospital, Berhampur, Odisha**
+                - **Anaesthesiology:** Dr. Harikrishna Dalai (Professor), Prof Dr Khageswar Raut (Professor), Dr. Jyoshna Mishra (Professor), Dr. Bimal Prasad Sahu (Associate Professor), Dr. S Sanjeeb Patro (Associate Professor), Dr. Bishnu Prasad Mohapatra (Associate Professor), Dr. Siba Prasad Das (Associate Professor), Dr. Bipin Bihari Malik (Assistant Professor), Dr. Manas Kumar Nahak (Assistant Professor), Dr. Nibedita Patnaik (Assistant Professor), Dr. Pankaj Kumar Sethy (Assistant Professor), Dr. Anup Kumar Harichandan (Assistant Professor), Dr. Chittranjan Pradhan (Assistant Professor), Dr. Jagdeep Nayak (Assistant Professor), Dr. Kunal Patra (Assistant Professor), Dr. Mrutyunjaya Mallick (Assistant Professor), Dr. Jayanta Pattanaik (Assistant Professor).`;
 
                 const payload = {
                     contents: [{ parts: [{ text: prompt }] }],
@@ -1210,7 +1330,8 @@
                 'hi': 'hi-IN',
                 'bn': 'bn-IN',
                 'ta': 'ta-IN',
-                'od': 'or-IN'
+                'od': 'or-IN',
+                'te': 'te-IN'
             };
             return langMap[lang] || 'en-IN';
         }
@@ -1243,7 +1364,7 @@
         // --- Virtual Keyboard Logic ---
         const Keyboard = window.SimpleKeyboard.default;
         let keyboard;
-        const languageCycle = ['en', 'hi', 'bn', 'ta', 'od'];
+        const languageCycle = ['en', 'hi', 'bn', 'ta', 'od', 'te'];
 
         const keyboardLayouts = {
             en: {
@@ -1313,6 +1434,22 @@
                     'ତ୍ ଥ୍ ଦ୍ ଧ୍ ନ ପ୍ ଫ୍ ବ୍ ଭ୍ ମ୍',
                     'ଯ୍ ର୍ ଲ୍ ଵ୍ ଶ୍ ଷ୍ ସ୍ ହ୍ ଚ୍ ଛ୍ ଜ୍ ଝ୍ ଞ୍',
                     'ଟ୍ ଠ୍ ଡ୍ ଢ୍ ଣ କ୍ ଖ୍ ଗ୍ ଘ୍ ଙ୍',
+                    '{shift} {next} {space} {hide} {enter}'
+                ]
+            },
+            te: {
+                 'default': [
+                    'ౌ ై ా ీ ు ూ ె ో ్ ృ {backspace}',
+                    'త థ ద ధ న ప ఫ బ భ మ',
+                    'య ర ల వ శ ష స హ చ ఛ జ ఝ ఞ',
+                    'ట ఠ డ ఢ ణ క ఖ గ ఘ ఙ',
+                    '{shift} {next} {space} {hide} {enter}'
+                ],
+                'shift': [
+                    'ఔ ఐ ఆ ఈ ఉ ఊ ఋ ఎ ఏ ఒ ఓ',
+                    'త్ థ్ ద్ ధ్ న ప్ ఫ్ బ్ భ్ మ్',
+                    'య్ ర్ ల వ శ ష స హ చ ఛ జ ఝ ఞ',
+                    'ట్ ఠ్ డ్ ఢ్ ణ్ క్ ఖ్ గ్ ఘ్ ఙ్',
                     '{shift} {next} {space} {hide} {enter}'
                 ]
             }
@@ -1386,4 +1523,3 @@
     </script>
 </body>
 </html>
-
