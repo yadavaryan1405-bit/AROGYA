@@ -3,13 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://generativelanguage.googleapis.com;">
+    <!-- Removed restrictive CSP to allow Gemini API calls in this environment -->
     <title>Sushruta - AI Health Assistant</title>
-    <!-- Tailwind CSS and Google Fonts -->
+    
+    <!-- Scripts -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- Virtual Keyboard -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/css/index.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/index.js"></script>
+    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         /* Base styles for all devices */
         html, body {
@@ -39,6 +48,8 @@
         
         .header {
             background: linear-gradient(135deg, #F9A825 0%, #F57F17 50%, #E65100 100%);
+            background-size: 200% 200%; /* For gradient animation */
+            animation: gradient-animation 15s ease infinite; /* Added animation */
             color: white;
             padding: 1rem 1.5rem 2rem;
             display: flex;
@@ -49,6 +60,12 @@
             flex-shrink: 0;
         }
         
+        @keyframes gradient-animation { /* Keyframes for gradient animation */
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         .logo-container {
             position: relative;
             z-index: 10;
@@ -140,8 +157,8 @@
             top: 0;
             z-index: 20;
             flex-shrink: 0;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
         
         .quick-actions::-webkit-scrollbar {
@@ -178,10 +195,13 @@
             color: #F9A825;
         }
         
+        .quick-btn.emergency, .quick-btn.women, .quick-btn.mental-health {
+            color: white;
+        }
+        
         .quick-btn.emergency {
             background: linear-gradient(135deg, #ef4444, #dc2626);
             border-color: #dc2626;
-            color: white;
         }
         
         .quick-btn.emergency:hover {
@@ -192,20 +212,87 @@
         .quick-btn.women {
             background: linear-gradient(135deg, #ec4899, #db2777);
             border-color: #db2777;
-            color: white;
         }
         
         .quick-btn.women:hover {
             background: linear-gradient(135deg, #db2777, #be185d);
             box-shadow: 0 8px 20px rgba(219, 39, 119, 0.4);
         }
+
+        .quick-btn.mental-health {
+            background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+            border-color: #0ea5e9;
+        }
         
+        .quick-btn.mental-health:hover {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.4);
+        }
+
+        .disease-alert {
+            padding: 1rem 2.5rem 1rem 1rem; /* Added padding for the close button */
+            margin: 0 1.5rem;
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border: 2px solid #93c5fd;
+            border-radius: 1rem;
+            position: relative;
+            top: -1rem;
+            z-index: 15;
+            box-shadow: 0 8px 20px rgba(191, 219, 254, 0.5);
+            transition: all 0.5s ease-in-out; /* Added for smooth collapse */
+        }
+
+        .alert-close-btn {
+            position: absolute;
+            top: 50%;
+            right: 0.5rem;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: #1e3a8a;
+            font-size: 1.75rem;
+            line-height: 1;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: 50%;
+            transition: background-color 0.2s ease;
+        }
+
+        .alert-close-btn:hover {
+            background-color: rgba(30, 64, 175, 0.1);
+        }
+
+        .alert-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #1e3a8a;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-content p {
+            margin-bottom: 0.5rem;
+            color: #1e40af;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .alert-content strong {
+            font-weight: 600;
+            color: #1c3d8a;
+        }
+
         .chat-area {
             flex: 1;
             padding: 1.5rem;
             overflow-y: auto;
             background: linear-gradient(180deg, #fefffe 0%, #f9fffe 100%);
             position: relative;
+            transition: padding-bottom 0.4s ease; /* For keyboard */
+        }
+
+        .chat-area-with-keyboard {
+            padding-bottom: 280px; /* Adjust based on keyboard height */
         }
         
         .chat-area::-webkit-scrollbar {
@@ -306,7 +393,7 @@
             flex-shrink: 0;
         }
         
-        .voice-btn, .send-btn {
+        .voice-btn, .send-btn, .keyboard-btn {
             width: 48px;
             height: 48px;
             border-radius: 50%;
@@ -317,6 +404,15 @@
             position: relative;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
             flex-shrink: 0;
+        }
+
+        .keyboard-btn {
+             background: linear-gradient(135deg, #60a5fa, #3b82f6);
+             color: white;
+        }
+
+        .keyboard-btn.active {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
         }
         
         .voice-btn {
@@ -393,6 +489,16 @@
             font-weight: 500;
             line-height: 1.7;
         }
+
+        .voice-tooltip {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .voice-tooltip.hidden {
+            opacity: 0;
+            transform: translateY(5px);
+            pointer-events: none;
+        }
         
         /* Focus indicators for keyboard navigation */
         *:focus {
@@ -425,13 +531,56 @@
             transform: rotate(180deg);
         }
 
-        /* Medium screens (tablets) */
+        /* --- Virtual Keyboard Styles --- */
+        .keyboard-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #e5e7eb;
+            z-index: 100;
+            transform: translateY(100%);
+            transition: transform 0.4s ease-in-out;
+            padding: 0.5rem;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+        }
+
+        .keyboard-container.visible {
+            transform: translateY(0);
+        }
+
+        .simple-keyboard {
+            border-radius: 0.5rem;
+        }
+
+        .simple-keyboard.hg-theme-default {
+            background-color: transparent;
+            border: none;
+        }
+
+        .simple-keyboard.hg-theme-default .hg-button {
+            background: white;
+            border-bottom: 2px solid #d1d5db;
+            color: #1f2937;
+            font-weight: 500;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: background 0.2s ease, transform 0.1s ease;
+        }
+        .simple-keyboard.hg-theme-default .hg-button:active {
+            transform: scale(0.95);
+        }
+
+        .simple-keyboard.hg-theme-default .hg-button.hg-function {
+            background: #d1d5db;
+        }
+
+        /* Responsive Design */
         @media (min-width: 640px) {
             body {
                 padding: 1.5rem;
             }
             .chat-container {
-                max-width: 42rem; /* Optimized for tablets */
+                max-width: 42rem;
                 height: 90vh;
                 max-height: 850px;
                 border-radius: 1.5rem;
@@ -442,7 +591,7 @@
                 padding: 1rem 1.5rem;
                 gap: 1rem;
             }
-            .voice-btn, .send-btn {
+            .voice-btn, .send-btn, .keyboard-btn {
                 width: 52px;
                 height: 52px;
             }
@@ -451,10 +600,9 @@
             }
         }
 
-        /* Large screens (desktops) */
         @media (min-width: 1024px) {
             .chat-container {
-                max-width: 48rem; /* Wider for desktops */
+                max-width: 48rem;
             }
             .message-input {
                 font-size: 1.1rem;
@@ -464,9 +612,6 @@
     </style>
 </head>
 <body>
-    <!-- Connection Indicator -->
-    <div class="connection-indicator" title="Connected" style="background: #F9A825; animation: connectionPulse 2s infinite;"></div>
-    
     <div class="chat-container">
         <!-- Medical Disclaimer Banner -->
         <div class="disclaimer-banner" id="disclaimer-banner">
@@ -502,26 +647,30 @@
             </button>
         </header>
 
+        <!-- Disease Alert Section -->
+        <div id="disease-alert" class="disease-alert collapsible">
+            <div class="alert-header">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <h3 id="disease-alert-title" class="font-bold"></h3>
+            </div>
+            <div id="disease-alert-content" class="alert-content">
+                <!-- Content will be inserted by script -->
+            </div>
+            <button id="close-alert-btn" title="Dismiss Alert" class="alert-close-btn">&times;</button>
+        </div>
+
         <!-- Quick Actions -->
         <div id="quick-actions" class="quick-actions collapsible">
-            <button id="quick-btn-fever" class="quick-btn">
-                <!-- content from script -->
-            </button>
-            <button id="quick-btn-cough" class="quick-btn">
-                <!-- content from script -->
-            </button>
-            <button id="quick-btn-vaccine" class="quick-btn">
-                 <!-- content from script -->
-            </button>
-            <button id="quick-btn-stomach" class="quick-btn">
-                 <!-- content from script -->
-            </button>
-            <button id="quick-btn-emergency" class="quick-btn emergency">
-                 <!-- content from script -->
-            </button>
-            <button id="quick-btn-women" class="quick-btn women">
-                 <!-- content from script -->
-            </button>
+            <button id="quick-btn-fever" class="quick-btn"></button>
+            <button id="quick-btn-cough" class="quick-btn"></button>
+            <button id="quick-btn-vaccine" class="quick-btn"></button>
+            <button id="quick-btn-stomach" class="quick-btn"></button>
+            <button id="quick-btn-diet" class="quick-btn"></button>
+            <button id="quick-btn-mental-health" class="quick-btn mental-health"></button>
+            <button id="quick-btn-women" class="quick-btn women"></button>
+            <button id="quick-btn-emergency" class="quick-btn emergency"></button>
         </div>
 
         <!-- Chat Area -->
@@ -547,6 +696,15 @@
                 <button id="close-tooltip" class="ml-2 font-bold text-lg">&times;</button>
             </div>
             
+            <button id="keyboardBtn" class="keyboard-btn" title="Toggle Keyboard">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="7" y1="7" x2="7" y2="7"></line><line x1="12" y1="7" x2="12" y2="7"></line><line x1="17" y1="7" x2="17" y2="7"></line>
+                    <line x1="7" y1="12" x2="7" y2="12"></line><line x1="12" y1="12" x2="12" y2="12"></line><line x1="17" y1="12" x2="17" y2="12"></line>
+                    <line x1="7" y1="17" x2="12" y2="17"></line>
+                </svg>
+            </button>
+
             <!-- Voice Button -->
             <button id="voiceBtn" class="voice-btn" title="Voice Input">
                 <svg id="mic-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -564,6 +722,11 @@
                 </svg>
             </button>
         </footer>
+    </div>
+    
+    <!-- Virtual Keyboard Container -->
+    <div id="keyboard-container" class="keyboard-container">
+        <div class="simple-keyboard"></div>
     </div>
     
     <script>
@@ -587,6 +750,8 @@
         const messageInput = document.getElementById('messageInput');
         const sendBtn = document.getElementById('sendBtn');
         const voiceBtn = document.getElementById('voiceBtn');
+        const keyboardBtn = document.getElementById('keyboardBtn');
+        const keyboardContainer = document.getElementById('keyboard-container');
         const typingIndicator = document.getElementById('typingIndicator');
         const initialMessageContainer = document.getElementById('initialMessageContainer');
         const voiceTooltip = document.getElementById('voice-tooltip');
@@ -597,7 +762,7 @@
         
         let currentLanguage = 'hi'; // Default language
 
-        // --- Comprehensive Translations Object ---
+        // --- Comprehensive Translations Object (Bug with duplicates fixed) ---
         const translations = {
             en: {
                 disclaimer: "⚠️ Important: This is for assistance only. Consult a doctor for serious issues.",
@@ -611,14 +776,18 @@
                 quickBtnCough: "Cough",
                 quickBtnVaccine: "Vaccine",
                 quickBtnStomach: "Stomach",
-                quickBtnEmergency: "Emergency",
+                quickBtnDiet: "Diet Plan",
+                quickBtnMentalHealth: "Mental Health",
                 quickBtnWomen: "Women Health",
+                quickBtnEmergency: "Emergency",
                 queryFever: "What are the symptoms of a fever?",
                 queryCough: "How to treat a cough?",
                 queryVaccine: "About child vaccinations",
                 queryStomach: "Home remedies for stomach ache",
+                queryDiet: "General advice for a healthy diet",
+                queryMentalHealth: "How to improve mental well-being?",
+                queryWomen: "Common women's health issues",
                 queryEmergency: "I need emergency help",
-                queryWomen: "Women's health issues",
                 helpTitle: "<span>📚</span> How can I help you?",
                 helpList: `• Know disease symptoms<br>• Get home remedies<br>• Learn about vaccination`,
                 initialBotGreeting: "🙏 Hello! I'm Sushruta, your AI Health Assistant!",
@@ -626,7 +795,12 @@
                 typingText: "Sushruta is thinking...",
                 inputPlaceholder: "Ask your question...",
                 tooltipText: "🎤 Tap mic to speak",
-                emergencyResponse: `🚨 **This sounds serious. Please seek immediate medical help.**<br><br>Call the National Emergency Number: <b>112</b><br>Or call for an Ambulance: <b>108</b>`
+                emergencyResponse: `🚨 **This sounds serious. Please seek immediate medical help.**<br><br>Call the National Emergency Number: <b>112</b><br>Or call for an Ambulance: <b>108</b>`,
+                diseaseAlertTitle: "Health Alerts for Your Area",
+                diseaseAlertDengueTitle: "Dengue Fever Cases Rising",
+                diseaseAlertDengueInfo: "Prevent mosquito breeding by keeping surroundings clean and avoiding water stagnation.",
+                diseaseAlertViralTitle: "Seasonal Viral Fever",
+                diseaseAlertViralInfo: "Boost immunity with a healthy diet and stay hydrated. Consult a doctor if fever persists."
             },
             hi: {
                 disclaimer: "⚠️ महत्वपूर्ण: यह केवल सहायता के लिए है। गंभीर समस्या के लिए डॉक्टर से मिलें।",
@@ -640,14 +814,18 @@
                 quickBtnCough: "खांसी",
                 quickBtnVaccine: "टीका",
                 quickBtnStomach: "पेट दर्द",
-                quickBtnEmergency: "आपातकालीन",
+                quickBtnDiet: "आहार योजना",
+                quickBtnMentalHealth: "मानसिक स्वास्थ्य",
                 quickBtnWomen: "महिला स्वास्थ्य",
+                quickBtnEmergency: "आपातकालीन",
                 queryFever: "बुखार के लक्षण क्या हैं?",
                 queryCough: "खांसी का इलाज कैसे करें?",
                 queryVaccine: "बच्चों का टीकाकरण",
                 queryStomach: "पेट दर्द का घरेलू इलाज",
-                queryEmergency: "आपातकालीन मदद चाहिए",
+                queryDiet: "स्वस्थ आहार के लिए सामान्य सलाह",
+                queryMentalHealth: "मानसिक स्वास्थ्य कैसे सुधारें?",
                 queryWomen: "महिलाओं की स्वास्थ्य समस्या",
+                queryEmergency: "आपातकालीन मदद चाहिए",
                 helpTitle: "<span>📚</span> मैं आपकी कैसे मदद कर सकता हूं?",
                 helpList: `• बीमारी के लक्षण जानने के लिए<br>• घरेलू उपचार की जानकारी के लिए<br>• टीकाकरण की जानकारी के लिए`,
                 initialBotGreeting: "🙏 नमस्ते! मैं सुश्रुत हूं, आपका AI स्वास्थ्य सहायक!",
@@ -655,7 +833,12 @@
                 typingText: "सुश्रुत सोच रहा है...",
                 inputPlaceholder: "अपना सवाल पूछें...",
                 tooltipText: "🎤 माइक दबाकर बोलें",
-                emergencyResponse: `🚨 **यह गंभीर लग रहा है। कृपया तत्काल चिकित्सा सहायता लें।**<br><br>राष्ट्रीय आपातकालीन नंबर पर कॉल करें: <b>112</b><br>या एम्बुलेंस के लिए कॉल करें: <b>108</b>`
+                emergencyResponse: `🚨 **यह गंभीर लग रहा है। कृपया तत्काल चिकित्सा सहायता लें।**<br><br>राष्ट्रीय आपातकालीन नंबर पर कॉल करें: <b>112</b><br>या एम्बुलेंस के लिए कॉल करें: <b>108</b>`,
+                diseaseAlertTitle: "आपके क्षेत्र के लिए स्वास्थ्य अलर्ट",
+                diseaseAlertDengueTitle: "डेंगू बुखार के मामले बढ़ रहे हैं",
+                diseaseAlertDengueInfo: "आस-पास साफ-सफाई रखकर और पानी जमा होने से रोककर मच्छरों के प्रजनन को रोकें।",
+                diseaseAlertViralTitle: "मौसमी वायरल बुखार",
+                diseaseAlertViralInfo: "स्वस्थ आहार से रोग प्रतिरोधक क्षमता बढ़ाएं और हाइड्रेटेड रहें। बुखार बना रहने पर डॉक्टर से सलाह लें।"
             },
             bn: {
                 disclaimer: "⚠️ গুরুত্বপূর্ণ: এটি শুধুমাত্র সহায়তার জন্য। গুরুতর সমস্যার জন্য ডাক্তারের সাথে পরামর্শ করুন।",
@@ -669,14 +852,18 @@
                 quickBtnCough: "কাশি",
                 quickBtnVaccine: "টিকা",
                 quickBtnStomach: "পেট ব্যথা",
-                quickBtnEmergency: "জরুরী",
+                quickBtnDiet: "ডায়েট প্ল্যান",
+                quickBtnMentalHealth: "মানসিক স্বাস্থ্য",
                 quickBtnWomen: "মহিলাদের স্বাস্থ্য",
+                quickBtnEmergency: "জরুরী",
                 queryFever: "জ্বরের লক্ষণ কি?",
                 queryCough: "কাশির চিকিৎসা কিভাবে করবেন?",
                 queryVaccine: "শিশুদের টিকা সম্পর্কে",
                 queryStomach: "পেট ব্যথার ঘরোয়া প্রতিকার",
-                queryEmergency: "জরুরী সাহায্য প্রয়োজন",
+                queryDiet: "স্বাস্থ্যকর খাবারের জন্য সাধারণ পরামর্শ",
+                queryMentalHealth: "মানসিক সুস্থতা কীভাবে উন্নত করা যায়?",
                 queryWomen: "মহিলাদের স্বাস্থ্য সমস্যা",
+                queryEmergency: "জরুরী সাহায্য প্রয়োজন",
                 helpTitle: "<span>📚</span> আমি কিভাবে আপনাকে সাহায্য করতে পারি?",
                 helpList: `• রোগের লক্ষণ জানুন<br>• ঘরোয়া প্রতিকার পান<br>• টিকা সম্পর্কে জানুন`,
                 initialBotGreeting: "🙏 নমস্কার! আমি সুশ্রুত, আপনার এআই স্বাস্থ্য সহকারী!",
@@ -684,7 +871,12 @@
                 typingText: "সুশ্রুত ভাবছে...",
                 inputPlaceholder: "আপনার প্রশ্ন জিজ্ঞাসা করুন...",
                 tooltipText: "🎤 কথা বলতে মাইক ট্যাপ করুন",
-                emergencyResponse: `🚨 **এটি গুরুতর মনে হচ্ছে। অনুগ্রহ করে অবিলম্বে চিকিৎসা সহায়তা নিন।**<br><br>জাতীয় জরুরি নম্বর এ কল করুন: <b>112</b><br>অথবা অ্যাম্বুলেন্সের জন্য কল করুন: <b>108</b>`
+                emergencyResponse: `🚨 **এটি গুরুতর মনে হচ্ছে। অনুগ্রহ করে অবিলম্বে চিকিৎসা সহায়তা নিন।**<br><br>জাতীয় জরুরি নম্বর এ কল করুন: <b>112</b><br>অথবা অ্যাম্বুলেন্সের জন্য কল করুন: <b>108</b>`,
+                diseaseAlertTitle: "আপনার এলাকার জন্য স্বাস্থ্য সতর্কতা",
+                diseaseAlertDengueTitle: "ডেঙ্গু জ্বরের ঘটনা বাড়ছে",
+                diseaseAlertDengueInfo: "পরিবেশ পরিষ্কার রেখে এবং জল জমতে না দিয়ে মশার বংশবৃদ্ধি রোধ করুন।",
+                diseaseAlertViralTitle: "মৌসুমী ভাইরাল জ্বর",
+                diseaseAlertViralInfo: "স্বাস্থ্যকর খাবারের মাধ্যমে রোগ প্রতিরোধ ক্ষমতা বাড়ান এবং হাইড্রেটেড থাকুন। জ্বর থাকলে ডাক্তারের সাথে পরামর্শ করুন।"
             },
             ta: {
                 disclaimer: "⚠️ முக்கியம்: இது உதவிக்கு மட்டுமே. গুরুতর பிரச்சினைகளுக்கு மருத்துவரை அணுகவும்.",
@@ -698,80 +890,31 @@
                 quickBtnCough: "இருமல்",
                 quickBtnVaccine: "தடுப்பூசி",
                 quickBtnStomach: "வயிற்று வலி",
-                quickBtnEmergency: "அவசரம்",
+                quickBtnDiet: "உணவு திட்டம்",
+                quickBtnMentalHealth: "மனநலம்",
                 quickBtnWomen: "பெண்கள் நலம்",
+                quickBtnEmergency: "அவசரம்",
                 queryFever: "காய்ச்சலின் அறிகுறிகள் என்ன?",
                 queryCough: "இருமல் குணப்படுத்துவது எப்படி?",
                 queryVaccine: "குழந்தை தடுப்பூசிகள் பற்றி",
                 queryStomach: "வயிற்று வலிக்கான வீட்டு வைத்தியம்",
-                queryEmergency: "எனக்கு அவசர உதவி தேவை",
+                queryDiet: "ஆரோக்கியமான உணவுக்கான பொதுவான ஆலோசனை",
+                queryMentalHealth: "மன நலத்தை எவ்வாறு மேம்படுத்துவது?",
                 queryWomen: "பெண்களின் சுகாதார பிரச்சினைகள்",
+                queryEmergency: "எனக்கு அவசர உதவி தேவை",
                 helpTitle: "<span>📚</span> நான் உங்களுக்கு எப்படி உதவ முடியும்?",
                 helpList: `• நோய் அறிகுறிகளை அறியுங்கள்<br>• வீட்டு வைத்தியம் பெறுங்கள்<br>• தடுப்பூசி பற்றி அறியுங்கள்`,
                 initialBotGreeting: "🙏 வணக்கம்! நான் சுஷ்ருதா, உங்கள் AI சுகாதார உதவியாளர்!",
-                initialBotInstruction: "சுகாதார பிரச்சினைகளுக்கு நான் உதவ முடியும். மேலே உள்ள பொத்தான்களைப் பயன்படுத்தவும் அல்லது உங்கள் கேள்வியை தட்டச்சு செய்யவும்.",
-                typingText: "सुश्रुत सोच रहा है...",
-                inputPlaceholder: "अपना सवाल पूछें...",
-                tooltipText: "🎤 माइक दबाकर बोलें",
-                emergencyResponse: `🚨 **यह गंभीर लग रहा है। कृपया तत्काल चिकित्सा सहायता लें।**<br><br>राष्ट्रीय आपातकालीन नंबर पर कॉल करें: <b>112</b><br>या एम्बुलेंस के लिए कॉल करें: <b>108</b>`
-            },
-            bn: {
-                disclaimer: "⚠️ গুরুত্বপূর্ণ: এটি শুধুমাত্র সহায়তার জন্য। গুরুতর সমস্যার জন্য ডাক্তারের সাথে পরামর্শ করুন।",
-                mainTitle: "সুশ্রুত",
-                subTitle: "আপনার স্বাস্থ্য সহকারী",
-                statFreeValue: "বিনামূল্যে",
-                statFreeLabel: "পরিষেবা",
-                stat247Value: "২৪/৭",
-                stat247Label: "উপলব্ধ",
-                quickBtnFever: "জ্বর",
-                quickBtnCough: "কাশি",
-                quickBtnVaccine: "টিকা",
-                quickBtnStomach: "পেট ব্যথা",
-                quickBtnEmergency: "জরুরী",
-                quickBtnWomen: "মহিলাদের স্বাস্থ্য",
-                queryFever: "জ্বরের লক্ষণ কি?",
-                queryCough: "কাশির চিকিৎসা কিভাবে করবেন?",
-                queryVaccine: "শিশুদের টিকা সম্পর্কে",
-                queryStomach: "পেট ব্যথার ঘরোয়া প্রতিকার",
-                queryEmergency: "জরুরী সাহায্য প্রয়োজন",
-                queryWomen: "মহিলাদের স্বাস্থ্য সমস্যা",
-                helpTitle: "<span>📚</span> আমি কিভাবে আপনাকে সাহায্য করতে পারি?",
-                helpList: `• রোগের লক্ষণ জানুন<br>• ঘরোয়া প্রতিকার পান<br>• টিকা সম্পর্কে জানুন`,
-                initialBotGreeting: "🙏 নমস্কার! আমি সুশ্রুত, আপনার এআই স্বাস্থ্য সহকারী!",
-                initialBotInstruction: "আমি স্বাস্থ্য সমস্যায় সাহায্য করতে পারি। উপরের বোতামগুলি ব্যবহার করুন বা আপনার প্রশ্ন টাইপ করুন।",
-                typingText: "সুশ্রুত ভাবছে...",
-                inputPlaceholder: "আপনার প্রশ্ন জিজ্ঞাসা করুন...",
-                tooltipText: "🎤 কথা বলতে মাইক ট্যাপ করুন",
-                emergencyResponse: `🚨 **এটি গুরুতর মনে হচ্ছে। অনুগ্রহ করে অবিলম্বে চিকিৎসা সহায়তা নিন।**<br><br>জাতীয় জরুরি নম্বর এ কল করুন: <b>112</b><br>অথবা অ্যাম্বুলেন্সের জন্য কল করুন: <b>108</b>`
-            },
-            ta: {
-                disclaimer: "⚠️ முக்கியம்: இது உதவிக்கு மட்டுமே. গুরুতর பிரச்சினைகளுக்கு மருத்துவரை அணுகவும்.",
-                mainTitle: "சுஷ்ருதா",
-                subTitle: "உங்கள் சுகாதார உதவியாளர்",
-                statFreeValue: "இலவசம்",
-                statFreeLabel: "சேவை",
-                stat247Value: "24/7",
-                stat247Label: "கிடைக்கும்",
-                quickBtnFever: "காய்ச்சல்",
-                quickBtnCough: "இருமல்",
-                quickBtnVaccine: "தடுப்பூசி",
-                quickBtnStomach: "வயிற்று வலி",
-                quickBtnEmergency: "அவசரம்",
-                quickBtnWomen: "பெண்கள் நலம்",
-                queryFever: "காய்ச்சலின் அறிகுறிகள் என்ன?",
-                queryCough: "இருமல் குணப்படுத்துவது எப்படி?",
-                queryVaccine: "குழந்தை தடுப்பூசிகள் பற்றி",
-                queryStomach: "வயிற்று வலிக்கான வீட்டு வைத்தியம்",
-                queryEmergency: "எனக்கு அவசர உதவி தேவை",
-                queryWomen: "பெண்களின் சுகாதார பிரச்சினைகள்",
-                helpTitle: "<span>📚</span> நான் உங்களுக்கு எப்படி உதவ முடியும்?",
-                helpList: `• நோய் அறிகுறிகளை அறியுங்கள்<br>• வீட்டு வைத்தியம் பெறுங்கள்<br>• தடுப்பூசி பற்றி அறியுங்கள்`,
-                initialBotGreeting: "🙏 வணக்கம்! நான் சுஷ்ருதா, உங்கள் AI சுகாதார உதவியாளர்!",
-                initialBotInstruction: "சுகாதார பிரச்சினைகளுக்கு நான் உதவ முடியும். மேலே உள்ள பொத்தான்களைப் பயன்படுத்தவும் அல்லது உங்கள் கேள்வியை தட்டச்சு செய்யவும்.",
+                initialBotInstruction: "சுகாதார பிரச்சினைகளுக்கு நான் உதவ முடியும்। மேலே உள்ள பொத்தான்களைப் பயன்படுத்தவும் அல்லது உங்கள் கேள்வியை தட்டச்சு செய்யவும்।",
                 typingText: "சுஷ்ருதா யோசிக்கிறது...",
                 inputPlaceholder: "உங்கள் கேள்வியைக் கேளுங்கள்...",
                 tooltipText: "🎤 பேச மைக்கைத் தட்டவும்",
-                emergencyResponse: `🚨 **இது தீவிரமாகத் தெரிகிறது. உடனடியாக மருத்துவ உதவியை நாடுங்கள்.**<br><br>தேசிய அவசர எண்ணை அழைக்கவும்: <b>112</b><br>அல்லது ஆம்புலன்ஸை அழைக்கவும்: <b>108</b>`
+                emergencyResponse: `🚨 **இது தீவிரமாகத் தெரிகிறது. உடனடியாக மருத்துவ உதவியை நாடுங்கள்.**<br><br>தேசிய அவசர எண்ணை அழைக்கவும்: <b>112</b><br>அல்லது ஆம்புலன்ஸை அழைக்கவும்: <b>108</b>`,
+                diseaseAlertTitle: "உங்கள் பகுதிக்கான சுகாதார எச்சரிக்கைகள்",
+                diseaseAlertDengueTitle: "டெங்கு காய்ச்சல் ಪ್ರಕರಣங்கள் அதிகரித்து வருகின்றன",
+                diseaseAlertDengueInfo: "சுற்றுப்புறத்தை சுத்தமாக வைத்திருப்பதன் மூலமும், தண்ணீர் தேங்குவதைத் தவிர்ப்பதன் மூலமும் கொசுக்கள் பெருகுவதைத் தடுக்கவும்.",
+                diseaseAlertViralTitle: "பருவகால வைரஸ் காய்ச்சல்",
+                diseaseAlertViralInfo: "ஆரோக்கியமான உணவு மூலம் நோய் எதிர்ப்பு சக்தியை அதிகரித்து, நீரேற்றத்துடன் இருங்கள். காய்ச்சல் தொடர்ந்தால் மருத்துவரை அணுகவும்."
             },
             od: {
                 disclaimer: "⚠️ ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ: ଏହା କେବଳ ସହାୟତା ପାଇଁ। ଗମ୍ଭୀର ସମସ୍ୟା ପାଇଁ ଡାକ୍ତରଙ୍କ ସହିତ ପରାମର୍ଶ କରନ୍ତୁ।",
@@ -785,14 +928,18 @@
                 quickBtnCough: "କାଶ",
                 quickBtnVaccine: "ଟିକା",
                 quickBtnStomach: "ପେଟ ବ୍ୟଥା",
-                quickBtnEmergency: "ଜରୁରୀକାଳୀନ",
+                quickBtnDiet: "ଡାଏଟ୍ ପ୍ଲାନ୍",
+                quickBtnMentalHealth: "ମାନସିକ ସ୍ୱାସ୍ଥ୍ୟ",
                 quickBtnWomen: "ମହିଳା ସ୍ୱାସ୍ଥ୍ୟ",
+                quickBtnEmergency: "ଜରୁରୀକାଳୀନ",
                 queryFever: "ଜ୍ୱରର ଲକ୍ଷଣ କ'ଣ?",
                 queryCough: "କାଶର ଚିକିତ୍ସା କିପରି କରିବେ?",
                 queryVaccine: "ଶିଶୁ ଟୀକାକରଣ ବିଷୟରେ",
                 queryStomach: "ପେଟ ବ୍ୟଥା ପାଇଁ ଘରୋଇ ଉପଚାର",
-                queryEmergency: "ମୋତେ ଜରୁରୀକାଳୀନ ସାହାଯ୍ୟ ଦରକାର",
+                queryDiet: "ଏକ ସୁସ୍ଥ ଖାଦ୍ୟ ପାଇଁ ସାଧାରଣ ପରାମର୍ଶ",
+                queryMentalHealth: "ମାନସିକ ସୁସ୍ଥତା କିପରି ଉନ୍ନତ କରିବେ?",
                 queryWomen: "ମହିଳାଙ୍କ ସ୍ୱାସ୍ଥ୍ୟ ସମସ୍ୟା",
+                queryEmergency: "ମୋତେ ଜରୁରୀକାଳୀନ ସାହାଯ୍ୟ ଦରକାର",
                 helpTitle: "<span>📚</span> ମୁଁ ଆପଣଙ୍କୁ କିପରି ସାହାଯ୍ୟ କରିପାରେ?",
                 helpList: `• ରୋଗର ଲକ୍ଷଣ ଜାଣନ୍ତୁ<br>• ଘରୋଇ ଉପଚାର ପାଆନ୍ତୁ<br>• ଟୀକାକରଣ ବିଷୟରେ ଜାଣନ୍ତୁ`,
                 initialBotGreeting: "🙏 ନମସ୍କାର! ମୁଁ ସୁଶ୍ରୁତ, ଆପଣଙ୍କ AI ସ୍ୱାସ୍ଥ୍ୟ ସହାୟକ!",
@@ -800,7 +947,12 @@
                 typingText: "ସୁଶ୍ରୁତ ଭାବୁଛି...",
                 inputPlaceholder: "ଆପଣଙ୍କ ପ୍ରଶ୍ନ ପଚାରନ୍ତୁ...",
                 tooltipText: "🎤 କହିବା ପାଇଁ ମାଇକ୍ ଟ୍ୟାପ୍ କରନ୍ତୁ",
-                emergencyResponse: `🚨 **ଏହା ଗମ୍ଭୀର ମନେହେଉଛି। ଦୟାକରି ତୁରନ୍ତ ଡାକ୍ତରୀ ସାହାଯ୍ୟ ନିଅନ୍ତୁ।**<br><br>ଜାତୀୟ ଜରୁରୀକାଳୀନ ନମ୍ବରକୁ କଲ୍ କରନ୍ତୁ: <b>112</b><br>କିମ୍ବା ଆମ୍ବୁଲାନ୍ସ ପାଇଁ କଲ୍ କରନ୍ତୁ: <b>108</b>`
+                emergencyResponse: `🚨 **ଏହା ଗମ୍ଭୀର ମନେହେଉଛି। ଦୟାକରି ତୁରନ୍ତ ଡାକ୍ତରୀ ସାହାଯ୍ୟ ନିଅନ୍ତୁ।**<br><br>ଜାତୀୟ ଜରୁରୀକାଳୀନ ନମ୍ବରକୁ କଲ୍ କରନ୍ତୁ: <b>112</b><br>କିମ୍ବା ଆମ୍ବୁଲାନ୍ସ ପାଇଁ କଲ୍ କରନ୍ତୁ: <b>108</b>`,
+                diseaseAlertTitle: "ଆପଣଙ୍କ ଅଞ୍ଚଳ ପାଇଁ ସ୍ୱାସ୍ଥ୍ୟ ସତର୍କତା",
+                diseaseAlertDengueTitle: "ଡେଙ୍ଗୁ ଜ୍ୱର ମାମଲା ବଢୁଛି",
+                diseaseAlertDengueInfo: "ପରିବେଶକୁ ସଫା ରଖି ଏବଂ ପାଣି ଜମିବାକୁ ନ ଦେଇ ମଶାଙ୍କ ବଂଶବୃଦ୍ଧିକୁ ରୋକନ୍ତୁ।",
+                diseaseAlertViralTitle: "ଋତୁକାଳୀନ ଭାଇରାଲ୍ ଜ୍ୱର",
+                diseaseAlertViralInfo: "ଏକ ସୁସ୍ଥ ଖାଦ୍ୟ ସହିତ ରୋଗ ପ୍ରତିରୋଧକ ଶକ୍ତି ବଢାନ୍ତୁ ଏବଂ ହାଇଡ୍ରେଟେଡ୍ ରୁହନ୍ତୁ। ଯଦି ଜ୍ୱର ଲାଗିରହେ ତେବେ ଡାକ୍ତରଙ୍କ ସହିତ ପରାମର୍ଶ କରନ୍ତୁ।"
             }
         };
 
@@ -818,18 +970,29 @@
             document.getElementById('stat-247-label').innerText = t.stat247Label;
 
             // Update Quick Actions
-            document.getElementById('quick-btn-fever').innerHTML = `<span class="icon">🌡️</span><span>${t.quickBtnFever}</span>`;
-            document.getElementById('quick-btn-fever').dataset.query = t.queryFever;
-            document.getElementById('quick-btn-cough').innerHTML = `<span class="icon">😤</span><span>${t.quickBtnCough}</span>`;
-            document.getElementById('quick-btn-cough').dataset.query = t.queryCough;
-            document.getElementById('quick-btn-vaccine').innerHTML = `<span class="icon">💉</span><span>${t.quickBtnVaccine}</span>`;
-            document.getElementById('quick-btn-vaccine').dataset.query = t.queryVaccine;
-            document.getElementById('quick-btn-stomach').innerHTML = `<span class="icon">🤰</span><span>${t.quickBtnStomach}</span>`;
-            document.getElementById('quick-btn-stomach').dataset.query = t.queryStomach;
-            document.getElementById('quick-btn-emergency').innerHTML = `<span class="icon">🚨</span><span>${t.quickBtnEmergency}</span>`;
-            document.getElementById('quick-btn-emergency').dataset.query = t.queryEmergency;
-            document.getElementById('quick-btn-women').innerHTML = `<span class="icon">👩‍⚕️</span><span>${t.quickBtnWomen}</span>`;
-            document.getElementById('quick-btn-women').dataset.query = t.queryWomen;
+            const quickButtons = [
+                { id: 'quick-btn-fever', icon: '🌡️', text: t.quickBtnFever, query: t.queryFever },
+                { id: 'quick-btn-cough', icon: '😤', text: t.quickBtnCough, query: t.queryCough },
+                { id: 'quick-btn-vaccine', icon: '💉', text: t.quickBtnVaccine, query: t.queryVaccine },
+                { id: 'quick-btn-stomach', icon: '🤢', text: t.quickBtnStomach, query: t.queryStomach },
+                { id: 'quick-btn-diet', icon: '🥗', text: t.quickBtnDiet, query: t.queryDiet },
+                { id: 'quick-btn-mental-health', icon: '🧠', text: t.quickBtnMentalHealth, query: t.queryMentalHealth },
+                { id: 'quick-btn-women', icon: '👩‍⚕️', text: t.quickBtnWomen, query: t.queryWomen },
+                { id: 'quick-btn-emergency', icon: '🚨', text: t.quickBtnEmergency, query: t.queryEmergency },
+            ];
+            
+            quickButtons.forEach(btnInfo => {
+                const btnElement = document.getElementById(btnInfo.id);
+                btnElement.innerHTML = `<span class="icon">${btnInfo.icon}</span><span>${btnInfo.text}</span>`;
+                btnElement.dataset.query = btnInfo.query;
+            });
+
+            // Update Disease Alert
+            document.getElementById('disease-alert-title').innerText = t.diseaseAlertTitle;
+            document.getElementById('disease-alert-content').innerHTML = `
+                <p><strong>${t.diseaseAlertDengueTitle}:</strong> ${t.diseaseAlertDengueInfo}</p>
+                <p><strong>${t.diseaseAlertViralTitle}:</strong> ${t.diseaseAlertViralInfo}</p>
+            `;
 
             // Update Initial Message Area
             initialMessageContainer.innerHTML = `
@@ -844,7 +1007,7 @@
 
             // Update other elements
             document.getElementById('typing-text').innerText = t.typingText;
-            document.getElementById('messageInput').placeholder = t.inputPlaceholder;
+            messageInput.placeholder = t.inputPlaceholder;
             document.getElementById('tooltip-text').innerText = t.tooltipText;
         }
 
@@ -852,7 +1015,20 @@
         // --- Event Listeners ---
         window.addEventListener('load', () => {
             updateUIText(currentLanguage); // Set initial language on load
+            initKeyboard(); // Initialize virtual keyboard
         });
+
+        document.getElementById('close-alert-btn').addEventListener('click', () => {
+            const banner = document.getElementById('disease-alert');
+            banner.style.maxHeight = '0';
+            banner.style.paddingTop = '0';
+            banner.style.paddingBottom = '0';
+            banner.style.marginTop = '0';
+            banner.style.marginBottom = '0';
+            banner.style.borderWidth = '0';
+            banner.style.opacity = '0';
+        });
+
         sendBtn.addEventListener('click', sendMessage);
         messageInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
@@ -869,6 +1045,7 @@
         voiceBtn.addEventListener('click', toggleVoiceRecognition);
         closeTooltipBtn.addEventListener('click', () => voiceTooltip.classList.add('hidden'));
         headerToggleBtn.addEventListener('click', () => {
+            document.getElementById('disease-alert').classList.toggle('collapsed');
             quickActions.classList.toggle('collapsed');
             headerToggleIcon.classList.toggle('rotate-180');
         });
@@ -885,13 +1062,16 @@
 
             addMessage(userMessage, 'user');
             messageInput.value = '';
+            if (keyboard) {
+                keyboard.setInput(""); // Clear keyboard input
+            }
             showTypingIndicator(true);
             
             if (isEmergency(userMessage)) {
                 const emergencyResponse = getEmergencyResponse(currentLanguage);
                 setTimeout(() => {
                     showTypingIndicator(false);
-                    addMessage(emergencyResponse, 'bot');
+                    addMessage(marked.parse(emergencyResponse), 'bot');
                 }, 1000);
             } else {
                 callGeminiAPI(userMessage);
@@ -900,20 +1080,24 @@
 
         async function callGeminiAPI(prompt) {
             try {
-                const systemPrompt = `You are Sushruta, an AI health assistant for India. Your primary goal is to provide helpful, safe, and preliminary health information in a calm and reassuring tone. You must respond in the user's selected language (${currentLanguage}).
+                // Enhanced system prompt for better, safer, and more empathetic responses
+                const systemPrompt = `You are Sushruta, an AI health assistant for India. Your primary goal is to provide helpful, safe, and preliminary health information in a calm, empathetic, and reassuring tone. You must respond ONLY in the user's selected language: ${currentLanguage}.
 
                 **CRITICAL SAFETY INSTRUCTIONS:**
-                1.  **Always start your response with a clear disclaimer:** "⚠️ **Disclaimer:** This is for informational purposes only and not a substitute for professional medical advice. Please consult a doctor for any health concerns." (Translate this disclaimer accurately to the user's language).
-                2.  **Never provide a diagnosis.** You can list possible symptoms or causes, but you must never state what condition the user has.
-                3.  **For any serious symptoms (e.g., chest pain, difficulty breathing, severe bleeding, high fever in infants), immediately advise the user to seek emergency medical help.** Provide the national emergency number (112) and ambulance number (108).
-                4.  **Keep information general.** Avoid specific dosages for medications. Recommend consulting a doctor for treatment plans.
-                5.  **Use simple, easy-to-understand language.** Avoid complex medical jargon.
+                1.  **ALWAYS start your response with a clear disclaimer:** "⚠️ **Disclaimer:** This is for informational purposes only and not a substitute for professional medical advice. Please consult a doctor for any health concerns." (Translate this disclaimer accurately to the user's language).
+                2.  **NEVER provide a diagnosis.** You can list possible symptoms or causes, but you must never state what condition the user has. Frame suggestions carefully, e.g., "Some people find relief by..."
+                3.  **FOR ANY SERIOUS SYMPTOMS** (e.g., chest pain, difficulty breathing, severe bleeding, high fever in infants, confusion, sudden weakness), immediately advise the user to seek emergency medical help. Provide the national emergency number (112) and ambulance number (108).
+                4.  **KEEP INFORMATION GENERAL.** Avoid specific dosages for medications. Recommend consulting a doctor or pharmacist for treatment plans and medication advice.
+                5.  **USE SIMPLE LANGUAGE.** Avoid complex medical jargon. Explain concepts clearly and concisely.
 
-                **Content Guidelines:**
-                - Use HTML for formatting (<b>, <ul>, <li>).
-                - Use emojis to make the content more friendly (e.g., 🩺, 🙏, 😊).
-                - Structure your response clearly: Disclaimer, then answer, then recommendations.
-                `;
+                **CONTENT & FORMATTING GUIDELINES:**
+                - **Use Markdown for formatting.** Use headings, bold text, and bulleted lists (\`*\` or \`-\`) to structure information and make it easy to read.
+                - **Use emojis** to make the content more friendly and approachable (e.g., 🩺, 🙏, 😊, 🥗).
+                - **Structure your response clearly:**
+                    1.  Mandatory Disclaimer (Translated).
+                    2.  Empathetic acknowledgment of the user's query.
+                    3.  Clear, structured answer using Markdown.
+                    4.  Actionable, safe recommendations (e.g., "Consider speaking to a doctor," "You might find it helpful to...").`;
 
                 const payload = {
                     contents: [{ parts: [{ text: prompt }] }],
@@ -935,7 +1119,8 @@
                 const result = await response.json();
                 const botResponse = result.candidates?.[0]?.content?.parts?.[0]?.text || "I'm sorry, I couldn't process that. Could you try rephrasing?";
                 
-                addMessage(botResponse, 'bot');
+                // Parse the Markdown response to HTML
+                addMessage(marked.parse(botResponse), 'bot');
 
             } catch (error) {
                 console.error("Error calling Gemini API:", error);
@@ -948,7 +1133,7 @@
         function addMessage(text, sender) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${sender}-message`;
-            messageDiv.innerHTML = text.replace(/\n/g, '<br>'); 
+            messageDiv.innerHTML = text; // Use innerHTML directly as text is now parsed HTML
             chatArea.appendChild(messageDiv);
             chatArea.scrollTop = chatArea.scrollHeight;
         }
@@ -965,7 +1150,13 @@
             document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(`lang-${lang}`).classList.add('active');
             updateUIText(lang);
-            console.log(`Language set to: ${lang}`);
+            // Update keyboard layout
+            if (keyboard) {
+                keyboard.setOptions({
+                    layout: keyboardLayouts[lang],
+                    layoutName: 'default' // Reset to default layout on language change
+                });
+            }
         }
 
         // --- Voice Recognition ---
@@ -1028,9 +1219,9 @@
         function isEmergency(text) {
             const emergencyKeywords = [
                 // English
-                'chest pain', 'heart attack', 'stroke', 'can\'t breathe', 'not breathing', 'severe bleeding', 'unconscious', 'poison', 'suicide', 'emergency',
-                // Hindi
-                'छाती में दर्द', 'दिल का दौरा', 'लकवा', 'सांस नहीं ले पा रहा', 'बेहोश', 'गंभीर रक्तस्राव', 'जहर', 'आत्महत्या', 'आपातकालीन'
+                'chest pain', 'heart attack', 'stroke', 'can\'t breathe', 'not breathing', 'severe bleeding', 'unconscious', 'poison', 'suicide', 'emergency', 'accident', 'seizure',
+                // Hindi (and other regional languages)
+                'छाती में दर्द', 'दिल का दौरा', 'लकवा', 'सांस नहीं ले पा रहा', 'बेहोश', 'गंभीर रक्तस्राव', 'जहर', 'आत्महत्या', 'आपातकालीन', 'दुर्घटना'
             ];
             const lowerText = text.toLowerCase();
             return emergencyKeywords.some(keyword => lowerText.includes(keyword));
@@ -1041,15 +1232,158 @@
             return t.emergencyResponse;
         }
 
-        // Show voice tooltip on first visit (simple version)
+        // Show voice tooltip on first visit
         if (!localStorage.getItem('visitedSushruta')) {
             setTimeout(() => {
                 voiceTooltip.classList.remove('hidden');
             }, 2000);
             localStorage.setItem('visitedSushruta', 'true');
         }
+
+        // --- Virtual Keyboard Logic ---
+        const Keyboard = window.SimpleKeyboard.default;
+        let keyboard;
+        const languageCycle = ['en', 'hi', 'bn', 'ta', 'od'];
+
+        const keyboardLayouts = {
+            en: {
+                'default': [
+                    'q w e r t y u i o p', 'a s d f g h j k l', '{shift} z x c v b n m {backspace}', '{next} {space} {hide} {enter}'
+                ],
+                'shift': [
+                    'Q W E R T Y U I O P', 'A S D F G H J K L', '{shift} Z X C V B N M {backspace}', '{next} {space} {hide} {enter}'
+                ]
+            },
+            hi: {
+                'default': [
+                    'ौ ै ा ी ू ू े ो ् ृ {backspace}',
+                    'त थ द ध न प फ ब भ म',
+                    'य र ल व श ष स ह च छ ज झ',
+                    'क़ ख ग़ ज़ ड़ ढ़ फ़ य़ ॉ ञ',
+                    '{shift} {next} {space} {hide} {enter}'
+                ],
+                'shift': [
+                    'औ ऐ आ ई ऊ ब भ र् ज्ञ ऋ ॐ',
+                    'त् थ् द् ध् न् प् फ् ब् भ् म्',
+                    'य् र् ल् व् श् ष् स् ह् च् छ् ज् झ्',
+                    'ट ठ ड ढ ण क ख ग घ ङ ञ्',
+                    '{shift} {next} {space} {hide} {enter}'
+                ]
+            },
+            bn: {
+                'default': [
+                    'ৌ ৈ া ী ু ূ ে ো ্ ৃ {backspace}',
+                    'ত থ দ ধ ন প ফ ব ভ ম',
+                    'য র ল ব শ ষ স হ চ ছ জ ঝ ঞ',
+                    'ট ঠ ড ঢ ণ ক খ গ ঘ ঙ',
+                    '{shift} {next} {space} {hide} {enter}'
+                ],
+                'shift': [
+                    'ঔ ঐ অ ই উ ঊ ঋ এ ঐ ও ঔ',
+                    'ৎ থ্ দ্ ধ্ ন্ প্ ফ্ ব্ ভ্ ম্',
+                    'য্ র ্ ল্ ব্ শ্ ষ ্ স্ হ্ চ্ ছ্ জ্ ঝ্ ঞ্',
+                    'ট্ ঠ্ ড্ ঢ্ ণ্ ক্ খ্ গ্ ঘ্ ঙ্',
+                    '{shift} {next} {space} {hide} {enter}'
+                ]
+            },
+            ta: {
+                'default': [
+                    'க ச ட த ப ய ர ல வ ழ ள {backspace}', 
+                    'அ ஆ இ ஈ உ ஊ எ ஏ ஐ ஒ ஓ ஔ', 
+                    '் ா ி ீ ு ூ ெ ே ை ொ ோ ௌ ஃ', 
+                    '{shift} {next} {space} {hide} {enter}'
+                ],
+                'shift': [
+                    'ங ஞ ண ந ம ன ற ன', 
+                    'க் ச் ட் த் ப் ய் ர் ல் வ் ழ் ள்', 
+                    'ஜ் ஷ் ஸ் ஹ் ஸ்ரீ {backspace}', 
+                    '{shift} {next} {space} {hide} {enter}'
+                ]
+            },
+             od: {
+                'default': [
+                    'ୌ ୈ ା ୀ ୂ ୄ େ ୋ ୍ ୃ {backspace}',
+                    'ତ ଥ ଦ ଧ ନ ପ ଫ ବ ଭ ମ',
+                    'ଯ ର ଲ ଵ ଶ ଷ ସ ହ ଚ ଛ ଜ ଝ ଞ',
+                    'ଟ ଠ ଡ ଢ ଣ କ ଖ ଗ ଘ ଙ',
+                    '{shift} {next} {space} {hide} {enter}'
+                ],
+                'shift': [
+                    'ଔ ঐ ଆ ଈ ଉ ଊ ଋ ଏ ଓ ଔ',
+                    'ତ୍ ଥ୍ ଦ୍ ଧ୍ ନ ପ୍ ଫ୍ ବ୍ ଭ୍ ମ୍',
+                    'ଯ୍ ର୍ ଲ୍ ଵ୍ ଶ୍ ଷ୍ ସ୍ ହ୍ ଚ୍ ଛ୍ ଜ୍ ଝ୍ ଞ୍',
+                    'ଟ୍ ଠ୍ ଡ୍ ଢ୍ ଣ କ୍ ଖ୍ ଗ୍ ଘ୍ ଙ୍',
+                    '{shift} {next} {space} {hide} {enter}'
+                ]
+            }
+        };
+
+        function initKeyboard() {
+            keyboard = new Keyboard({
+                onChange: input => onKeyboardChange(input),
+                onKeyPress: button => onKeyPress(button),
+                layoutName: "default", // Always start with default layout
+                layout: keyboardLayouts[currentLanguage],
+                display: {
+                    '{next}': '🌐',
+                    '{enter}': 'Send',
+                    '{shift}': 'Shift',
+                    '{space}': ' ',
+                    '{backspace}': '⌫',
+                    '{hide}': 'Done'
+                }
+            });
+        }
+        
+        function onKeyboardChange(input) {
+            messageInput.value = input;
+        }
+
+        function onKeyPress(button) {
+            if (button === "{shift}" || button === "{lock}") handleShift();
+            if (button === "{enter}") sendMessage();
+            if (button === "{next}") handleNextLanguage();
+            if (button === "{hide}") hideKeyboard();
+        }
+
+        function handleShift() {
+            const currentLayout = keyboard.options.layoutName;
+            const newLayoutName = currentLayout === "default" ? "shift" : "default";
+            keyboard.setOptions({
+                layoutName: newLayoutName
+            });
+        }
+
+        function handleNextLanguage() {
+            const currentIndex = languageCycle.indexOf(currentLanguage);
+            const nextIndex = (currentIndex + 1) % languageCycle.length;
+            const nextLang = languageCycle[nextIndex];
+            setLanguage(nextLang);
+        }
+
+        function showKeyboard() {
+            keyboardContainer.classList.add('visible');
+            chatArea.classList.add('chat-area-with-keyboard');
+            keyboardBtn.classList.add('active');
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function hideKeyboard() {
+            keyboardContainer.classList.remove('visible');
+            chatArea.classList.remove('chat-area-with-keyboard');
+            keyboardBtn.classList.remove('active');
+        }
+
+        keyboardBtn.addEventListener('click', () => {
+            const isVisible = keyboardContainer.classList.contains('visible');
+            if (isVisible) {
+                hideKeyboard();
+            } else {
+                showKeyboard();
+            }
+        });
+
     </script>
 </body>
 </html>
-
 
