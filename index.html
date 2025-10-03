@@ -2,1729 +2,1474 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- Removed restrictive CSP to allow Gemini API calls in this environment -->
-    <title>Sushruta - AI Health Assistant</title>
-    
-    <!-- Scripts -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internship & Placement Gateway</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    
-    <!-- Virtual Keyboard -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/css/index.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/index.js"></script>
-    
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        /* Base styles for all devices */
-        html, body {
-            height: 100%;
-            overflow: hidden;
-            -webkit-tap-highlight-color: transparent; /* Disable tap highlight on mobile */
-        }
         body {
-            font-family: 'Inter', 'Noto Sans Devangari', sans-serif;
-            background: linear-gradient(135deg, #F9A825 0%, #F57F17 50%, #E65100 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px; 
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
         }
-        
-        .chat-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(10px);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+        .animated-gradient-text {
+            background: linear-gradient(90deg, #8b5cf6, #d946ef, #ec4899, #f97316);
+            background-size: 250% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-flow 8s ease infinite;
         }
-        
-        .header {
-            background: linear-gradient(135deg, #F9A825 0%, #F57F17 50%, #E65100 100%);
-            background-size: 200% 200%; /* For gradient animation */
-            animation: gradient-animation 15s ease infinite; /* Added animation */
-            color: white;
-            padding: 1rem 1.5rem 2rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            position: relative;
-            flex-shrink: 0;
-        }
-        
-        @keyframes gradient-animation { /* Keyframes for gradient animation */
+        @keyframes gradient-flow {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-
-        .logo-container {
+        .card-hover {
+            transition: all 0.3s ease-in-out;
+        }
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 0 30px rgba(217, 70, 239, 0.3); /* fuchsia glow */
+        }
+        .modal-backdrop {
+            background-color: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+        }
+        .nav-link {
             position: relative;
-            z-index: 10;
+            transition: all 0.3s;
+            padding-bottom: 8px;
+            font-weight: 500;
         }
-
-        .header-content-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; /* Align with the border-b of the header */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #8b5cf6, #ec4899);
+            border-radius: 2px;
+            transition: width 0.3s ease-in-out;
         }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
+        .nav-link.active::after, .nav-link:hover::after {
             width: 100%;
-            max-width: 280px;
-            margin: 0.75rem auto 0;
         }
-        
-        .stat-card {
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 1rem;
-            padding: 0.75rem;
-            text-align: center;
-            backdrop-filter: blur(10px);
+        .nav-link.active {
+            color: #1e293b;
+        }
+        .view-section {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes spin {
+            to { transform: rotate(300deg); }
+        }
+        .loader {
             border: 2px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-        }
-        
-        .stat-card:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateY(-2px);
-        }
-        
-        .lang-selector {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            justify-content: center;
-            margin-bottom: 1rem;
-        }
-        
-        .lang-btn {
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            font-size: 0.8rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-        
-        .lang-btn:hover, .lang-btn.active {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-        }
-        
-        .disclaimer-banner {
-            background: linear-gradient(90deg, #ef4444, #dc2626);
-            color: white;
-            text-align: center;
-            font-size: 0.8rem;
-            padding: 0.75rem 1rem;
-            font-weight: 600;
-            position: relative;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-        
-        .disclaimer-banner::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            animation: shimmer 3s infinite;
-        }
-        
-        .quick-actions {
-            padding: 0.75rem;
-            background: #f8fffe;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 0.75rem;
-            border-bottom: 2px solid #e5e7eb;
-            position: sticky;
-            top: 0;
-            z-index: 20;
-            flex-shrink: 0;
-        }
-        
-        .quick-btn {
-            padding: 0.5rem 0.75rem;
-            border-radius: 1rem;
-            background: white;
-            border: 2px solid #e5e7eb;
-            color: #374151;
-            font-size: 0.8rem;
-            font-weight: 600;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            white-space: nowrap;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            flex-shrink: 0;
-        }
-        
-        .quick-btn .icon {
-            font-size: 1.25rem;
-        }
-        
-        .quick-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(249, 168, 37, 0.2);
-            border-color: #F9A825;
-            color: #F9A825;
-        }
-        
-        .quick-btn.emergency, .quick-btn.women, .quick-btn.mental-health, .quick-btn.nearby {
-            color: white;
-        }
-        
-        .quick-btn.emergency {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            border-color: #dc2626;
-        }
-        
-        .quick-btn.emergency:hover {
-            background: linear-gradient(135deg, #dc2626, #b91c1c);
-            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
-        }
-        
-        .quick-btn.women {
-            background: linear-gradient(135deg, #ec4899, #db2777);
-            border-color: #db2777;
-        }
-        
-        .quick-btn.women:hover {
-            background: linear-gradient(135deg, #db2777, #be185d);
-            box-shadow: 0 8px 20px rgba(219, 39, 119, 0.4);
-        }
-
-        .quick-btn.mental-health {
-            background: linear-gradient(135deg, #38bdf8, #0ea5e9);
-            border-color: #0ea5e9;
-        }
-        
-        .quick-btn.mental-health:hover {
-            background: linear-gradient(135deg, #0ea5e9, #0284c7);
-            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.4);
-        }
-
-        .quick-btn.nearby {
-            background: linear-gradient(135deg, #6366f1, #4f46e5);
-            border-color: #4f46e5;
-        }
-
-        .quick-btn.nearby:hover {
-            background: linear-gradient(135deg, #4f46e5, #4338ca);
-            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
-        }
-
-        .disease-alert {
-            padding: 1rem 2.5rem 1rem 1rem;
-            margin: 0 1.5rem;
-            background: linear-gradient(135deg, #eff6ff, #dbeafe);
-            border: 2px solid #93c5fd;
-            border-radius: 1rem;
-            position: relative;
-            top: -1rem;
-            z-index: 15;
-            box-shadow: 0 8px 20px rgba(191, 219, 254, 0.5);
-            transition: all 0.5s ease-in-out;
-        }
-
-        .alert-close-btn {
-            position: absolute;
-            top: 50%;
-            right: 0.5rem;
-            transform: translateY(-50%);
-            background: transparent;
-            border: none;
-            color: #1e3a8a;
-            font-size: 1.75rem;
-            line-height: 1;
-            cursor: pointer;
-            padding: 0.25rem 0.5rem;
+            border-left-color: #ffffff;
             border-radius: 50%;
-            transition: background-color 0.2s ease;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
         }
-
-        .alert-close-btn:hover {
-            background-color: rgba(30, 64, 175, 0.1);
+        .carousel-container {
+            scroll-behavior: smooth;
+            scrollbar-width: none;
         }
-
-        .alert-header {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #1e3a8a;
-            margin-bottom: 0.5rem;
+        .carousel-container::-webkit-scrollbar {
+            display: none;
         }
-
-        .alert-content p {
-            margin-bottom: 0.5rem;
-            color: #1e40af;
-            font-size: 0.9rem;
-            line-height: 1.5;
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
         }
-
-        .alert-content strong {
-            font-weight: 600;
-            color: #1c3d8a;
+        .listening-indicator {
+            animation: pulse 1.5s infinite;
         }
-
-        .chat-area {
-            flex: 1;
-            padding: 1.5rem;
-            overflow-y: auto;
-            background: linear-gradient(180deg, #fefffe 0%, #f9fffe 100%);
-            position: relative;
-            transition: padding-bottom 0.4s ease; /* For keyboard */
+        .sort-tab.active {
+            color: #1e293b;
+            border-bottom-width: 2px;
+            border-color: #1e293b;
         }
-
-        .chat-area-with-keyboard {
-            padding-bottom: 280px; /* Adjust based on keyboard height */
-        }
-        
-        .chat-area::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        .chat-area::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        
-        .chat-area::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #F9A825, #F57F17);
-            border-radius: 4px;
-        }
-        
-        .message {
-            margin-bottom: 1.5rem;
-            animation: messageSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 1rem;
-            line-height: 1.6;
-        }
-        
-        @keyframes messageSlideIn {
-            from { opacity: 0; transform: translateY(20px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        
-        .user-message, .bot-message {
-            max-width: 85%;
-            padding: 1rem 1.25rem;
-        }
-
-        .user-message {
-            background: linear-gradient(135deg, #F9A825 0%, #F57F17 100%);
-            color: white;
-            margin-left: auto;
-            border-radius: 1.5rem 1.5rem 0.5rem 1.5rem;
-            box-shadow: 0 4px 16px rgba(249, 168, 37, 0.3);
-        }
-        
-        .bot-message {
-            background: white;
-            color: #1f2937;
-            border: 2px solid #e5e7eb;
-            border-radius: 1.5rem 1.5rem 1.5rem 0.5rem;
-            position: relative;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-        }
-        
-        .bot-message::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(180deg, #F9A825, #F57F17);
-            border-radius: 3px 0 0 3px;
-        }
-        
-        .typing-indicator {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 1rem;
-            background: white;
-            border-radius: 1.5rem;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-            width: fit-content;
-            margin-bottom: 1.5rem;
-            border: 2px solid #e5e7eb;
-        }
-        
-        .typing-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #F9A825, #F57F17);
-            animation: typingBounce 1.4s infinite ease-in-out;
-        }
-        
-        .typing-dot:nth-child(2) { animation-delay: 0.16s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.32s; }
-        
-        @keyframes typingBounce {
-            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
-            40% { transform: scale(1); opacity: 1; }
-        }
-        
-        .input-area {
-            background: #f8fffe;
-            padding: 1rem 1rem;
-            border-top: 2px solid #e5e7eb;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            position: relative;
-            flex-shrink: 0;
-        }
-        
-        .voice-btn, .send-btn, .keyboard-btn {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-            flex-shrink: 0;
-        }
-
-        .keyboard-btn {
-             background: linear-gradient(135deg, #60a5fa, #3b82f6);
-             color: white;
-        }
-
-        .keyboard-btn.active {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-        }
-        
-        .voice-btn {
-            background: linear-gradient(135deg, #fbbf24, #f97316);
-            color: white;
-        }
-        
-        .voice-btn:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 24px rgba(251, 191, 36, 0.4);
-        }
-        
-        .voice-btn.listening {
-            animation: voicePulse 1.5s infinite;
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-        }
-        
-        @keyframes voicePulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3); }
-            50% { transform: scale(1.1); box-shadow: 0 8px 30px rgba(239, 68, 68, 0.5); }
-        }
-        
-        .message-input {
-            flex: 1;
-            padding: 0.8rem 1.25rem;
-            background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 1.75rem;
-            font-size: 16px; /* Prevents iOS zoom */
-            transition: all 0.3s ease;
-            outline: none;
-            font-weight: 500;
-        }
-        
-        .message-input:focus {
-            border-color: #F9A825;
-            box-shadow: 0 0 0 4px rgba(249, 168, 37, 0.1);
-        }
-        
-        .send-btn {
-            background: linear-gradient(135deg, #F9A825, #F57F17);
-            color: white;
-        }
-        
-        .send-btn:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 24px rgba(249, 168, 37, 0.4);
-        }
-        
-        .send-btn:active {
-            transform: translateY(0) scale(0.95);
-        }
-        
-        .help-section {
-            background: linear-gradient(135deg, #ebf4ff, #dbeafe);
-            border-radius: 1.5rem;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            border: 2px solid #bfdbfe;
-        }
-        
-        .help-title {
-            color: #1e3a8a;
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .help-list {
-            color: #1e3a8a;
-            font-weight: 500;
-            line-height: 1.7;
-        }
-
-        .voice-tooltip {
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-
-        .voice-tooltip.hidden {
-            opacity: 0;
-            transform: translateY(5px);
-            pointer-events: none;
-        }
-        
-        /* Focus indicators for keyboard navigation */
-        *:focus {
-            outline: 3px solid #F9A825;
-            outline-offset: 2px;
-        }
-        
-        .lang-btn:focus {
-            outline-color: white;
-        }
-
-        /* Collapsible section styles */
-        .collapsible {
-            max-height: 500px;
-            transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out, padding 0.5s, margin 0.5s;
-            overflow: hidden;
-        }
-
-        .collapsed {
-            max-height: 0;
-            opacity: 0;
-            padding-top: 0 !important;
-            padding-bottom: 0 !important;
-            margin-top: 0 !important;
-            margin-bottom: 0 !important;
-            border-width: 0 !important;
-        }
-
-        #header-toggle-icon.rotate-180 {
-            transform: rotate(180deg);
-        }
-
-        /* --- Virtual Keyboard Styles --- */
-        .keyboard-container {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: #e5e7eb;
-            z-index: 100;
-            transform: translateY(100%);
-            transition: transform 0.4s ease-in-out;
-            padding: 0.5rem;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
-        }
-
-        .keyboard-container.visible {
-            transform: translateY(0);
-        }
-
-        .simple-keyboard {
-            border-radius: 0.5rem;
-        }
-
-        .simple-keyboard.hg-theme-default {
-            background-color: transparent;
-            border: none;
-        }
-
-        .simple-keyboard.hg-theme-default .hg-button {
-            background: white;
-            border-bottom: 2px solid #d1d5db;
-            color: #1f2937;
-            font-weight: 500;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            transition: background 0.2s ease, transform 0.1s ease;
-        }
-        .simple-keyboard.hg-theme-default .hg-button:active {
-            transform: scale(0.95);
-        }
-
-        .simple-keyboard.hg-theme-default .hg-button.hg-function {
-            background: #d1d5db;
-        }
-
-        /* Responsive Design */
-        @media (min-width: 640px) {
-            body {
-                padding: 1.5rem;
-            }
-            .chat-container {
-                max-width: 42rem;
-                height: 90vh;
-                max-height: 850px;
-                border-radius: 1.5rem;
-                box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.3);
-                border: 2px solid rgba(255, 255, 255, 0.2);
-            }
-            .input-area {
-                padding: 1rem 1.5rem;
-                gap: 1rem;
-            }
-            .voice-btn, .send-btn, .keyboard-btn {
-                width: 52px;
-                height: 52px;
-            }
-            .message-input {
-                padding: 1rem 1.5rem;
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .chat-container {
-                max-width: 48rem;
-            }
-            .message-input {
-                font-size: 1.1rem;
-            }
-        }
-        
     </style>
 </head>
-<body>
-    <div class="chat-container">
-        <!-- Medical Disclaimer Banner -->
-        <div class="disclaimer-banner" id="disclaimer-banner">
-            <!-- Text will be inserted by script -->
-        </div>
+<body class="bg-gray-50 text-slate-800">
 
-        <!-- Header -->
-        <header class="header">
-            
-            <div class="header-content-wrapper">
-                <!-- Icon removed from here -->
-                <div class="logo-container">
-                    <div class="lang-selector">
-                        <button class="lang-btn active" onclick="setLanguage('hi')" id="lang-hi">हिंदी</button>
-                        <button class="lang-btn" onclick="setLanguage('en')" id="lang-en">English</button>
-                        <button class="lang-btn" onclick="setLanguage('bn')" id="lang-bn">বাংলা</button>
-                        <button class="lang-btn" onclick="setLanguage('ta')" id="lang-ta">தமிழ்</button>
-                        <button class="lang-btn" onclick="setLanguage('od')" id="lang-od">ଓଡ଼ିଆ</button>
-                        <button class="lang-btn" onclick="setLanguage('te')" id="lang-te">తెలుగు</button>
+    <!-- Title and Search Section -->
+    <div class="bg-white pt-8 pb-6 px-6 shadow-sm">
+        <div class="container mx-auto">
+            <h1 class="text-5xl font-extrabold animated-gradient-text text-center mb-6">Prepify</h1>
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="relative w-full">
+                     <input type="text" id="main-search-bar" placeholder="Search for internships, skills, or companies..." class="w-full pl-12 pr-4 py-3 bg-gray-50 border-2 border-slate-200 rounded-full shadow-inner focus:outline-none focus:ring-2 focus:ring-purple-500 text-base">
+                     <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                </div>
+                 <div id="auth-buttons" class="flex items-center space-x-4 md:ml-8">
+                    <button id="login-btn-header" class="font-bold px-6 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:opacity-90 transition-opacity flex-shrink-0">Log In</button>
+                    <button id="signup-btn-header" class="font-bold px-6 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:opacity-90 transition-opacity flex-shrink-0">Sign Up</button>
+                </div>
+                <div id="user-greeting" class="hidden items-center space-x-4 md:ml-8">
+                    <span id="user-name" class="font-bold text-slate-700"></span>
+                    <button id="logout-btn" class="font-bold px-6 py-2 rounded-lg bg-slate-200 text-slate-800 hover:bg-slate-300 transition-colors flex-shrink-0">Log Out</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40">
+        <div class="container mx-auto px-6">
+            <div class="flex justify-center items-center h-16">
+                <nav id="main-nav" class="flex items-center space-x-6 md:space-x-10 text-slate-500 font-medium">
+                    <!-- Nav buttons are injected here by JS -->
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-6">
+
+        <!-- Home View -->
+        <div id="home-view" class="view-section">
+             <div class="relative rounded-lg overflow-hidden h-[450px] mb-16 mt-6">
+                 <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop" class="absolute w-full h-full object-cover" alt="Students collaborating">
+                 <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+                 <div class="absolute inset-0 flex items-center justify-center">
+                     <div class="text-center text-white p-8 bg-black/40 backdrop-blur-sm rounded-lg shadow-lg max-w-2xl mx-4">
+                         <h2 class="text-5xl font-extrabold mb-4 leading-tight">Unlock Your Career Potential</h2>
+                         <p class="text-xl leading-relaxed">Prepify is your launchpad. Sharpen skills with our learning resources, practice with AI interview prep, and land internships that lead to careers.</p>
+                     </div>
+                 </div>
+             </div>
+
+             <div class="py-16">
+                 <div class="relative rounded-lg overflow-hidden h-[500px]">
+                      <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=2070&auto=format&fit=crop" class="absolute w-full h-full object-cover" alt="Team collaborating in a modern office">
+                      <div class="absolute inset-0 bg-black/50"></div>
+                      <div class="absolute inset-0 flex items-center justify-center">
+                          <div class="text-center text-white max-w-3xl mx-4 p-8 bg-black/30 backdrop-blur-sm rounded-lg">
+                              <h3 class="text-4xl font-extrabold mb-6">Your All-in-One Career Toolkit.</h3>
+                              <p class="text-lg mb-6 leading-relaxed">Prepify isn't just a portal; it's a comprehensive ecosystem designed for ambitious students. We bridge the gap between education and employment by providing:</p>
+                              <ul class="list-none space-y-5 text-lg inline-block text-left">
+                                  <li class="flex items-start"><i class="fas fa-book-open text-purple-400 mt-1 mr-4"></i><div><strong>Targeted Learning:</strong> Resources to build the exact skills employers are looking for.</div></li>
+                                  <li class="flex items-start"><i class="fas fa-robot text-pink-400 mt-1 mr-4"></i><div><strong>Realistic Practice:</strong> AI-powered interview simulations that build real confidence.</div></li>
+                                  <li class="flex items-start"><i class="fas fa-briefcase text-orange-400 mt-1 mr-4"></i><div><strong>Career Opportunities:</strong> Curated internships with a high chance of leading to full-time roles.</div></li>
+                              </ul>
+                          </div>
+                      </div>
+                 </div>
+             </div>
+
+            <div class="mb-12">
+                <h3 class="text-3xl font-bold mb-2">A broad selection of opportunities</h3>
+                <p class="text-lg text-slate-500 mb-8">Choose from thousands of internship opportunities with new additions published every month.</p>
+                
+                <div id="sort-tabs" class="flex space-x-8 border-b mb-8">
+                    <button data-sort="popular" class="sort-tab font-bold pb-3 active">Most Popular</button>
+                    <button data-sort="rated" class="sort-tab font-bold pb-3 text-slate-500 hover:text-slate-800">Top Rated</button>
+                    <button data-sort="newest" class="sort-tab font-bold pb-3 text-slate-500 hover:text-slate-800">Newest</button>
+                </div>
+
+                <div class="relative">
+                    <div id="internship-carousel" class="flex overflow-x-auto gap-6 carousel-container pb-4">
+                        <!-- Internship carousel cards will be injected here -->
                     </div>
-                    <div class="flex items-center justify-center gap-3">
-                        <svg class="w-7 h-7" viewBox="0 0 448 512" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M64 0C46.3 0 32 14.3 32 32V224H0V384H32v96c0 17.7 14.3 32 32 32H352c17.7 0 32-14.3 32-32V384H416V224H384V32c0-17.7-14.3-32-32-32H64zM208 288h-32c-8.8 0-16-7.2-16-16s7.2-16 16-16h32V224c0-8.8 7.2-16 16-16s16 7.2 16 16v32h32c8.8 0 16 7.2 16 16s-7.2 16-16 16h-32v32c0 8.8-7.2 16-16 16s-16-7.2-16-16V288z"/>
-                        </svg>
-                        <h1 id="main-title" class="text-2xl font-bold tracking-tight" style="font-family: 'Inter', sans-serif;"></h1>
-                        <svg class="w-7 h-7" viewBox="0 0 448 512" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M64 0C46.3 0 32 14.3 32 32V224H0V384H32v96c0 17.7 14.3 32 32 32H352c17.7 0 32-14.3 32-32V384H416V224H384V32c0-17.7-14.3-32-32-32H64zM208 288h-32c-8.8 0-16-7.2-16-16s7.2-16 16-16h32V224c0-8.8 7.2-16 16-16s16 7.2 16 16v32h32c8.8 0 16 7.2 16 16s-7.2 16-16 16h-32v32c0 8.8-7.2 16-16 16s-16-7.2-16-16V288z"/>
-                        </svg>
+                    <button id="internship-prev" class="absolute top-1/2 -left-5 -translate-y-1/2 bg-white rounded-full shadow-lg w-12 h-12 text-2xl z-10 hover:bg-gray-200 hidden md:flex items-center justify-center"><i class="fas fa-chevron-left"></i></button>
+                    <button id="internship-next" class="absolute top-1/2 -right-5 -translate-y-1/2 bg-white rounded-full shadow-lg w-12 h-12 text-2xl z-10 hover:bg-gray-200 hidden md:flex items-center justify-center"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dashboard View -->
+        <div id="dashboard-view" class="view-section hidden">
+            <h2 class="text-4xl font-extrabold text-slate-900 mb-8">My Dashboard</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 space-y-8">
+                    <!-- Saved Internships -->
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-800 mb-4">Saved Internships</h3>
+                        <div id="saved-internships-container" class="space-y-4"></div>
                     </div>
-                    <p id="sub-title" class="text-base text-orange-100 font-semibold mt-1"></p>
-                    <div class="stats-grid">
-                        <!-- Removed the old stats grid items -->
+                     <!-- Application History -->
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-800 mb-4">Application History</h3>
+                        <div id="application-history-container" class="bg-white rounded-lg shadow-md p-4"></div>
+                    </div>
+                </div>
+                <div class="space-y-8">
+                     <!-- My Badges -->
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-800 mb-4">My Badges</h3>
+                        <div id="my-badges-container" class="flex flex-wrap gap-4"></div>
+                    </div>
+                     <!-- AI Recommendations -->
+                    <div class="bg-violet-50/50 border-2 border-dashed border-violet-200 rounded-2xl p-6">
+                         <h3 class="text-2xl font-bold text-slate-900 mb-2">✨ AI Recommendations</h3>
+                         <p class="text-slate-600 mb-4">Based on your activity, here are some top matches for you.</p>
+                         <button id="get-recommendations-btn" class="w-full flex justify-center items-center gap-2 text-white font-bold py-2 px-6 rounded-lg bg-gradient-to-r from-purple-600 to-pink-500">Get Recommendations</button>
+                         <div id="recommendations-result" class="mt-4 hidden text-sm"></div>
                     </div>
                 </div>
             </div>
-            
-            <button id="header-toggle-btn" class="absolute bottom-[-1rem] bg-white text-gray-600 rounded-full p-1 shadow-md border-2 border-gray-200 transition-transform duration-300 z-10">
-                <svg id="header-toggle-icon" class="w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
-            </button>
-        </header>
-
-        <!-- Disease Alert Section -->
-        <div id="disease-alert" class="disease-alert collapsible">
-            <div class="alert-header">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px;">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <h3 id="disease-alert-title" class="font-bold"></h3>
-            </div>
-            <div id="disease-alert-content" class="alert-content">
-                <!-- Content will be inserted by script -->
-            </div>
-            <button id="close-alert-btn" title="Dismiss Alert" class="alert-close-btn">&times;</button>
         </div>
 
-        <!-- Quick Actions -->
-        <div id="quick-actions" class="quick-actions collapsible">
-            <button id="quick-btn-fever" class="quick-btn"></button>
-            <button id="quick-btn-cough" class="quick-btn"></button>
-            <button id="quick-btn-vaccine" class="quick-btn"></button>
-            <button id="quick-btn-stomach" class="quick-btn"></button>
-            <button id="quick-btn-diet" class="quick-btn"></button>
-            <button id="quick-btn-mental-health" class="quick-btn mental-health"></button>
-            <button id="quick-btn-women" class="quick-btn women"></button>
-            <button id="quick-btn-nearby" class="quick-btn nearby"></button>
-            <button id="quick-btn-emergency" class="quick-btn emergency"></button>
+        <!-- Internships (Student) View -->
+        <div id="internships-view" class="view-section hidden">
+            <div class="text-center my-6">
+                <h2 class="text-4xl font-extrabold text-slate-900 mb-2">Curated Internship Opportunities</h2>
+                <p class="text-lg text-slate-500">Discover roles that offer a direct path to a full-time career.</p>
+            </div>
+            <div id="internship-listings" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- All internship cards will be injected here -->
+            </div>
         </div>
 
-        <!-- Chat Area -->
-        <main id="chatArea" class="chat-area">
-            <div id="initialMessageContainer">
-                    <!-- content from script -->
+        <!-- Learning Hub View -->
+        <div id="learning-view" class="view-section hidden">
+            <div class="text-center my-6">
+                <h2 class="text-4xl font-extrabold text-slate-900 mb-2">Learning Hub</h2>
+                <p class="text-lg text-slate-500">Sharpen your skills with our curated collection of resources.</p>
             </div>
-            
-            <!-- Enhanced Typing Indicator -->
-            <div id="typingIndicator" class="typing-indicator" style="display: none;">
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-                <span id="typing-text" class="ml-2 text-base text-gray-700 font-semibold"></span>
-            </div>
-        </main>
-        
-        <!-- Enhanced Input Area -->
-        <footer class="input-area">
-            <!-- Voice Tooltip -->
-            <div id="voice-tooltip" class="voice-tooltip hidden" style="position: absolute; bottom: 100%; left: 0; background: #1f2937; color: white; padding: 0.75rem 1rem; border-radius: 0.75rem; font-size: 0.8rem; white-space: nowrap; z-index: 30; transform: translateY(-10px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);">
-                <span id="tooltip-text"></span>
-                <button id="close-tooltip" class="ml-2 font-bold text-lg">&times;</button>
-            </div>
-            
-            <button id="keyboardBtn" class="keyboard-btn" title="Toggle Keyboard">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                    <line x1="7" y1="7" x2="7" y2="7"></line><line x1="12" y1="7" x2="12" y2="7"></line><line x1="17" y1="7" x2="17" y2="7"></line>
-                    <line x1="7" y1="12" x2="7" y2="12"></line><line x1="12" y1="12" x2="12" y2="12"></line><line x1="17" y1="12" x2="17" y2="12"></line>
-                    <line x1="7" y1="17" x2="12" y2="17"></line>
-                </svg>
-            </button>
 
-            <!-- Voice Button -->
-            <button id="voiceBtn" class="voice-btn" title="Voice Input">
-                <svg id="mic-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 1C10.89 1 10 1.89 10 3V12C10 13.11 10.89 14 12 14C13.11 14 14 13.11 14 12V3C14 1.89 13.11 1 12 1Z" fill="currentColor"/>
-                    <path d="M19 10V12C19 15.87 15.87 19 12 19C8.13 19 5 15.87 5 12V10H7V12C7 14.76 9.24 17 12 17C14.76 17 17 14.76 17 12V10H19Z" fill="currentColor"/>
-                    <path d="M12 19V23H8V21H16V23H12V19Z" fill="currentColor"/>
-                </svg>
-            </button>
-            
-            <input type="text" id="messageInput" class="message-input">
-            
-            <button id="sendBtn" class="send-btn" title="Send Message">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M2.01 21L23 12L2.01 3L2 10L17 12L2 14L2.01 21Z" fill="currentColor"/>
-                </svg>
-            </button>
-        </footer>
+            <div class="bg-violet-50/50 border-2 border-dashed border-violet-200 rounded-2xl p-8 mb-12">
+                <h3 class="text-3xl font-bold text-slate-900 mb-2">✨ Create Your Personalized Learning Path</h3>
+                <p class="text-slate-600 mb-6">Tell us your career goal, and our AI will generate a custom learning plan for you.</p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <input type="text" id="career-goal-input" placeholder="e.g., Become a Backend Developer" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition">
+                    <button id="generate-path-btn" class="flex justify-center items-center gap-2 text-white font-bold py-3 px-8 rounded-lg bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 transition-all">Generate Path</button>
+                </div>
+                <div id="learning-path-result" class="mt-8 hidden p-6 bg-white rounded-lg border border-slate-200"></div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg p-8 mb-12 border border-slate-200">
+                <h3 class="text-3xl font-bold text-slate-900 mb-2">Test Your Knowledge</h3>
+                <p class="text-slate-600 mb-6">Take a quick AI-generated quiz to earn a skill badge!</p>
+                <button id="take-quiz-btn" class="text-white font-bold py-3 px-8 rounded-lg bg-gradient-to-r from-pink-600 to-orange-500 hover:opacity-90 transition-opacity">Take a Quiz ✨</button>
+            </div>
+
+            <div id="learning-resources" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            </div>
+        </div>
+
+        <!-- Interview Prep View -->
+        <div id="interview-view" class="view-section hidden">
+            <div class="text-center my-6">
+                <h2 class="text-4xl font-extrabold text-slate-900 mb-2">AI-Powered Interview Prep</h2>
+                <p class="text-lg text-slate-500">Simulate real interviews and get instant, actionable feedback.</p>
+            </div>
+            <div id="interview-container" class="max-w-4xl mx-auto bg-white/60 backdrop-blur-sm p-8 sm:p-10 rounded-2xl shadow-xl shadow-purple-100/50 border border-slate-200">
+            </div>
+        </div>
+
+        <!-- Company View -->
+        <div id="company-view" class="view-section hidden">
+            <div class="text-center my-6">
+                <h2 class="text-4xl font-extrabold text-slate-900 mb-2">Partner With Excellence</h2>
+                <p class="text-lg text-slate-500">Recruit top talent through our "Purpose-Process-Placement" framework.</p>
+            </div>
+            <div class="max-w-4xl mx-auto bg-white p-10 rounded-2xl shadow-lg border border-slate-200">
+                <h3 class="text-3xl font-bold text-slate-900 mb-6">Our 3-P Framework</h3>
+                <ol class="list-decimal list-inside space-y-6 text-slate-600 text-lg">
+                     <li><span class="font-semibold text-purple-700">Purpose:</span> We help you define clear, meaningful project goals for interns that align with your business objectives, ensuring a purposeful experience.</li>
+                     <li><span class="font-semibold text-pink-600">Process:</span> Our platform encourages best practices like dedicated mentorship and structured feedback, processes proven to boost performance and engagement.</li>
+                     <li><span class="font-semibold text-orange-500">Placement:</span> By focusing on skill development and performance tracking, our framework naturally identifies high-potential candidates, creating a seamless pipeline to full-time placement.</li>
+                </ol>
+                <div class="text-center mt-10">
+                    <button class="text-white font-bold py-3 px-8 rounded-lg bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 transition-all duration-300 text-lg">Post an Internship</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Modals -->
+    <div id="application-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden modal-backdrop">
+        <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-lg mx-4 border border-slate-200">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-slate-900">Apply for <span id="modal-job-title" class="animated-gradient-text"></span></h3>
+                <button class="close-modal-btn text-slate-500 hover:text-slate-800 text-3xl">&times;</button>
+            </div>
+            <form id="application-form">
+                <input type="hidden" id="modal-job-id">
+                <div class="mb-4">
+                    <label for="name" class="block text-slate-700 font-semibold mb-2">Full Name</label>
+                    <input type="text" id="name" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition" required>
+                </div>
+                <div class="mb-4">
+                    <label for="email" class="block text-slate-700 font-semibold mb-2">Email Address</label>
+                    <input type="email" id="email" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition" required>
+                </div>
+                <div class="mb-6">
+                    <label for="resume-content" class="block text-slate-700 font-semibold mb-2">Your Resume Content</label>
+                    <textarea id="resume-content" placeholder="Paste your resume content here for AI analysis..." class="w-full h-24 p-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition" required></textarea>
+                </div>
+                
+                <div class="flex gap-4 mb-6">
+                    <button type="button" id="improve-resume-btn" class="w-full flex justify-center items-center gap-2 text-purple-700 font-bold py-2.5 px-6 rounded-lg bg-purple-100 hover:bg-purple-200 transition-all">
+                        ✨ Improve Resume
+                    </button>
+                    <button type="button" id="generate-cover-letter-btn" class="w-full flex justify-center items-center gap-2 text-pink-700 font-bold py-2.5 px-6 rounded-lg bg-pink-100 hover:bg-pink-200 transition-all">
+                        ✨ Generate Cover Letter
+                    </button>
+                </div>
+                <div id="ai-helper-output" class="mt-4 hidden p-4 bg-slate-50 rounded-lg border border-slate-200 text-sm"></div>
+
+                <div class="text-right">
+                    <button type="submit" class="text-white font-bold py-2 px-6 rounded-lg bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 transition-colors duration-300">Submit Application</button>
+                </div>
+            </form>
+        </div>
     </div>
     
-    <!-- Virtual Keyboard Container -->
-    <div id="keyboard-container" class="keyboard-container">
-        <div class="simple-keyboard"></div>
+    <div id="day-in-life-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden modal-backdrop">
+        <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-lg mx-4 border border-slate-200 relative">
+            <button class="close-modal-btn absolute top-4 right-4 text-slate-500 hover:text-slate-800 text-3xl">&times;</button>
+            <h3 class="text-2xl font-bold text-slate-900 mb-4">A Day in the Life of a <span id="day-modal-job-title" class="animated-gradient-text"></span></h3>
+            <div id="day-in-life-content" class="text-slate-600 leading-relaxed"></div>
+        </div>
     </div>
-    
-    <script>
-        // Sushruta - AI Health Assistant - Main JavaScript
-        
-        // --- IMPORTANT: For the app to work, you must replace this with your own Google AI API Key. ---
-        // You can get a key from the Google AI Studio: https://makersuite.google.com/
-        const apiKey = "AIzaSyDY4WUNKFyJmTDKZFCi0xZjLZvoMxsNTNo"; // If you want to use models other than gemini-2.5-flash-preview-05-20 or imagen-3.0-generate-002, provide an API key here. Otherwise, leave this as-is.
-        
-        const API_MODEL = "gemini-2.5-flash-preview-05-20";
-        
-        if (apiKey === "PASTE_YOUR_GOOGLE_AI_API_KEY_HERE") {
-            const errorElement = document.createElement('div');
-            errorElement.style.cssText = 'position:fixed;top:0;left:0;width:100%;padding:1rem;background:red;color:white;text-align:center;font-weight:bold;z-index:1000;';
-            errorElement.textContent = 'API Key is missing! Please add your API key to the script section in index.html to enable the assistant.';
-            document.body.appendChild(errorElement);
-        }
 
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${API_MODEL}:generateContent?key=${apiKey}`;
+    <div id="login-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden modal-backdrop">
+        <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md mx-4 border border-slate-200">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-slate-900">Log In</h3>
+                <button class="close-modal-btn text-slate-500 hover:text-slate-800 text-3xl">&times;</button>
+            </div>
+            <form id="login-form">
+                <div class="mb-4">
+                    <label for="login-email" class="block text-slate-700 font-semibold mb-2">Email Address</label>
+                    <input type="email" id="login-email" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition" required>
+                </div>
+                <div class="mb-6">
+                    <label for="login-password" class="block text-slate-700 font-semibold mb-2">Password</label>
+                    <input type="password" id="login-password" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition" required>
+                </div>
+                <div id="login-error" class="text-red-500 text-sm mb-4 hidden"></div>
+                <div class="text-right">
+                    <button type="submit" class="text-white font-bold py-2 px-6 rounded-lg bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 transition-colors duration-300">Log In</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-        // --- DOM Elements ---
-        const chatArea = document.getElementById('chatArea');
-        const messageInput = document.getElementById('messageInput');
-        const sendBtn = document.getElementById('sendBtn');
-        const voiceBtn = document.getElementById('voiceBtn');
-        const keyboardBtn = document.getElementById('keyboardBtn');
-        const keyboardContainer = document.getElementById('keyboard-container');
-        const typingIndicator = document.getElementById('typingIndicator');
-        const initialMessageContainer = document.getElementById('initialMessageContainer');
-        const voiceTooltip = document.getElementById('voice-tooltip');
-        const closeTooltipBtn = document.getElementById('close-tooltip');
-        const headerToggleBtn = document.getElementById('header-toggle-btn');
-        const headerToggleIcon = document.getElementById('header-toggle-icon');
-        const quickActions = document.getElementById('quick-actions');
-        
-        let currentLanguage = 'hi'; // Default language
+     <div id="signup-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden modal-backdrop">
+        <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md mx-4 border border-slate-200">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-slate-900">Sign Up</h3>
+                <button class="close-modal-btn text-slate-500 hover:text-slate-800 text-3xl">&times;</button>
+            </div>
+            <form id="signup-form">
+                 <div class="mb-4">
+                    <label for="signup-name" class="block text-slate-700 font-semibold mb-2">Full Name</label>
+                    <input type="text" id="signup-name" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition" required>
+                </div>
+                <div class="mb-4">
+                    <label for="signup-email" class="block text-slate-700 font-semibold mb-2">Email Address</label>
+                    <input type="email" id="signup-email" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition" required>
+                </div>
+                <div class="mb-6">
+                    <label for="signup-password" class="block text-slate-700 font-semibold mb-2">Password</label>
+                    <input type="password" id="signup-password" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition" required>
+                </div>
+                <div id="signup-error" class="text-red-500 text-sm mb-4 hidden"></div>
+                <div class="text-right">
+                    <button type="submit" class="text-white font-bold py-2 px-6 rounded-lg bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 transition-colors duration-300">Create Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-        // --- Comprehensive Translations Object (Updated with localized alerts) ---
-        const translations = {
-            en: {
-                disclaimer: "⚠️ Important: This is for assistance only. Consult a doctor for serious issues.",
-                mainTitle: "Sushruta",
-                subTitle: "Your Health Assistant",
-                quickBtnFever: "Fever",
-                quickBtnCough: "Cough",
-                quickBtnVaccine: "Vaccine",
-                quickBtnStomach: "Stomach",
-                quickBtnDiet: "Diet Plan",
-                quickBtnMentalHealth: "Mental Health",
-                quickBtnWomen: "Women Health",
-                quickBtnNearby: "Nearby Doctor",
-                quickBtnEmergency: "Emergency",
-                queryFever: "What are the symptoms of a fever?",
-                queryCough: "How to treat a cough?",
-                queryVaccine: "About child vaccinations",
-                queryStomach: "Home remedies for stomach ache",
-                queryDiet: "General advice for a healthy diet",
-                queryMentalHealth: "How to improve mental well-being?",
-                queryWomen: "Common women's health issues",
-                queryEmergency: "I need emergency help",
-                helpTitle: "<span>📚</span> How can I help you?",
-                helpList: `• Know disease symptoms<br>• Get home remedies<br>• Learn about vaccination`,
-                initialBotGreeting: "🙏 Hello! I'm Sushruta, your AI Health Assistant!",
-                initialBotInstruction: "I can help with health issues. Use the buttons above or type your question.",
-                typingText: "Sushruta is thinking...",
-                inputPlaceholder: "Ask your question...",
-                tooltipText: "🎤 Tap mic to speak",
-                emergencyResponse: `🚨 **This sounds serious. Please seek immediate medical help.**<br><br>Call the National Emergency Number: <b>112</b><br>Or call for an Ambulance: <b>108</b>`,
-                diseaseAlertTitle: "Health Alerts for Noida (Sept 2025)",
-                diseaseAlertDengueTitle: "Dengue & Malaria Alert 🦟",
-                diseaseAlertDengueInfo: "Post-monsoon season sees a rise in mosquito-borne illnesses. Prevent breeding by cleaning coolers and pots. Use repellents and sleep under a mosquito net.",
-                diseaseAlertViralTitle: "Water-Borne Disease Warning 💧",
-                diseaseAlertViralInfo: "Risk of Typhoid & Jaundice is high. Drink only boiled or filtered water, avoid street food, and wash hands frequently.",
-                doctorDisclaimer: "Please note: This is a sample list based on publicly available data and may not be current or complete. Please contact the hospital directly to confirm doctor availability and book an appointment.",
-                dietFormTitle: "Get a Personalized Diet Plan",
-                dietFormSubtitle: "Please provide your details below:",
-                ageLabel: "Your Age:",
-                genderLabel: "Your Gender:",
-                goalLabel: "Your Goal:",
-                agePlaceholder: "Enter age",
-                genderMale: "Male",
-                genderFemale: "Female",
-                goalLoose: "Lose Weight",
-                goalGain: "Gain Weight",
-                goalMaintain: "Maintain Weight",
-                generateBtn: "Generate Plan",
-                dietChartGenerating: "Generating your personalized diet chart...",
-                chartGeneratedMessage: "Here is a sample diet chart based on your details. Remember to consult with a professional nutritionist or doctor for a plan tailored to your specific needs.",
-                nearbyDoctorsGenerating: "Searching for nearby doctors...",
-                locationPermissionDenied: "Location access denied. Please enable it in your browser settings to find nearby doctors."
-            },
-            hi: {
-                disclaimer: "⚠️ महत्वपूर्ण: यह केवल सहायता के लिए है। गंभीर समस्या के लिए डॉक्टर से मिलें।",
-                mainTitle: "सुश्रुत",
-                subTitle: "आपका स्वास्थ्य सहायक",
-                quickBtnFever: "बुखार",
-                quickBtnCough: "खांसी",
-                quickBtnVaccine: "टीका",
-                quickBtnStomach: "पेट दर्द",
-                quickBtnDiet: "आहार योजना",
-                quickBtnMentalHealth: "मानसिक स्वास्थ्य",
-                quickBtnWomen: "महिला स्वास्थ्य",
-                quickBtnNearby: "निकटवर्ती डॉक्टर",
-                quickBtnEmergency: "आपातकालीन",
-                queryFever: "बुखार के लक्षण क्या हैं?",
-                queryCough: "खांसी का इलाज कैसे करें?",
-                queryVaccine: "बच्चों का टीकाकरण",
-                queryStomach: "पेट दर्द का घरेलू इलाज",
-                queryDiet: "स्वस्थ आहार के लिए सामान्य सलाह",
-                queryMentalHealth: "मानसिक स्वास्थ्य कैसे सुधारें?",
-                queryWomen: "महिलाओं की स्वास्थ्य समस्या",
-                queryEmergency: "आपातकालीन मदद चाहिए",
-                helpTitle: "<span>📚</span> मैं आपकी कैसे मदद कर सकता हूं?",
-                helpList: `• बीमारी के लक्षण जानने के लिए<br>• घरेलू उपचार की जानकारी के लिए<br>• टीकाकरण की जानकारी के लिए`,
-                initialBotGreeting: "🙏 नमस्ते! मैं सुश्रुत हूं, आपका AI स्वास्थ्य सहायक!",
-                initialBotInstruction: "मैं आपकी स्वास्थ्य संबंधी समस्याओं में मदद कर सकता हूं। ऊपर के बटन दबाएं या अपना सवाल टाइप करें।",
-                typingText: "सुश्रुत सोच रहा है...",
-                inputPlaceholder: "अपना सवाल पूछें...",
-                tooltipText: "🎤 माइक दबाकर बोलें",
-                emergencyResponse: `🚨 **यह गंभीर लग रहा है। कृपया तत्काल चिकित्सा सहायता लें।**<br><br>राष्ट्रीय आपातकालीन नंबर पर कॉल करें: <b>112</b><br>या एम्बुलेंस के लिए कॉल करें: <b>108</b>`,
-                diseaseAlertTitle: "नोएडा के लिए स्वास्थ्य अलर्ट (सितंबर 2025)",
-                diseaseAlertDengueTitle: "डेंगू और मलेरिया अलर्ट 🦟",
-                diseaseAlertDengueInfo: "मानसून के बाद मच्छर जनित बीमारियाँ बढ़ जाती हैं। कूलर और गमलों की सफाई करके मच्छरों को पनपने से रोकें। मच्छर भगाने वाली क्रीम का प्रयोग करें और मच्छरदानी लगाकर सोएं।",
-                diseaseAlertViralTitle: "जल जनित रोग चेतावनी 💧",
-                diseaseAlertViralInfo: "टाइफाइड और पीलिया का खतरा अधिक है। केवल उबला हुआ या फ़िल्टर किया हुआ पानी पिएं, बाहर के खाने से बचें और बार-बार हाथ धोएं।",
-                doctorDisclaimer: "कृपया ध्यान दें: यह सार्वजनिक रूप से उपलब्ध डेटा पर आधारित एक नमूना सूची है और यह वर्तमान या पूर्ण नहीं हो सकती है। डॉक्टर की उपलब्धता की पुष्टि करने और अपॉइंटमेंट बुक करने के लिए कृपया सीधे अस्पताल से संपर्क करें।",
-                dietFormTitle: "व्यक्तिगत आहार योजना प्राप्त करें",
-                dietFormSubtitle: "कृपया नीचे अपना विवरण प्रदान करें:",
-                ageLabel: "आपकी उम्र:",
-                genderLabel: "आपका लिंग:",
-                goalLabel: "आपका लक्ष्य:",
-                agePlaceholder: "उम्र दर्ज करें",
-                genderMale: "पुरुष",
-                genderFemale: "महिला",
-                goalLoose: "वजन घटाना",
-                goalGain: "वजन बढ़ाना",
-                goalMaintain: "वजन बनाए रखना",
-                generateBtn: "योजना बनाएं",
-                dietChartGenerating: "आपकी व्यक्तिगत आहार योजना बनाई जा रही है...",
-                chartGeneratedMessage: "आपके विवरण के आधार पर एक नमूना आहार चार्ट यहां दिया गया है। अपनी विशिष्ट आवश्यकताओं के अनुसार योजना के लिए पेशेवर पोषण विशेषज्ञ या डॉक्टर से परामर्श करना याद रखें।",
-                nearbyDoctorsGenerating: "निकटवर्ती डॉक्टरों की तलाश की जा रही है...",
-                locationPermissionDenied: "स्थान तक पहुंच से इनकार किया गया। कृपया पास के डॉक्टरों को खोजने के लिए इसे अपने ब्राउज़र सेटिंग्स में सक्षम करें।"
-            },
-            bn: {
-                disclaimer: "⚠️ গুরুত্বপূর্ণ: এটি শুধুমাত্র সহায়তার জন্য। গুরুতর সমস্যার জন্য ডাক্তারের সাথে পরামর্শ করুন।",
-                mainTitle: "সুশ্রুত",
-                subTitle: "আপনার স্বাস্থ্য সহকারী",
-                quickBtnFever: "জ্বর",
-                quickBtnCough: "কাশি",
-                quickBtnVaccine: "টিকা",
-                quickBtnStomach: "পেট ব্যথা",
-                quickBtnDiet: "ডায়েট প্ল্যান",
-                quickBtnMentalHealth: "মানসিক স্বাস্থ্য",
-                quickBtnWomen: "মহিলাদের স্বাস্থ্য",
-                quickBtnNearby: "কাছের ডাক্তার",
-                quickBtnEmergency: "জরুরী",
-                queryFever: "জ্বরের লক্ষণ কি?",
-                queryCough: "কাশির চিকিৎসা কিভাবে করবেন?",
-                queryVaccine: "শিশুদের টিকা সম্পর্কে",
-                queryStomach: "পেট ব্যথার ঘরোয়া প্রতিকার",
-                queryDiet: "স্বাস্থ্যকর খাবারের জন্য সাধারণ পরামর্শ",
-                queryMentalHealth: "মানসিক সুস্থতা কীভাবে উন্নত করা যায়?",
-                queryWomen: "মহিলাদের স্বাস্থ্য সমস্যা",
-                queryEmergency: "জরুরী সাহায্য প্রয়োজন",
-                helpTitle: "<span>📚</span> আমি কিভাবে আপনাকে সাহায্য করতে পারি?",
-                helpList: `• রোগের লক্ষণ জানুন<br>• ঘরোয়া প্রতিকার পান<br>• টিকা সম্পর্কে জানুন`,
-                initialBotGreeting: "🙏 নমস্কার! আমি সুশ্রুত, আপনার এআই স্বাস্থ্য সহকারী!",
-                initialBotInstruction: "আমি স্বাস্থ্য সমস্যায় সাহায্য করতে পারি। উপরের বোতামগুলি ব্যবহার করুন বা আপনার প্রশ্ন টাইপ করুন।",
-                typingText: "সুশ্রুত ভাবছে...",
-                inputPlaceholder: "আপনার প্রশ্ন জিজ্ঞাসা করুন...",
-                tooltipText: "🎤 কথা বলতে মাইক ট্যাপ করুন",
-                emergencyResponse: `🚨 **এটি গুরুতর মনে হচ্ছে। অনুগ্রহ করে অবিলম্বে চিকিৎসা সহায়তা নিন।**<br><br>জাতীয় জরুরি নম্বর এ কল করুন: <b>112</b><br>অথবা অ্যাম্বুলেন্সের জন্য কল করুন: <b>108</b>`,
-                diseaseAlertTitle: "নয়ডার জন্য স্বাস্থ্য সতর্কতা (সেপ্টেম্বর 2025)",
-                diseaseAlertDengueTitle: "ডেঙ্গু ও ম্যালেরিয়া সতর্কতা 🦟",
-                diseaseAlertDengueInfo: "বর্ষার পরে মশা বাহিত রোগের প্রকোপ বাড়ে। কুলার ও পাত্র পরিষ্কার করে মশার বংশবৃদ্ধি রোধ করুন। রিপেলেন্ট ব্যবহার করুন এবং মশারি টাঙিয়ে ঘুমান।",
-                diseaseAlertViralTitle: "জলবাহিত রোগের সতর্কতা 💧",
-                diseaseAlertViralInfo: "টাইফয়েড ও জন্ডিসের ঝুঁকি বেশি। শুধুমাত্র ফোটানো বা ফিল্টার করা জল পান করুন, রাস্তার খাবার এড়িয়ে চলুন এবং ঘন ঘন হাত ধুন।",
-                doctorDisclaimer: "অনুগ্রহ করে মনে রাখবেন: এটি সর্বজনীনভাবে উপলব্ধ ডেটার উপর ভিত্তি করে একটি নমুনা তালিকা এবং এটি বর্তমান বা সম্পূর্ণ নাও হতে পারে। ডাক্তারের প্রাপ্যতা নিশ্চিত করতে এবং অ্যাপয়েন্টমেন্ট বুক করতে সরাসরি হাসপাতালের সাথে যোগাযোগ করুন।",
-                dietFormTitle: "একটি ব্যক্তিগতকৃত ডায়েট প্ল্যান পান",
-                dietFormSubtitle: "আপনার বিবরণ নিচে প্রদান করুন:",
-                ageLabel: "আপনার বয়স:",
-                genderLabel: "আপনার লিঙ্গ:",
-                goalLabel: "আপনার লক্ষ্য:",
-                agePlaceholder: "বয়স লিখুন",
-                genderMale: "পুরুষ",
-                genderFemale: "মহিলা",
-                goalLoose: "ওজন কমানো",
-                goalGain: "ওজন বাড়ানো",
-                goalMaintain: "ওজন বজায় রাখা",
-                generateBtn: "প্ল্যান তৈরি করুন",
-                dietChartGenerating: "আপনার ব্যক্তিগতকৃত ডায়েট চার্ট তৈরি করা হচ্ছে...",
-                chartGeneratedMessage: "আপনার তথ্যের উপর ভিত্তি করে একটি নমুনা ডায়েট চার্ট এখানে দেওয়া হল। আপনার নির্দিষ্ট প্রয়োজনের জন্য একটি প্ল্যান পেতে একজন পেশাদার পুষ্টিবিদ বা ডাক্তারের সাথে পরামর্শ করতে মনে রাখবেন।",
-                nearbyDoctorsGenerating: "কাছের ডাক্তারদের খোঁজা হচ্ছে...",
-                locationPermissionDenied: "অবস্থান অ্যাক্সেস অস্বীকার করা হয়েছে। কাছের ডাক্তারদের খুঁজে পেতে অনুগ্রহ করে আপনার ব্রাউজারের সেটিংসে এটি সক্ষম করুন।"
-            },
-            ta: {
-                disclaimer: "⚠️ முக்கியம்: இது உதவிக்கு மட்டுமே. গুরুতর பிரச்சினைகளுக்கு மருத்துவரை அணுகவும்.",
-                mainTitle: "சுஷ்ருதா",
-                subTitle: "உங்கள் சுகாதார உதவியாளர்",
-                quickBtnFever: "காய்ச்சல்",
-                quickBtnCough: "இருமல்",
-                quickBtnVaccine: "தடுப்பூசி",
-                quickBtnStomach: "வயிற்று வலி",
-                quickBtnDiet: "உணவு திட்டம்",
-                quickBtnMentalHealth: "மனநலம்",
-                quickBtnWomen: "பெண்கள் நலம்",
-                quickBtnNearby: "அருகிலுள்ள மருத்துவர்",
-                quickBtnEmergency: "அவசரம்",
-                queryFever: "காய்ச்சலின் அறிகுறிகள் என்ன?",
-                queryCough: "இருமல் குணப்படுத்துவது எப்படி?",
-                queryVaccine: "குழந்தை தடுப்பூசிகள் பற்றி",
-                queryStomach: "வயிற்று வலிக்கான வீட்டு வைத்தியம்",
-                queryDiet: "ஆரோக்கியமான உணவுக்கான பொதுவான ஆலோசனை",
-                queryMentalHealth: "மன நலத்தை எவ்வாறு மேம்படுத்துவது?",
-                queryWomen: "பெண்களின் சுகாதார பிரச்சினைகள்",
-                queryEmergency: "எனக்கு அவசர உதவி தேவை",
-                helpTitle: "<span>📚</span> நான் உங்களுக்கு எப்படி உதவ முடியும்?",
-                helpList: `• நோய் அறிகுறிகளை அறியுங்கள்<br>• வீட்டு வைத்தியம் பெறுங்கள்<br>• தடுப்பூசி பற்றி அறியுங்கள்`,
-                initialBotGreeting: "🙏 வணக்கம்! நான் சுஷ்ருதா, உங்கள் AI சுகாதார உதவியாளர்!",
-                initialBotInstruction: "சுகாதார பிரச்சினைகளுக்கு நான் உதவ முடியும்। மேலே உள்ள பொத்தான்களைப் பயன்படுத்தவும் அல்லது உங்கள் கேள்வியை தட்டச்சு செய்யவும்।",
-                typingText: "சுஷ்ருதா யோசிக்கிறது...",
-                inputPlaceholder: "உங்கள் கேள்வியைக் கேளுங்கள்...",
-                tooltipText: "🎤 பேச மைக்கைத் தட்டவும்",
-                emergencyResponse: `🚨 **இது தீவிரமாகத் தெரிகிறது. உடனடியாக மருத்துவ உதவியை நாடுங்கள்.**<br><br>தேசிய அவசர எண்ணை அழைக்கவும்: <b>112</b><br>அல்லது ஆம்புலன்ஸை அழைக்கவும்: <b>108</b>`,
-                diseaseAlertTitle: "நோய்டாவிற்கான சுகாதார எச்சரிக்கைகள் (செப்டம்பர் 2025)",
-                diseaseAlertDengueTitle: "டெங்கு மற்றும் மலேரியா எச்சரிக்கை 🦟",
-                diseaseAlertDengueInfo: "பருவமழைக்குப் பிந்தைய காலத்தில் கொசுக்களால் பரவும் நோய்கள் அதிகரிக்கின்றன. கூலர்கள் மற்றும் பானைகளை சுத்தம் செய்வதன் மூலம் கொசுக்கள் பெருகுவதைத் தடுக்கவும். கொசு விரட்டிகளைப் பயன்படுத்துங்கள் மற்றும் கொசுவலைக்குள் உறங்குங்கள்.",
-                diseaseAlertViralTitle: "நீரால் பரவும் நோய்கள் எச்சரிக்கை 💧",
-                diseaseAlertViralInfo: "டைபாய்டு மற்றும் மஞ்சள் காமாலை ஏற்படும் அபாயம் அதிகம். கொதிக்கவைத்த அல்லது வடிகட்டிய நீரை மட்டுமே குடியுங்கள், தெரு உணவுகளைத் தவிர்க்கவும், அடிக்கடி கைகளைக் கழுவவும்.",
-                doctorDisclaimer: "தயவுசெய்து கவனிக்கவும்: இது பொதுவில் கிடைக்கும் தரவுகளின் அடிப்படையில் ஒரு மாதிரிப் பட்டியல் மட்டுமே, மேலும் இது தற்போதைய அல்லது முழுமையானதாக இருக்காது. மருத்துவரின் கிடைப்புத்தன்மையை உறுதிப்படுத்தவும் மற்றும் அப்பாயிண்ட்மென்ட்டை முன்பதிவு செய்யவும் நேரடியாக மருத்துவமனையைத் தொடர்பு கொள்ளவும்.",
-                dietFormTitle: "தனிப்பயனாக்கப்பட்ட உணவுத் திட்டத்தைப் பெறுங்கள்",
-                dietFormSubtitle: "உங்கள் விவரங்களை கீழே வழங்கவும்:",
-                ageLabel: "உங்கள் வயது:",
-                genderLabel: "உங்கள் பாலினம்:",
-                goalLabel: "உங்கள் இலக்கு:",
-                agePlaceholder: "வயதை உள்ளிடவும்",
-                genderMale: "ஆண்",
-                genderFemale: "பெண்",
-                goalLoose: "எடை குறைத்தல்",
-                goalGain: "எடை அதிகரித்தல்",
-                goalMaintain: "எடையை பராமரித்தல்",
-                generateBtn: "திட்டத்தை உருவாக்குங்கள்",
-                dietChartGenerating: "உங்கள் தனிப்பயனாக்கப்பட்ட உணவு விளக்கப்படம் உருவாக்கப்படுகிறது...",
-                chartGeneratedMessage: "உங்கள் விவரங்களின் அடிப்படையில் ஒரு மாதிரி உணவு விளக்கப்படம் இங்கே உள்ளது. உங்கள் குறிப்பிட்ட தேவைகளுக்கு ஏற்ற திட்டத்திற்காக ஒரு தொழில்முறை ஊட்டச்சத்து நிபுணர் அல்லது மருத்துவரை அணுகுவதை நினைவில் கொள்ளுங்கள்.",
-                nearbyDoctorsGenerating: "அருகிலுள்ள மருத்துவர்களைத் தேடுகிறது...",
-                locationPermissionDenied: "இருப்பிட அணுகல் மறுக்கப்பட்டது. அருகிலுள்ள மருத்துவர்களைக் கண்டறிய உங்கள் உலாவி அமைப்புகளில் அதை இயக்கவும்."
-            },
-            od: {
-                disclaimer: "⚠️ ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ: ଏହା କେବଳ ସହାୟତା ପାଇଁ। ଗମ୍ଭୀର ସମସ୍ୟା ପାଇଁ ଡାକ୍ତରଙ୍କ ସହିତ ପରାମର୍ଶ କରନ୍ତୁ।",
-                mainTitle: "ସୁଶ୍ରୁତ",
-                subTitle: "ଆପଣଙ୍କ ସ୍ୱାସ୍ଥ୍ୟ ସହାୟକ",
-                quickBtnFever: "ଜ୍ୱର",
-                quickBtnCough: "କାଶ",
-                quickBtnVaccine: "ଟିକା",
-                quickBtnStomach: "ପେଟ ବ୍ୟଥା",
-                quickBtnDiet: "ଡାଏଟ୍ ପ୍ଲାନ୍",
-                quickBtnMentalHealth: "ମାନସିକ ସ୍ୱାସ୍ଥ୍ୟ",
-                quickBtnWomen: "ମହିଳା ସ୍ୱାସ୍ଥ୍ୟ",
-                quickBtnNearby: "ନିକଟସ୍ଥ ଡାକ୍ତର",
-                quickBtnEmergency: "ଜରୁରୀକାଳୀନ",
-                queryFever: "ଜ୍ୱରର ଲକ୍ଷଣ କ'ଣ?",
-                queryCough: "କାଶର ଚିକିତ୍ସା କିପରି କରିବେ?",
-                queryVaccine: "ଶିଶୁ ଟୀକାକରଣ ବିଷୟରେ",
-                queryStomach: "ପେଟ ବ୍ୟଥା ପାଇଁ ଘରୋଇ ଉପଚାର",
-                queryDiet: "ଏକ ସୁସ୍ଥ ଖାଦ୍ୟ ପାଇଁ ସାଧାରଣ ପରାମର୍ଶ",
-                queryMentalHealth: "ମାନସିକ ସୁସ୍ଥତା କିପରି ଉନ୍ନତ କରିବେ?",
-                queryWomen: "ମହିଳାଙ୍କ ସ୍ୱାସ୍ଥ୍ୟ ସମସ୍ୟା",
-                queryEmergency: "ମୋତେ ଜରୁରୀକାଳୀନ ସାହାଯ୍ୟ ଦରକାର",
-                helpTitle: "<span>📚</span> ମୁଁ ଆପଣଙ୍କୁ କିପରି ସାହାଯ୍ୟ କରିପାରେ?",
-                helpList: `• ରୋଗର ଲକ୍ଷଣ ଜାଣନ୍ତୁ<br>• ଘରୋଇ ଉପଚାର ପାଆନ୍ତୁ<br>• ଟୀକାକରଣ ବିଷୟରେ ଜାଣନ୍ତୁ`,
-                initialBotGreeting: "🙏 ନମସ୍କାର! ମୁଁ ସୁଶ୍ରୁତ, ଆପଣଙ୍କ AI ସ୍ୱାସ୍ଥ୍ୟ ସହାୟକ!",
-                initialBotInstruction: "ମୁଁ ସ୍ୱାସ୍ଥ୍ୟ ସମସ୍ୟାରେ ସାହାଯ୍ୟ କରିପାରିବି। ଉପର ବଟନ୍ ବ୍ୟବହାର କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ ପ୍ରଶ୍ନ ଟାଇପ୍ କରନ୍ତୁ।",
-                typingText: "ସୁଶ୍ରୁତ ଭାବୁଛି...",
-                inputPlaceholder: "ଆପଣଙ୍କ ପ୍ରଶ୍ନ ପଚାରନ୍ତୁ...",
-                tooltipText: "🎤 କହିବା ପାଇଁ ମାଇକ୍ ଟ୍ୟାପ୍ କରନ୍ତୁ",
-                emergencyResponse: `🚨 **ଏହା ଗମ୍ଭୀର ମନେହେଉଛି। ଦୟାକରି ତୁରନ୍ତ ଡାକ୍ତରୀ ସାହାଯ୍ୟ ନିଅନ୍ତୁ।**<br><br>ଜାତୀୟ ଜରୁରୀକାଳୀନ ନମ୍ବରକୁ କଲ୍ କରନ୍ତୁ: <b>112</b><br>କିମ୍ବା ଆମ୍ବୁଲାନ୍ସ ପାଇଁ କଲ୍ କରନ୍ତୁ: <b>108</b>`,
-                diseaseAlertTitle: "ନୋଏଡା ପାଇଁ ସ୍ୱାସ୍ଥ୍ୟ ସତର୍କତା (ସେପ୍ଟେମ୍ବର 2025)",
-                diseaseAlertDengueTitle: "ଡେଙ୍ଗୁ ଓ ମ୍ୟାଲେରିଆ ସତର୍କତା 🦟",
-                diseaseAlertDengueInfo: "ମୌସୁମୀ ପରେ ମଶାବାହିତ ରୋଗ ବୃଦ୍ଧି ପାଏ। କୁଲର ଓ ପାତ୍ର ସଫା କରି ମଶାଙ୍କ ବଂଶବୃଦ୍ଧି ରୋକନ୍ତୁ। ମଶା ଘଉଡ଼ାଇବା ଔଷଧ ବ୍ୟବହାର କରନ୍ତୁ ଏବଂ ମଶାରି ଟାଙ୍ଗି ଶୁଅନ୍ତୁ।",
-                diseaseAlertViralTitle: "ଜଳବାହିତ ରୋଗ ସତର୍କତା 💧",
-                diseaseAlertViralInfo: "ଟାଇଫଏଡ୍ ଓ ଜଣ୍ଡିସ୍ ହେବାର ଆଶଙ୍କା ଅଧିକ। କେବଳ ସିଝା କିମ୍ବା ଫିଲ୍ଟର୍ ହୋଇଥିବା ପାଣି ପିଅନ୍ତୁ, ରାସ୍ତାକଡ଼ ଖାଦ୍ୟରୁ ଦୂରେଇ ରୁହନ୍ତୁ ଏବଂ ବାରମ୍ବାର ହାତ ଧୁଅନ୍ତୁ।",
-                doctorDisclaimer: "ଦୟାକରି ଧ୍ୟାନ ଦିଅନ୍ତୁ: ଏହା ସର୍ବସାଧାରଣରେ ଉପଲବ୍ଧ ତଥ୍ୟ ଉପରେ ଆଧାରିତ ଏକ ନମୁନା ତାଲିକା ଏବଂ ଏହା ବର୍ତ୍ତମାନର କିମ୍ବା ସମ୍ପୂର୍ଣ୍ଣ ନୁହେଁ। ଡାକ୍ତରଙ୍କ ଉପଲବ୍ଧତା ନିଶ୍ଚିତ କରିବା ଏବଂ ଏକ ଆପଏଣ୍ଟମେଣ୍ଟ ବୁକ୍ କରିବା ପାଇଁ ଦୟାକରି ସିଧାସଳଖ ଡାକ୍ତରଖାନା ସହିତ ଯୋଗାଯੋଗ କରନ୍ତୁ।",
-                dietFormTitle: "ଏକ ବ୍ୟକ୍ତିଗତ ଡାଏଟ୍ ଯୋଜନା ପାଆନ୍ତୁ",
-                dietFormSubtitle: "ଦୟାକରି ନିମ୍ନରେ ଆପଣଙ୍କ ବିବରଣୀ ପ୍ରଦାନ କରନ୍ତୁ:",
-                ageLabel: "ଆପଣଙ୍କ ବୟସ:",
-                genderLabel: "ଆପଣଙ୍କ ଲିଙ୍ଗ:",
-                goalLabel: "ଆପଣଙ୍କ ଲକ୍ଷ୍ୟ:",
-                agePlaceholder: "ବୟସ ପ୍ରବେଶ କରନ୍ତୁ",
-                genderMale: "ପୁରୁଷ",
-                genderFemale: "ମହିଳା",
-                goalLoose: "ଓଜନ ହ୍ରାସ",
-                goalGain: "ଓଜନ ବୃଦ୍ଧି",
-                goalMaintain: "ଓଜନ ବଜାୟ ରଖିବା",
-                generateBtn: "ଯୋଜନା ସୃଷ୍ଟି କରନ୍ତୁ",
-                dietChartGenerating: "ଆପଣଙ୍କ ବ୍ୟକ୍ତିଗତ ଡାଏଟ୍ ଚାର୍ଟ ପ୍ରସ୍ତୁତ କରାଯାଉଛି...",
-                chartGeneratedMessage: "ଆପଣଙ୍କ ବିବରଣୀ ଉପରେ ଆଧାର କରି ଏକ ନମୁନା ଡାଏଟ୍ ଚାର୍ଟ ଏଠାରେ ଦିଆଯାଇଛି। ଆପଣଙ୍କର ନିର୍ଦ୍ଦିଷ୍ଟ ଆବଶ୍ୟକତା ଅନୁଯାୟୀ ଏକ ଯୋଜନା ପାଇଁ ଜଣେ ପେସାଦାର ପୁଷ୍ଟିକର ବିଶେଷଜ୍ଞ କିମ୍ବା ଡାକ୍ତରଙ୍କ ସହିତ ପରାମର୍ଶ କରିବାକୁ ମନେରଖନ୍ତୁ।",
-                nearbyDoctorsGenerating: "ନିକଟସ୍ଥ ଡାକ୍ତରମାନଙ୍କୁ ଖୋଜାଯାଉଛି...",
-                locationPermissionDenied: "ସ୍ଥାନ ପ୍ରବେଶ ପ୍ରତ୍ୟାଖ୍ୟାନ କରାଯାଇଛି। ଦୟାକରି ନିକଟସ୍ଥ ଡାକ୍ତରମାନଙ୍କୁ ଖୋଜିବା ପାଇଁ ଆପଣଙ୍କ ବ୍ରାଉଜର ସେଟିଙ୍ଗ୍‌ରେ ଏହାକୁ ସକ୍ଷମ କରନ୍ତୁ।"
-            },
-            te: {
-                disclaimer: "⚠️ ముఖ్య గమనిక: ఇది సహాయం కోసం మాత్రమే. తీవ్రమైన సమస్యల కోసం వైద్యుడిని సంప్రదించండి.",
-                mainTitle: "సుశ్రుత",
-                subTitle: "మీ ఆరోగ్య సహాయకుడు",
-                quickBtnFever: "జ్వరం",
-                quickBtnCough: "దగ్గు",
-                quickBtnVaccine: "టీకా",
-                quickBtnStomach: "కడుపు నొప్పి",
-                quickBtnDiet: "ఆహార ప్రణాళిక",
-                quickBtnMentalHealth: "మానసిక ఆరోగ్యం",
-                quickBtnWomen: "మహిళల ఆరోగ్యం",
-                quickBtnNearby: "సమీప వైద్యుడు",
-                quickBtnEmergency: "అత్యవసరం",
-                queryFever: "జ్వరం యొక్క లక్షణాలు ఏమిటి?",
-                queryCough: "దగ్గును ఎలా తగ్గించాలి?",
-                queryVaccine: "పిల్లల టీకాల గురించి",
-                queryStomach: "కడుపు నొప్పికి ఇంటి నివారణలు",
-                queryDiet: "ఆరోగ్యకరమైన ఆహారం కోసం సాధారణ సలహా",
-                queryMentalHealth: "మానసిక క్షేమాన్ని ఎలా మెరుగుపరచుకోవాలి?",
-                queryWomen: "మహిళల సాధారణ ఆరోగ్య సమస్యలు",
-                queryEmergency: "నాకు అత్యవసర సహాయం కావాలి",
-                helpTitle: "<span>📚</span> నేను మీకు ఎలా సహాయపడగలను?",
-                helpList: `• వ్యాధి లక్షణాలను తెలుసుకోండి<br>• ఇంటి నివారణలను పొందండి<br>• టీకాల గురించి తెలుసుకోండి`,
-                initialBotGreeting: "🙏 నమస్కారం! నేను సుశ్రుత, మీ AI ఆరోగ్య సహాయకుడిని!",
-                initialBotInstruction: "నేను ఆరోగ్య సమస్యలతో సహాయపడగలను. పై బటన్లను ఉపయోగించండి లేదా మీ ప్రశ్నను టైప్ చేయండి.",
-                typingText: "సుశ్రుత ఆలోచిస్తోంది...",
-                inputPlaceholder: "మీ ప్రశ్నను అడగండి...",
-                tooltipText: "🎤 మాట్లాడటానికి మైక్‌ను నొక్కండి",
-                emergencyResponse: `🚨 **ఇది తీవ్రంగా ఉంది. దయచేసి తక్షణ వైద్య సహాయం తీసుకోండి.**<br><br>జాతీయ అత్యవసర నంబర్‌కు కాల్ చేయండి: <b>112</b><br>లేదా అంబులెన్స్ కోసం కాల్ చేయండి: <b>108</b>`,
-                diseaseAlertTitle: "నోయిడా కోసం ఆరోగ్య హెచ్చరికలు (సెప్టెంబర్ 2025)",
-                diseaseAlertDengueTitle: "డెంగ్యూ & మలేరియా హెచ్చరిక 🦟",
-                diseaseAlertDengueInfo: "రుతుపవనాల తర్వాత దోమల ద్వారా பரவும் நோய்கள் పెరుగుతాయి. కూలర్లు మరియు కుండలను శుభ్రపరచడం ద్వారా దోమల ఉత్పత్తిని నివారించండి. దోమల నివారణలను ఉపయోగించండి మరియు దోమతెర కింద నిద్రించండి.",
-                diseaseAlertViralTitle: "నీటి ద్వారా பரவும் వ్యాధుల హెచ్చరిక 💧",
-                diseaseAlertViralInfo: "టైఫాయిడ్ & కామెర్ల ప్రమాదం ఎక్కువగా ఉంది. కాచిన లేదా ఫిల్టర్ చేసిన నీటిని మాత్రమే త్రాగండి, వీధి ఆహారాన్ని నివారించండి మరియు చేతులను తరచుగా కడుక్కోండి.",
-                doctorDisclaimer: "దయచేసి గమనించండి: ఇది బహిరంగంగా అందుబాటులో ఉన్న డేటా ఆధారంగా ఒక నమూనా జాబితా మరియు ప్రస్తుత లేదా పూర్తి కాదు. వైద్యుడి లభ్యతను ధృవీకరించడానికి మరియు అపాయింట్‌మెంట్ బుక్ చేయడానికి దయచేసి నేరుగా ఆసుపత్రిని సంప్రదించండి.",
-                dietFormTitle: "వ్యక్తిగత ఆహార ప్రణాళికను పొందండి",
-                dietFormSubtitle: "దయచేసి మీ వివరాలను క్రింద ఇవ్వండి:",
-                ageLabel: "మీ వయస్సు:",
-                genderLabel: "మీ లింగం:",
-                goalLabel: "మీ లక్ష్యం:",
-                agePlaceholder: "వయస్సును నమోదు చేయండి",
-                genderMale: "పురుషుడు",
-                genderFemale: "మహిళ",
-                goalLoose: "బరువు తగ్గడం",
-                goalGain: "బరువు పెరగడం",
-                goalMaintain: "బరువు నిర్వహించడం",
-                generateBtn: "ప్రణాళికను రూపొందించండి",
-                dietChartGenerating: "మీ వ్యక్తిగత ఆహార ప్రణాళిక రూపొందించబడుతోంది...",
-                chartGeneratedMessage: "మీ వివరాల ఆధారంగా ఒక నమూనా ఆహార పట్టిక ఇక్కడ ఉంది. మీ నిర్దిష్ట అవసరాలకు అనుగుణంగా ఒక ప్రణాళిక కోసం ఒక వృత్తిపరమైన పోషకాహార నిపుణుడు లేదా వైద్యుడిని సంప్రదించడం గుర్తుంచుకోండి।"
-            }
-        };
+    <div id="quiz-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden modal-backdrop">
+        <div id="quiz-container" class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-2xl mx-4 border border-slate-200">
+            <!-- Quiz content injected by JS -->
+        </div>
+    </div>
 
-        // --- UI Update Function ---
-        function updateUIText(lang) {
-            const t = translations[lang] || translations.en; // Fallback to English
+    <!-- Success Notification -->
+    <div id="success-notification" class="fixed top-5 right-5 bg-gradient-to-r from-green-400 to-teal-500 text-white py-3 px-6 rounded-lg shadow-lg transform translate-x-[120%] transition-transform duration-500 flex items-center gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        <span id="notification-text" class="font-semibold"></span>
+    </div>
 
-            // Update Header
-            const disclaimerBanner = document.getElementById('disclaimer-banner');
-            if (disclaimerBanner) {
-                disclaimerBanner.innerText = t.disclaimer;
-            }
-            const mainTitle = document.getElementById('main-title');
-            if (mainTitle) {
-                mainTitle.innerText = t.mainTitle;
-            }
-            const subTitle = document.getElementById('sub-title');
-            if (subTitle) {
-                subTitle.innerText = t.subTitle;
-            }
+    <footer class="bg-gray-800 text-white mt-20">
+        <div class="container mx-auto px-6 py-12">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="font-bold mb-4">Prepify</h4>
+                    <ul>
+                        <li class="mb-2"><a href="#" class="hover:underline">About Us</a></li>
+                        <li class="mb-2"><a href="#" class="hover:underline">Careers</a></li>
+                        <li class="mb-2"><a href="#" class="hover:underline">Press</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">For Students</h4>
+                    <ul>
+                        <li class="mb-2"><a href="#" class="hover:underline">Internships</a></li>
+                        <li class="mb-2"><a href="#" class="hover:underline">Learning Hub</a></li>
+                        <li class="mb-2"><a href="#" class="hover:underline">Interview Prep</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">For Companies</h4>
+                    <ul>
+                        <li class="mb-2"><a href="#" class="hover:underline">Post an Internship</a></li>
+                        <li class="mb-2"><a href="#" class="hover:underline">Our Framework</a></li>
+                        <li class="mb-2"><a href="#" class="hover:underline">Success Stories</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Connect</h4>
+                    <div class="flex space-x-4 text-2xl">
+                        <a href="#" class="hover:text-violet-400"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="hover:text-violet-400"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="hover:text-violet-400"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-12 border-t border-gray-700 pt-8 flex justify-between items-center">
+                <p>&copy; 2025 Prepify, Inc.</p>
+                <h1 class="text-2xl font-bold animated-gradient-text">Prepify</h1>
+            </div>
+        </div>
+    </footer>
 
-            // Update Quick Actions
-            const quickButtons = [
-                { id: 'quick-btn-fever', icon: '🌡️', text: t.quickBtnFever, query: t.queryFever },
-                { id: 'quick-btn-cough', icon: '😤', text: t.quickBtnCough, query: t.queryCough },
-                { id: 'quick-btn-vaccine', icon: '💉', text: t.quickBtnVaccine, query: t.queryVaccine },
-                { id: 'quick-btn-stomach', icon: '🤢', text: t.quickBtnStomach, query: t.queryStomach },
-                { id: 'quick-btn-diet', icon: '🥗', text: t.quickBtnDiet, query: 'show_diet_plan_form' },
-                { id: 'quick-btn-mental-health', icon: '🧠', text: t.quickBtnMentalHealth, query: t.queryMentalHealth },
-                { id: 'quick-btn-women', icon: '👩‍⚕️', text: t.quickBtnWomen, query: t.queryWomen },
-                { id: 'quick-btn-nearby', icon: '🏥', text: t.quickBtnNearby, query: 'show_nearby_doctors' },
-                { id: 'quick-btn-emergency', icon: '🚨', text: t.quickBtnEmergency, query: t.queryEmergency },
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword, 
+            signOut,
+            updateProfile,
+            signInAnonymously,
+            signInWithCustomToken
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            doc, 
+            addDoc, 
+            setDoc,
+            deleteDoc,
+            onSnapshot,
+            query,
+            where,
+            getDocs,
+            setLogLevel
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- FIREBASE SETUP ---
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+            
+            let app, auth, db;
+            let currentUserId = null;
+            let firestoreUnsubscribers = [];
+
+            // --- DATA ---
+            const internships = [ 
+                { id: 'swe1', title: 'Software Engineer Intern', company: 'TechCorp Solutions', location: 'Remote', duration: '6 Months', stipend: '₹40,000/month', ppoChance: 'High', skills: ['Python', 'React', 'AWS'], mentor: true, rating: 4.8, postedDate: '2025-09-15T10:00:00Z' }, 
+                { id: 'ds1', title: 'Data Science Intern', company: 'InnovateStart Pvt. Ltd.', location: 'Bangalore', duration: '3 Months', stipend: '₹25,000/month', ppoChance: 'Medium', skills: ['Machine Learning', 'SQL', 'Pandas'], mentor: true, rating: 4.6, postedDate: '2025-09-28T11:00:00Z' }, 
+                { id: 'pm1', title: 'Product Management Intern', company: 'Future Gadgets', location: 'Hybrid (Delhi)', duration: '4 Months', stipend: '₹30,000/month', ppoChance: 'Medium', skills: ['JIRA', 'Market Research', 'Agile'], mentor: false, rating: 4.5, postedDate: '2025-09-10T09:00:00Z' },
+                { id: 'ux1', title: 'UI/UX Design Intern', company: 'Creative Minds', location: 'Remote', duration: '3 Months', stipend: '₹22,000/month', ppoChance: 'High', skills: ['Figma', 'Adobe XD', 'User Research'], mentor: true, rating: 4.9, postedDate: '2025-10-01T14:00:00Z' },
+                { id: 'mkt1', title: 'Marketing Intern', company: 'Brand Boosters', location: 'Mumbai', duration: '6 Months', stipend: '₹18,000/month', ppoChance: 'Low', skills: ['SEO', 'Content Writing', 'Social Media'], mentor: false, rating: 4.2, postedDate: '2025-08-25T12:00:00Z' },
+                { id: 'be1', title: 'Backend Developer Intern', company: 'DataWeave', location: 'Remote', duration: '4 Months', stipend: '₹35,000/month', ppoChance: 'High', skills: ['Node.js', 'Express', 'MongoDB'], mentor: true, rating: 4.7, postedDate: '2025-09-25T18:00:00Z' },
+                { id: 'cld1', title: 'Cloud Engineer Intern', company: 'SkyHigh Infra', location: 'Pune', duration: '6 Months', stipend: '₹30,000/month', ppoChance: 'Medium', skills: ['AWS', 'Docker', 'Terraform'], mentor: true, rating: 4.5, postedDate: '2025-09-18T10:00:00Z' },
+                { id: 'mob1', title: 'Mobile App Dev Intern', company: 'Appify', location: 'Hybrid (Bangalore)', duration: '3 Months', stipend: '₹28,000/month', ppoChance: 'High', skills: ['Flutter', 'Firebase', 'Dart'], mentor: true, rating: 4.8, postedDate: '2025-09-30T15:00:00Z' },
+                { id: 'sec1', title: 'Cybersecurity Analyst Intern', company: 'SecureNet', location: 'Remote', duration: '6 Months', stipend: '₹32,000/month', ppoChance: 'Medium', skills: ['Penetration Testing', 'Wireshark', 'Metasploit'], mentor: false, rating: 4.4, postedDate: '2025-09-05T11:00:00Z' },
+                { id: 'dev1', title: 'DevOps Intern', company: 'DeployFast', location: 'Remote', duration: '5 Months', stipend: '₹38,000/month', ppoChance: 'High', skills: ['CI/CD', 'Jenkins', 'Kubernetes'], mentor: true, rating: 4.7, postedDate: '2025-09-22T16:00:00Z' },
             ];
+            const learningResources = [ 
+                { title: 'React for Beginners', category: 'Frontend', type: 'Video Course' }, 
+                { title: 'Advanced CSS Grids', category: 'Frontend', type: 'Article' }, 
+                { title: 'Node.js & Express API', category: 'Backend', type: 'Tutorial' }, 
+                { title: 'Database Design Principles', category: 'Backend', type: 'Article' }, 
+                { title: 'Intro to Python for ML', category: 'Data Science', type: 'Video Course' }, 
+                { title: 'Pandas Dataframes', category: 'Data Science', type: 'Tutorial' }, 
+                { title: 'Figma Design Fundamentals', category: 'Design', type: 'Video Course' }, 
+                { title: 'Case Study: Solving User Problems', category: 'Product', type: 'Article' },
+                { title: 'AWS Certified Cloud Practitioner', category: 'Cloud', type: 'Video Course' },
+                { title: 'Docker for Beginners', category: 'DevOps', type: 'Tutorial' },
+                { title: 'Introduction to CI/CD', category: 'DevOps', type: 'Article' },
+                { title: 'SQL for Data Analysis', category: 'Data Science', type: 'Tutorial' }
+            ];
+            const interviewQuestions = {
+                frontend: [ 'Explain the difference between `let`, `const`, and `var`.', 'What is the component lifecycle in React?', 'How would you make a website responsive?', 'Describe the differences between `null` and `undefined` in JavaScript.', 'What is "prop drilling" in React and how can you avoid it?', 'Explain the concept of memoization in the context of React.', 'Describe a situation where you had to optimize a slow-loading web page.'],
+                backend: ['What is the difference between SQL and NoSQL databases?', 'Explain the request-response cycle in a web application.', 'Describe RESTful APIs and their principles.', 'What is the purpose of indexing in a database?', 'Explain the concept of microservices architecture.', 'How would you design a simple URL shortening service like TinyURL?', 'Describe different types of caching strategies you might use in a backend application.'],
+                'data-science': ['Explain the difference between supervised and unsupervised learning.', 'What is overfitting and how can you prevent it?', 'Describe the process of cleaning a dataset.', 'Explain the bias-variance tradeoff in machine learning.', 'What are Type I and Type II errors?', 'Describe how a decision tree works.', 'How would you approach a problem where the dataset is highly imbalanced?'],
+                'cloud': ['What is virtualization?', 'Explain the difference between IaaS, PaaS, and SaaS.', 'What is a VPC in the context of cloud computing?', 'Describe the concept of auto-scaling.', 'What is the purpose of a load balancer?', 'Compare and contrast serverless computing with container-based deployment.', 'How would you secure a cloud environment?'],
+                'devops': ['What is CI/CD and why is it important?', 'Explain the purpose of Docker and containers.', 'What is Infrastructure as Code (IaC)?', 'Describe the difference between a virtual machine and a container.', 'What is the role of a configuration management tool like Ansible or Puppet?', 'Explain the concept of blue-green deployment.', 'How would you monitor a distributed system in production?'],
+                'product-management': ['How would you prioritize features for a new product?', 'What is your favorite product and why?', 'Describe the product development lifecycle.', 'How do you define and measure the success of a product?', 'Walk me through how you would design a new feature for a popular app.', 'How would you handle a situation where stakeholders have conflicting priorities?', 'What is the difference between a product manager and a project manager?']
+            };
+
+            // --- USER DATA (Now sourced from Firestore) ---
+            let savedInternships = [];
+            let appliedInternships = [];
+            let earnedBadges = [];
+
+            // --- ELEMENTS ---
+            const mainNav = document.getElementById('main-nav');
+            const viewSections = document.querySelectorAll('.view-section');
+            const listingsContainer = document.getElementById('internship-listings');
+            const internshipCarousel = document.getElementById('internship-carousel');
+            const internshipPrevBtn = document.getElementById('internship-prev');
+            const internshipNextBtn = document.getElementById('internship-next');
+            const modal = document.getElementById('application-modal');
+            const modalJobTitle = document.getElementById('modal-job-title');
+            const modalJobIdInput = document.getElementById('modal-job-id');
+            const applicationForm = document.getElementById('application-form');
+            const successNotification = document.getElementById('success-notification');
+            const notificationText = document.getElementById('notification-text');
+            const learningContainer = document.getElementById('learning-resources');
+            const interviewContainer = document.getElementById('interview-container');
+            const improveResumeBtn = document.getElementById('improve-resume-btn');
+            const generateCoverLetterBtn = document.getElementById('generate-cover-letter-btn');
+            const aiHelperOutput = document.getElementById('ai-helper-output');
+            const resumeContent = document.getElementById('resume-content');
+            const generatePathBtn = document.getElementById('generate-path-btn');
+            const careerGoalInput = document.getElementById('career-goal-input');
+            const learningPathResult = document.getElementById('learning-path-result');
+            const dayInLifeModal = document.getElementById('day-in-life-modal');
+            const dayModalJobTitle = document.getElementById('day-modal-job-title');
+            const dayInLifeContent = document.getElementById('day-in-life-content');
+            const searchBar = document.getElementById('main-search-bar');
+            const sortTabsContainer = document.getElementById('sort-tabs');
+            const takeQuizBtn = document.getElementById('take-quiz-btn');
+            const quizModal = document.getElementById('quiz-modal');
+            const quizContainer = document.getElementById('quiz-container');
             
-            quickButtons.forEach(btnInfo => {
-                const btnElement = document.getElementById(btnInfo.id);
-                if(btnElement) {
-                    btnElement.innerHTML = `<span class="icon">${btnInfo.icon}</span><span>${btnInfo.text}</span>`;
-                    btnElement.dataset.query = btnInfo.query;
-                }
-            });
+            // Auth elements
+            const loginModal = document.getElementById('login-modal');
+            const signupModal = document.getElementById('signup-modal');
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            const loginBtnHeader = document.getElementById('login-btn-header');
+            const signupBtnHeader = document.getElementById('signup-btn-header');
+            const authButtons = document.getElementById('auth-buttons');
+            const userGreeting = document.getElementById('user-greeting');
+            const userNameEl = document.getElementById('user-name');
+            const logoutBtn = document.getElementById('logout-btn');
+            const loginError = document.getElementById('login-error');
+            const signupError = document.getElementById('signup-error');
 
-            // Update Disease Alert
-            const diseaseAlertTitleElement = document.getElementById('disease-alert-title');
-            const diseaseAlertContentElement = document.getElementById('disease-alert-content');
-            if (diseaseAlertTitleElement && diseaseAlertContentElement) {
-                diseaseAlertTitleElement.innerText = t.diseaseAlertTitle;
-                diseaseAlertContentElement.innerHTML = `
-                    <p><strong>${t.diseaseAlertDengueTitle}:</strong> ${t.diseaseAlertDengueInfo}</p>
-                    <p><strong>${t.diseaseAlertViralTitle}:</strong> ${t.diseaseAlertViralInfo}</p>
-                `;
-            }
-
-            // Update Initial Message Area
-            if (initialMessageContainer && initialMessageContainer.style.display !== 'none') {
-                initialMessageContainer.innerHTML = `
-                    <div class="help-section">
-                        <div class="help-title">${t.helpTitle}</div>
-                        <div class="help-list">${t.helpList}</div>
-                    </div>
-                    <div class="message bot-message">
-                        <p class="font-bold text-gray-800 mb-2">${t.initialBotGreeting}</p>
-                        <p class="text-gray-600">${t.initialBotInstruction}</p>
-                    </div>
-                `;
-            }
-
-            // Update other elements
-            const typingTextElement = document.getElementById('typing-text');
-            if(typingTextElement) {
-                typingTextElement.innerText = t.typingText;
-            }
-            if(messageInput) {
-                messageInput.placeholder = t.inputPlaceholder;
-            }
-            const tooltipTextElement = document.getElementById('tooltip-text');
-            if(tooltipTextElement) {
-                tooltipTextElement.innerText = t.tooltipText;
-            }
-        }
-
-
-        // --- Event Listeners ---
-        window.addEventListener('load', () => {
-            updateUIText(currentLanguage); // Set initial language on load
-            initKeyboard(); // Initialize virtual keyboard
-        });
-
-        document.getElementById('close-alert-btn').addEventListener('click', () => {
-            const banner = document.getElementById('disease-alert');
-            banner.classList.add('collapsed');
-        });
-
-        sendBtn.addEventListener('click', sendMessage);
-        messageInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
-        document.querySelectorAll('.quick-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const query = btn.dataset.query;
-                if (query === 'show_diet_plan_form') {
-                    showDietPlanForm();
-                } else if (query === 'show_nearby_doctors') {
-                    showNearbyDoctors();
-                } else {
-                    messageInput.value = query;
-                    sendMessage();
-                }
-            });
-        });
-        voiceBtn.addEventListener('click', toggleVoiceRecognition);
-        closeTooltipBtn.addEventListener('click', () => voiceTooltip.classList.add('hidden'));
-        headerToggleBtn.addEventListener('click', () => {
-            document.getElementById('disease-alert').classList.toggle('collapsed');
-            quickActions.classList.toggle('collapsed');
-            headerToggleIcon.classList.toggle('rotate-180');
-        });
-
-
-        // --- Core Functions ---
-        function sendMessage() {
-            const userMessage = messageInput.value.trim();
-            if (!userMessage || apiKey === "PASTE_YOUR_GOOGLE_AI_API_KEY_HERE") return;
-
-            if (initialMessageContainer) {
-                initialMessageContainer.style.display = 'none';
-            }
-
-            addMessage(userMessage, 'user');
-            messageInput.value = '';
-            if (keyboard) {
-                keyboard.setInput(""); // Clear keyboard input
-            }
-            showTypingIndicator(true);
+            // Dashboard elements
+            const savedInternshipsContainer = document.getElementById('saved-internships-container');
+            const applicationHistoryContainer = document.getElementById('application-history-container');
+            const myBadgesContainer = document.getElementById('my-badges-container');
+            const getRecommendationsBtn = document.getElementById('get-recommendations-btn');
+            const recommendationsResult = document.getElementById('recommendations-result');
             
-            if (isEmergency(userMessage)) {
-                const emergencyResponse = getEmergencyResponse(currentLanguage);
-                setTimeout(() => {
-                    showTypingIndicator(false);
-                    addMessage(marked.parse(emergencyResponse), 'bot');
-                }, 1000);
-            } else {
-                callGeminiAPI(userMessage);
-            }
-        }
+            let currentTrack = '';
+            let questionIndex = 0;
+            let userAnswers = [];
+            let recognition;
+            let isLoggedIn = false;
 
-        async function callGeminiAPI(prompt) {
-            try {
-                // Enhanced system prompt for better, safer, and more empathetic responses
-                const systemPrompt = `You are Sushruta, an AI health assistant for India. Your primary goal is to provide helpful, safe, and preliminary health information in a calm, empathetic, and reassuring tone. You must respond ONLY in the user's selected language: ${currentLanguage}.
-                
-                **CONTEXT:** The current date is Friday, September 26, 2025. The user is located in Noida, Uttar Pradesh, India. Tailor your health advice to be relevant to this time and location (post-monsoon season).
-
-                **CRITICAL SAFETY INSTRUCTIONS:**
-                1.  **ALWAYS start your response with a clear disclaimer:** "${translations[currentLanguage].disclaimer} Please consult a doctor for any health concerns." (Translate this disclaimer accurately to the user's language).
-                2.  **NEVER provide a diagnosis.** You can list possible symptoms or causes, but you must never state what condition the user has. Frame suggestions carefully, e.g., "Some people find relief by..."
-                3.  **FOR ANY SERIOUS SYMPTOMS** (e.g., chest pain, difficulty breathing, severe bleeding, high fever in infants, confusion, sudden weakness), immediately advise the user to seek emergency medical help. Provide the national emergency number (112) and ambulance number (108).
-                4.  **KEEP INFORMATION GENERAL.** Avoid specific dosages for medications. Recommend consulting a doctor or pharmacist for treatment plans and medication advice.
-                5.  **USE SIMPLE LANGUAGE.** Avoid complex medical jargon. Explain concepts clearly and concisely.
-
-                **CONTENT & FORMATTING GUIDELINES:**
-                - **Use Markdown for formatting.** Use headings, bold text, and bulleted lists (\`*\` or \`-\`) to structure information and make it easy to read.
-                - **Use emojis** to make the content more friendly and approachable (e.g., 🩺, 🙏, 😊, 🥗).
-                - **Structure your response clearly:**
-                    1.  Mandatory Disclaimer (Translated).
-                    2.  Empathetic acknowledgment of the user's query.
-                    3.  Clear, structured answer using Markdown.
-                    4.  Actionable, safe recommendations (e.g., "Consider speaking to a doctor," "You might find it helpful to...").
-
-                **NEW INSTRUCTION: PROVIDING DOCTOR INFORMATION**
-                After you provide the health information for the user's query, you MUST add a new section titled "### 🩺 Find a Specialist (Examples)".
-                In this section, you must:
-                1.  Identify the relevant medical specialty for the user's query (e.g., for a skin rash, the specialty is Dermatology; for a heart issue, it's Cardiology; for fever or cold, it is General Medicine).
-                2.  Search the "INTERNAL KNOWLEDGE BASE" provided below for doctors or departments matching that specialty, prioritizing those in Noida/Delhi NCR.
-                3.  List a few relevant examples of doctors or departments you find. Include their name, designation, and hospital.
-                4.  **CRITICALLY IMPORTANT:** You MUST include the following disclaimer at the end of this section: "${translations[currentLanguage].doctorDisclaimer}" (Translate this disclaimer to the user's language).
-                5.  If you cannot find a relevant specialist in the knowledge base, state that you don't have specific doctor information for this condition and recommend contacting a major government hospital like AIIMS, New Delhi for a referral.
-
-                ---
-
-                **INTERNAL KNOWLEDGE BASE: DOCTOR DIRECTORY (SAMPLE DATA)**
-                
-                **NOIDA & DELHI NCR REGION:**
-                **1. Fortis Hospital, Noida**
-                - Cardiology: Dr. Subrat Akhoury (Director)
-                - Neurology: Dr. Jyoti Bala Sharma (Director)
-                - Orthopaedics & Joint Replacement: Dr. Atul Mishra (Director)
-                - Gastroenterology & Hepatobiliary Sciences: Dr. Ajay Kumar (Director)
-                - Pulmonology: Dr. Rahul Sharma (Sr. Consultant)
-
-                **2. Max Healthcare, Noida**
-                - Internal Medicine: Dr. V K Jain (Sr. Director)
-                - Paediatrics (Ped): Dr. Ankur Kumar (Associate Consultant)
-                - Obstetrics & Gynaecology: Dr. Anjali Kumar (Director)
-                - Cardiology: Dr. Girish B. Navasundi (Sr. Director)
-
-                **3. All India Institute of Medical Sciences (AIIMS), New Delhi (Major Referral Hospital)**
-                - General Medicine / Pulmonology: Dr. Randeep Guleria (Former Director, renowned specialist)
-                - Cardiology: Dr. Vinay Kumar Bahl (Head of Department)
-                - Neurology: Dr. M.V. Padma Srivastava (Head of Department)
-                - Paediatrics: Dr. V. K. Paul (Head of Department, Member NITI Aayog)
-
-                **OTHER REGIONS:**
-                **4. Nil Ratan Sircar (NRS) Medical College & Hospital, Kolkata, West Bengal**
-                - Cardiology: Prof. (Dr.) Manoranjan Mandal
-                - General Medicine: Dr. Milan Chakraborty
-                - Gynecology & Obstetrics: Dr. Runa Bal
-                - Paediatrics Medicine: Dr. Asim Kr Mallick
-                - Psychiatry: Dr. Asish Mukhopadhyay
-
-                **5. Sheikh Bhikhari Medical College & Hospital, Hazaribag, Jharkhand**
-                - Medicine: DR S K SINGH (Professor & Principal), DR S. K. SINHA (Professor & HOD)
-                - Surgery: DR VINOD KUMAR (Professor)
-                - Obstetrics & Gynecology (OBGY): DR SWETA LAL (Assistant Professor)
-                - Paediatrics: DR CHITIZ ANAND (Assistant Professor)
-                - Dermatology: DR. FIRDOUS JAHAN (Assistant Professor)
-
-                **6. MKCG Medical College & Hospital, Berhampur, Odisha**
-                - General Medicine: Prof Dr S.S. Baisakh (Professor)
-                - Orthopaedics: Dr. Bikram Keshari Mohanty (Professor)
-                - Cardiology: Dr. A.K. Mohapatra (Professor)
-                - Nephrology: Dr. J.K. Sahu (Professor)`;
-
+            // --- GEMINI API HELPER ---
+            const apiKey = ""; // This will be provided by the environment
+            
+            async function callGemini(systemPrompt, userQuery) {
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
                 const payload = {
-                    contents: [{ parts: [{ text: prompt }] }],
-                    systemInstruction: {
-                        parts: [{ text: systemPrompt }]
-                    },
+                    contents: [{ parts: [{ text: userQuery }] }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
                 };
-
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`API call failed with status: ${response.status}`);
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) { throw new Error(`API call failed: ${response.status}`); }
+                    const result = await response.json();
+                    return result.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't get a response.";
+                } catch (error) {
+                    console.error("Gemini API Error:", error);
+                    return "Error contacting AI. Please try again.";
                 }
-
-                const result = await response.json();
-                const botResponse = result.candidates?.[0]?.content?.parts?.[0]?.text || "I'm sorry, I couldn't process that. Could you try rephrasing?";
-                
-                // Parse the Markdown response to HTML
-                addMessage(marked.parse(botResponse), 'bot');
-
-            } catch (error) {
-                console.error("Error calling Gemini API:", error);
-                addMessage("I'm having trouble connecting right now. Please try again later.", 'bot');
-            } finally {
-                showTypingIndicator(false);
             }
-        }
+            
+            // --- UI TOGGLES ---
+            function showLoader(button) {
+                button.disabled = true;
+                button.dataset.originalText = button.innerHTML;
+                button.innerHTML = '<div class="loader mx-auto"></div>';
+            }
+            function hideLoader(button) {
+                button.disabled = false;
+                button.innerHTML = button.dataset.originalText;
+            }
 
-        function showNearbyDoctors() {
-            const t = translations[currentLanguage];
-            addMessage(t.nearbyDoctorsGenerating, 'bot');
-            showTypingIndicator(true);
-
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const { latitude, longitude } = position.coords;
-                        // The prompt is updated to be more direct, asking for Noida doctors from the KB.
-                        const prompt = `A user in Noida needs to find a doctor. Based on the INTERNAL KNOWLEDGE BASE, list a few doctors from different specialties available in the Noida/Delhi NCR region.
-                        `;
-                        callGeminiAPI(prompt);
-                    },
-                    (error) => {
-                        showTypingIndicator(false);
-                        console.error('Geolocation error:', error);
-                        addMessage(t.locationPermissionDenied, 'bot');
+            // --- RENDER FUNCTIONS ---
+            function renderInternshipCard(internship, isCarouselCard = false) {
+                 const ppoColors = { High: 'bg-green-100 text-green-800', Medium: 'bg-yellow-100 text-yellow-800', Low: 'bg-red-100 text-red-800' };
+                 const cardWidthClass = isCarouselCard ? 'w-80 flex-shrink-0' : '';
+                 const isSaved = savedInternships.includes(internship.id);
+                 return `
+                     <div class="bg-white rounded-xl shadow-md p-6 flex flex-col transition-all duration-300 card-hover border border-slate-200 ${cardWidthClass}">
+                         <div class="flex-grow">
+                             <div class="flex justify-between items-start mb-2">
+                                 <p class="text-md font-semibold text-slate-600">${internship.company}</p>
+                                 <span class="text-xs font-semibold px-2.5 py-1 rounded-full ${ppoColors[internship.ppoChance]}">${internship.ppoChance} PPO Chance</span>
+                             </div>
+                             <h3 class="text-xl font-bold text-slate-900 mb-4">${internship.title}</h3>
+                              <div class="mb-4 pt-4 border-t border-slate-100">
+                                  <h4 class="font-semibold text-sm mb-2 text-slate-800">Top Skills:</h4>
+                                  <div class="flex flex-wrap gap-2">
+                                      ${internship.skills.slice(0, 3).map(skill => `<span class="bg-slate-100 text-slate-700 text-xs font-medium px-2 py-1 rounded-md">${skill}</span>`).join('')}
+                                  </div>
+                              </div>
+                         </div>
+                         <div class="flex gap-2 mt-2 items-center">
+                              <button data-job-id="${internship.id}" class="apply-btn w-full text-white font-bold py-2 px-4 rounded-lg bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 transition-all duration-300">Apply</button>
+                              <button data-job-id="${internship.id}" class="save-btn text-xl p-2 rounded-full ${isSaved ? 'text-pink-500 bg-pink-100' : 'text-slate-400 hover:bg-slate-100'}">
+                                  <i class="fas fa-heart"></i>
+                              </button>
+                         </div>
+                     </div>
+                 `;
+            }
+            
+            function populateAllInternships(data = internships) {
+                if(listingsContainer) {
+                    if (data.length === 0) {
+                        listingsContainer.innerHTML = `<p class="text-slate-500 text-center col-span-full">No internships found matching your search.</p>`;
+                    } else {
+                        listingsContainer.innerHTML = data.map(internship => renderInternshipCard(internship, false)).join('');
                     }
-                );
-            } else {
-                showTypingIndicator(false);
-                addMessage("Geolocation is not supported by your browser.", 'bot');
+                }
             }
-        }
-        
-        // --- Diet Plan Form Functions ---
-        function showDietPlanForm() {
-            const t = translations[currentLanguage];
-            chatArea.innerHTML = `
-                <div class="message bot-message fade-in">
-                    <div class="px-4 py-6 sm:px-8 bg-white shadow-xl rounded-2xl border border-gray-200">
-                        <div class="flex items-center justify-center space-x-2 text-center text-gray-800 mb-4">
-                            <h2 class="text-2xl font-bold">${t.dietFormTitle}</h2>
-                        </div>
-                        <p class="text-gray-500 mb-6 text-center">${t.dietFormSubtitle}</p>
-                        
-                        <div class="space-y-6">
-                            <div class="relative">
-                                <label for="age-input" class="block text-sm font-medium text-gray-700 mb-1">${t.ageLabel}</label>
-                                <input type="number" id="age-input" placeholder="${t.agePlaceholder}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-shadow duration-200">
-                            </div>
-                            
-                            <div class="relative">
-                                <label for="gender-select" class="block text-sm font-medium text-gray-700 mb-1">${t.genderLabel}</label>
-                                <select id="gender-select" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 transition-shadow duration-200">
-                                    <option value="male">${t.genderMale}</option>
-                                    <option value="female">${t.genderFemale}</option>
-                                </select>
-                            </div>
-                            
-                            <div class="relative">
-                                <label for="goal-select" class="block text-sm font-medium text-gray-700 mb-1">${t.goalLabel}</label>
-                                <select id="goal-select" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 transition-shadow duration-200">
-                                    <option value="lose">${t.goalLoose}</option>
-                                    <option value="gain">${t.goalGain}</option>
-                                    <option value="maintain">${t.goalMaintain}</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <button id="generate-diet-btn" class="mt-8 w-full py-3 rounded-lg text-white font-semibold transition-transform duration-200 transform-gpu hover:scale-105 active:scale-95 shadow-lg"
-                                style="background: linear-gradient(135deg, #F9A825, #F57F17);">
-                            ${t.generateBtn}
-                        </button>
+            
+            function populateCarousel(data = internships) {
+                 if (internshipCarousel) {
+                     if (data.length === 0) {
+                         internshipCarousel.innerHTML = `<p class="text-slate-500 text-center w-full">No internships found matching your search.</p>`;
+                     } else {
+                         internshipCarousel.innerHTML = data.map(internship => renderInternshipCard(internship, true)).join('');
+                     }
+                 }
+            }
+            
+            function renderLearningResources() {
+                const icons = {
+                    'Video Course': `<i class="fas fa-video text-purple-500 text-2xl"></i>`,
+                    'Article': `<i class="fas fa-link text-pink-500 text-2xl"></i>`,
+                    'Tutorial': `<i class="fas fa-wrench text-orange-500 text-2xl"></i>`
+                };
+                if(learningContainer) learningContainer.innerHTML = learningResources.map(resource => `
+                    <div class="bg-white rounded-xl shadow-md p-6 flex flex-col items-start transition-all duration-300 card-hover border border-slate-200">
+                        <div class="mb-4 h-8">${icons[resource.type] || icons['Article']}</div>
+                        <h3 class="text-lg font-bold text-slate-900 mb-1 flex-grow">${resource.title}</h3>
+                        <p class="text-sm text-slate-500 mb-4">${resource.category}</p>
+                        <span class="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-800 self-start">${resource.type}</span>
                     </div>
-                </div>
-            `;
-            document.getElementById('generate-diet-btn').addEventListener('click', generateDietPlan);
-            chatArea.scrollTop = chatArea.scrollHeight;
-        }
-
-        async function generateDietPlan() {
-            const age = document.getElementById('age-input').value;
-            const gender = document.getElementById('gender-select').value;
-            const goal = document.getElementById('goal-select').value;
-            const t = translations[currentLanguage];
-
-            if (!age) {
-                // In-chat message box for validation
-                addMessage('Please enter your age.', 'bot');
-                return;
+                `).join('');
             }
 
-            const prompt = `Generate a comprehensive and well-structured, 7-day diet chart based on the following information:
-- Age: ${age} years
-- Gender: ${gender}
-- Weight Goal: ${goal}
-The diet chart should be suitable for a general audience in India and should include a variety of meals for breakfast, lunch, and dinner. Provide healthy snacks and drink suggestions as well. Use simple language and clear formatting.
-`;
-            
-            chatArea.innerHTML = '';
-            addMessage(t.dietChartGenerating, 'bot');
-            showTypingIndicator(true);
+            function renderInterviewUI(state, aiFeedback = "") {
+                 if(!interviewContainer) return;
+                 let content = '';
+                 switch(state) {
+                     case 'selection':
+                         content = `
+                             <div id="interview-selection">
+                                 <h3 class="text-2xl font-bold text-slate-900 mb-6 text-center">Choose Your Interview Track</h3>
+                                 <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                      <button data-track="frontend" class="interview-track-btn flex flex-col items-center justify-center p-6 border border-slate-200 rounded-lg transition text-slate-700 font-semibold text-lg hover:border-purple-500 hover:text-purple-600 hover:shadow-lg">
+                                          <i class="fas fa-code text-3xl mb-3 text-purple-500"></i>
+                                          <span>Frontend</span>
+                                      </button>
+                                      <button data-track="backend" class="interview-track-btn flex flex-col items-center justify-center p-6 border border-slate-200 rounded-lg transition text-slate-700 font-semibold text-lg hover:border-pink-500 hover:text-pink-600 hover:shadow-lg">
+                                          <i class="fas fa-server text-3xl mb-3 text-pink-500"></i>
+                                          <span>Backend</span>
+                                      </button>
+                                      <button data-track="data-science" class="interview-track-btn flex flex-col items-center justify-center p-6 border border-slate-200 rounded-lg transition text-slate-700 font-semibold text-lg hover:border-orange-500 hover:text-orange-600 hover:shadow-lg">
+                                          <i class="fas fa-brain text-3xl mb-3 text-orange-500"></i>
+                                          <span>Data Science</span>
+                                      </button>
+                                      <button data-track="cloud" class="interview-track-btn flex flex-col items-center justify-center p-6 border border-slate-200 rounded-lg transition text-slate-700 font-semibold text-lg hover:border-blue-500 hover:text-blue-600 hover:shadow-lg">
+                                          <i class="fas fa-cloud text-3xl mb-3 text-blue-500"></i>
+                                          <span>Cloud</span>
+                                      </button>
+                                      <button data-track="devops" class="interview-track-btn flex flex-col items-center justify-center p-6 border border-slate-200 rounded-lg transition text-slate-700 font-semibold text-lg hover:border-green-500 hover:text-green-600 hover:shadow-lg">
+                                          <i class="fas fa-infinity text-3xl mb-3 text-green-500"></i>
+                                          <span>DevOps</span>
+                                      </button>
+                                      <button data-track="product-management" class="interview-track-btn flex flex-col items-center justify-center p-6 border border-slate-200 rounded-lg transition text-slate-700 font-semibold text-lg hover:border-indigo-500 hover:text-indigo-600 hover:shadow-lg">
+                                          <i class="fas fa-lightbulb text-3xl mb-3 text-indigo-500"></i>
+                                          <span>Product</span>
+                                      </button>
+                                 </div>
+                             </div>`;
+                         interviewContainer.innerHTML = content;
+                         interviewContainer.querySelectorAll('.interview-track-btn').forEach(btn => btn.addEventListener('click', () => startInterview(btn.dataset.track)));
+                         break;
+                     case 'session':
+                         const questions = interviewQuestions[currentTrack];
+                         const progress = (questionIndex / questions.length) * 100;
+                         content = `
+                             <div id="interview-session">
+                                 <div class="flex justify-between items-center mb-4">
+                                     <h3 class="text-2xl font-bold text-slate-900">Interview in Progress...</h3>
+                                     <p class="text-sm font-semibold text-slate-500">Track: <span class="text-purple-600">${currentTrack.replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase())}</span></p>
+                                 </div>
+                                 <div class="w-full bg-gray-200 rounded-full h-2 mb-6"><div class="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full" style="width: ${progress}%"></div></div>
+                                 <div class="bg-slate-100 p-6 rounded-lg mb-4 border border-slate-200"><p id="question-text" class="text-lg font-semibold text-slate-800">${questions[questionIndex]}</p></div>
+                                 <textarea id="answer-input" class="w-full p-4 border border-slate-300 rounded-lg" rows="5" placeholder="Type your answer here or use the voice input..."></textarea>
+                                 <div class="flex justify-center items-center gap-4 my-4">
+                                     <button id="listen-btn" class="flex items-center gap-2 text-white font-bold py-2 px-6 rounded-full bg-green-500 hover:bg-green-600 transition-colors">
+                                         <i class="fas fa-microphone"></i>
+                                         <span id="listen-text">Start Listening</span>
+                                     </button>
+                                 </div>
+                                 <div class="flex justify-between items-center mt-4">
+                                     <p class="text-sm font-medium text-slate-500">Question ${questionIndex + 1} of ${questions.length}</p>
+                                     <button id="next-question-btn" class="text-white font-bold py-2 px-6 rounded-lg bg-gradient-to-r from-purple-600 to-pink-500">Next Question</button>
+                                 </div>
+                             </div>`;
+                         interviewContainer.innerHTML = content;
+                         const nextBtn = interviewContainer.querySelector('#next-question-btn');
+                         if (questionIndex >= questions.length - 1) {
+                             nextBtn.textContent = 'Finish & Get Feedback';
+                         }
+                         nextBtn.addEventListener('click', handleNextQuestion);
+                         interviewContainer.querySelector('#listen-btn').addEventListener('click', toggleListening);
+                         speak(questions[questionIndex]);
+                         break;
+                      case 'loading':
+                         content = `
+                             <div class="text-center">
+                                 <h3 class="text-2xl font-bold text-slate-900 mb-4">Analyzing your answers...</h3>
+                                 <p class="text-slate-600 mb-6">Our AI interviewer is reviewing your responses to provide personalized feedback.</p>
+                                 <div class="flex justify-center items-center">
+                                     <div class="loader" style="border-left-color: #8b5cf6; width: 40px; height: 40px;"></div>
+                                 </div>
+                             </div>`;
+                         interviewContainer.innerHTML = content;
+                         break;
+                       case 'report':
+                         let progressHtml = isLoggedIn ? `
+                             <div class="mt-12 p-6 bg-purple-50 rounded-lg border border-purple-200">
+                                 <h4 class="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2"><i class="fas fa-chart-line text-purple-600"></i>Progress Tracking</h4>
+                                 <p class="text-slate-600 mb-4">Here's how you're improving over time in the ${currentTrack.replace('-', ' ')} track.</p>
+                                 <div class="space-y-3">
+                                     <div class="flex items-center">
+                                         <p class="w-32 font-semibold">Previous Score:</p>
+                                         <div class="w-full bg-slate-200 rounded-full h-5"><div class="bg-purple-400 h-5 rounded-full text-xs text-white flex items-center justify-center" style="width: 75%">75%</div></div>
+                                     </div>
+                                     <div class="flex items-center">
+                                         <p class="w-32 font-semibold">This Score:</p>
+                                         <div class="w-full bg-slate-200 rounded-full h-5"><div class="bg-purple-600 h-5 rounded-full text-xs text-white flex items-center justify-center" style="width: 85%">85%</div></div>
+                                     </div>
+                                 </div>
+                             </div>` : '';
 
-            // Re-adding the safety prompt before the content prompt
-            const fullPrompt = `${prompt}
----
-${t.chartGeneratedMessage}
----`;
-            
-            callGeminiAPI(fullPrompt);
-        }
-
-        function addMessage(text, sender) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}-message`;
-            messageDiv.innerHTML = text; // Use innerHTML directly as text is now parsed HTML
-            chatArea.appendChild(messageDiv);
-            chatArea.scrollTop = chatArea.scrollHeight;
-        }
-
-        function showTypingIndicator(show) {
-            typingIndicator.style.display = show ? 'flex' : 'none';
-            if (show) {
-                chatArea.scrollTop = chatArea.scrollHeight;
+                         content = `
+                             <div id="interview-report">
+                                 <h3 class="text-3xl font-bold text-slate-900 mb-8 text-center">Your AI Interview Feedback</h3>
+                                 <div class="prose max-w-none text-slate-700 bg-purple-50 p-6 rounded-lg border border-purple-200">
+                                     ${aiFeedback.replace(/\n/g, '<br>')}
+                                 </div>
+                                 ${progressHtml}
+                                 <div class="text-center mt-10"><button id="try-again-btn" class="bg-slate-200 text-slate-800 font-bold py-3 px-8 rounded-lg">Try Another Interview</button></div>
+                             </div>`;
+                         interviewContainer.innerHTML = content;
+                         interviewContainer.querySelector('#try-again-btn').addEventListener('click', () => renderInterviewUI('selection'));
+                         break;
+                }
             }
-        }
 
-        function setLanguage(lang) {
-            currentLanguage = lang;
-            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-            const langBtn = document.getElementById(`lang-${lang}`);
-            if (langBtn) {
-                langBtn.classList.add('active');
+            // --- LOGIC & EVENT HANDLERS ---
+            function switchView(viewId, isSearchTriggered = false) {
+                if (!isSearchTriggered && searchBar.value !== '') {
+                    searchBar.value = '';
+                    populateAllInternships(internships);
+                    populateCarousel(internships);
+                }
+                viewSections.forEach(section => section.classList.add('hidden'));
+                const targetView = document.getElementById(viewId);
+                targetView.classList.remove('hidden');
+                
+                const navId = viewId.replace('-view', '');
+                const activeLink = document.querySelector(`.nav-link[data-nav="${navId}"]`);
+                document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+                if(activeLink) activeLink.classList.add('active');
+
             }
-            updateUIText(lang);
-            // Update keyboard layout
-            if (keyboard) {
-                keyboard.setOptions({
-                    layout: keyboardLayouts[lang],
-                    layoutName: 'default' // Reset to default layout on language change
+            function startInterview(track) { 
+                currentTrack = track; 
+                questionIndex = 0; 
+                userAnswers = [];
+                renderInterviewUI('session'); 
+            }
+            function handleNextQuestion() {
+                const answerInput = document.getElementById('answer-input');
+                const questions = interviewQuestions[currentTrack];
+                userAnswers.push({
+                    question: questions[questionIndex],
+                    answer: answerInput.value || "No answer provided."
                 });
+
+                if (questionIndex < questions.length - 1) { 
+                    questionIndex++; 
+                    renderInterviewUI('session'); 
+                } else { 
+                    generateAIReport();
+                }
             }
-        }
-
-        // --- Voice Recognition ---
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        let recognition;
-        let isListening = false;
-        
-        if (SpeechRecognition) {
-            recognition = new SpeechRecognition();
-            recognition.continuous = false;
-            recognition.interimResults = false;
-            
-            recognition.onstart = () => {
-                isListening = true;
-                voiceBtn.classList.add('listening');
-            };
-            
-            recognition.onend = () => {
-                isListening = false;
-                voiceBtn.classList.remove('listening');
-            };
-            
-            recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                messageInput.value = transcript;
-                sendMessage();
-            };
-            
-            recognition.onerror = (event) => {
-                console.error('Speech recognition error:', event.error);
-            };
-
-        } else {
-            voiceBtn.style.display = 'none'; // Hide voice button if not supported
-        }
-
-        function toggleVoiceRecognition() {
-            if (!recognition) return;
-            
-            if (isListening) {
-                recognition.stop();
-            } else {
-                recognition.lang = getLangCodeForVoice(currentLanguage);
-                recognition.start();
+            async function generateAIReport() {
+                renderInterviewUI('loading');
+                const systemPrompt = "You are a senior technical interviewer providing feedback on a candidate's performance. The user has completed an interview simulation. You will receive the interview track, a list of questions, and their corresponding answers. Your task is to provide a realistic, professional evaluation. Do not invent fake progress scores. Instead, focus on the quality of their answers. \n\nYour response MUST include:\n1. An overall **Answer Level** assessment (e.g., Beginner, Intermediate, Advanced-Beginner, etc.).\n2. A concise **Overall Summary** of their performance in a short paragraph.\n3. A bulleted list of **Specific Feedback** with 2-3 points on what they did well and what they can improve.\n\nFormat your response using markdown, for example:\n**Answer Level:** Intermediate\n\n**Overall Summary:**\nThe candidate demonstrates a solid foundational knowledge...\n\n**Specific Feedback:**\n* **Good:** Your explanation of the component lifecycle was clear...\n* **Improvement:** When discussing RESTful APIs, try to include more detail about HTTP methods...";
+                
+                const userQuery = `Interview Track: ${currentTrack}\n\nQuestions and Answers:\n${userAnswers.map((item, index) => `Q${index+1}: ${item.question}\nA${index+1}: ${item.answer}`).join('\n\n')}`;
+                
+                const feedback = await callGemini(systemPrompt, userQuery);
+                renderInterviewUI('report', feedback);
             }
-        }
-        
-        function getLangCodeForVoice(lang) {
-            const langMap = {
-                'en': 'en-IN',
-                'hi': 'hi-IN',
-                'bn': 'bn-IN',
-                'ta': 'ta-IN',
-                'od': 'or-IN',
-                'te': 'te-IN'
-            };
-            return langMap[lang] || 'en-IN';
-        }
-        
-        // --- Emergency Detection ---
-        function isEmergency(text) {
-            const emergencyKeywords = [
-                // English
-                'chest pain', 'heart attack', 'stroke', 'can\'t breathe', 'not breathing', 'severe bleeding', 'unconscious', 'poison', 'suicide', 'emergency', 'accident', 'seizure',
-                // Hindi (and other regional languages)
-                'छाती में दर्द', 'दिल का दौरा', 'लकवा', 'सांस नहीं ले पा रहा', 'बेहोश', 'गंभीर रक्तस्राव', 'जहर', 'आत्महत्या', 'आपातकालीन', 'दुर्घटना'
-            ];
-            const lowerText = text.toLowerCase();
-            return emergencyKeywords.some(keyword => lowerText.includes(keyword));
-        }
-
-        function getEmergencyResponse(lang) {
-            const t = translations[lang] || translations.en;
-            return t.emergencyResponse;
-        }
-
-        // Show voice tooltip on first visit
-        if (!localStorage.getItem('visitedSushruta')) {
-            setTimeout(() => {
-                voiceTooltip.classList.remove('hidden');
-            }, 2000);
-            localStorage.setItem('visitedSushruta', 'true');
-        }
-
-        // --- Virtual Keyboard Logic ---
-        const Keyboard = window.SimpleKeyboard.default;
-        let keyboard;
-        const languageCycle = ['en', 'hi', 'bn', 'ta', 'od', 'te'];
-
-        const keyboardLayouts = {
-            en: {
-                'default': [
-                    'q w e r t y u i o p', 'a s d f g h j k l', '{shift} z x c v b n m {backspace}', '{next} {space} {hide} {enter}'
-                ],
-                'shift': [
-                    'Q W E R T Y U I O P', 'A S D F G H J K L', '{shift} Z X C V B N M {backspace}', '{next} {space} {hide} {enter}'
-                ]
-            },
-            hi: {
-                'default': [
-                    'ौ ै ा ी ू ू े ो ् ृ {backspace}',
-                    'त थ द ध न प फ ब भ म',
-                    'य र ल व श ष स ह च छ ज झ',
-                    'क़ ख ग़ ज़ ड़ ढ़ फ़ य़ ॉ ञ',
-                    '{shift} {next} {space} {hide} {enter}'
-                ],
-                'shift': [
-                    'औ ऐ आ ई ऊ ब भ र् ज्ञ ऋ ॐ',
-                    'त् थ् द् ध् न् प् फ् ब् भ् म्',
-                    'य् र् ल् व् श् ष् स् ह् च् छ् ज् झ्',
-                    'ट ठ ड ढ ण क ख ग घ ङ ञ्',
-                    '{shift} {next} {space} {hide} {enter}'
-                ]
-            },
-            bn: {
-                'default': [
-                    'ৌ ৈ া ী ু ূ ে ো ্ ৃ {backspace}',
-                    'ত থ দ ধ ন প ফ ব ভ ম',
-                    'য র ল ব শ ষ স হ চ ছ জ ঝ ঞ',
-                    'ট ঠ ড ঢ ণ ক খ গ ঘ ঙ',
-                    '{shift} {next} {space} {hide} {enter}'
-                ],
-                'shift': [
-                    'ঔ ঐ অ ই উ ঊ ঋ এ ঐ ও ঔ',
-                    'ৎ থ্ দ্ ধ্ ন্ প্ ফ্ ব্ ভ্ ম্',
-                    'য্ র ্ ল্ ব্ শ্ ষ ্ স্ হ্ চ্ ছ্ জ্ ঝ্ ঞ্',
-                    'ট্ ঠ্ ড্ ঢ্ ণ্ ক্ খ্ গ্ ঘ্ ঙ্',
-                    '{shift} {next} {space} {hide} {enter}'
-                ]
-            },
-            ta: {
-                'default': [
-                    'க ச ட த ப ய ர ல வ ழ ள {backspace}', 
-                    'அ ஆ இ ஈ உ ஊ எ ஏ ஐ ஒ ஓ ஔ', 
-                    '் ா ி ீ ு ூ ெ ே ை ொ ோ ௌ ஃ', 
-                    '{shift} {next} {space} {hide} {enter}'
-                ],
-                'shift': [
-                    'ங ஞ ண ந ம ன ற ன', 
-                    'க் ச் ட் த் ப் ய் ர் ல் வ் ழ் ள்', 
-                    'ஜ் ஷ் ஸ் ஹ் ஸ்ரீ {backspace}', 
-                    '{shift} {next} {space} {hide} {enter}'
-                ]
-            },
-              od: {
-                'default': [
-                    'ୌ ୈ ା ୀ ୂ ୄ େ ୋ ୍ ୃ {backspace}',
-                    'ତ ଥ ଦ ଧ ନ ପ ଫ ବ ଭ ମ',
-                    'ଯ ର ଲ ଵ ଶ ଷ ସ ହ ଚ ଛ ଜ ଝ ଞ',
-                    'ଟ ଠ ଡ ଢ ଣ କ ଖ ଗ ଘ ଙ',
-                    '{shift} {next} {space} {hide} {enter}'
-                ],
-                'shift': [
-                    'ଔ ঐ ଆ ଈ ଉ ଊ ଋ ଏ ଓ ଔ',
-                    'ତ୍ ଥ୍ ଦ୍ ଧ୍ ନ ପ୍ ଫ୍ ବ୍ ଭ୍ ମ୍',
-                    'ଯ୍ ର୍ ଲ୍ ଵ୍ ଶ୍ ଷ୍ ସ୍ ହ୍ ଚ୍ ଛ୍ ଜ୍ ଝ୍ ଞ୍',
-                    'ଟ୍ ଠ୍ ଡ୍ ଢ୍ ଣ କ୍ ଖ୍ ଗ୍ ଘ୍ ଙ୍',
-                    '{shift} {next} {space} {hide} {enter}'
-                ]
-            },
-            te: {
-                 'default': [
-                    'ౌ ై ా ీ ు ూ ె ో ్ ృ {backspace}',
-                    'త థ ద ధ న ప ఫ బ భ మ',
-                    'య ర ల వ శ ష స హ చ ఛ జ ఝ ఞ',
-                    'ట ఠ డ ఢ ణ క ఖ గ ఘ ఙ',
-                    '{shift} {next} {space} {hide} {enter}'
-                ],
-                'shift': [
-                    'ఔ ఐ ఆ ఈ ఉ ఊ ఋ ఎ ఏ ఒ ఓ',
-                    'త్ థ్ ద్ ధ్ న ప్ ఫ్ బ్ భ్ మ్',
-                    'య్ ర్ ల వ శ ష స హ చ ఛ జ ఝ ఞ',
-                    'ట్ ఠ్ డ్ ఢ్ ణ్ క్ ఖ్ గ్ ఘ్ ఙ్',
-                    '{shift} {next} {space} {hide} {enter}'
-                ]
+            
+            function openModal(modalEl) { modalEl.classList.remove('hidden'); }
+            function closeModal(modalEl) { modalEl.classList.add('hidden'); }
+            
+            function showSuccessNotification(message) {
+                notificationText.textContent = message;
+                successNotification.classList.remove('translate-x-[120%]');
+                setTimeout(() => { successNotification.classList.add('translate-x-[120%]'); }, 3000);
             }
-        };
+            
+            async function handleLogin(e) {
+                e.preventDefault();
+                showLoader(loginForm.querySelector('button[type="submit"]'));
+                loginError.classList.add('hidden');
+                const email = loginForm.querySelector('#login-email').value;
+                const password = loginForm.querySelector('#login-password').value;
+                try {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    closeModal(loginModal);
+                    loginForm.reset();
+                    // onAuthStateChanged will handle the rest
+                } catch(error) {
+                    console.error("Login failed:", error.message);
+                    loginError.textContent = "Failed to log in. Please check your email and password.";
+                    loginError.classList.remove('hidden');
+                } finally {
+                    hideLoader(loginForm.querySelector('button[type="submit"]'));
+                }
+            }
 
-        function initKeyboard() {
-            keyboard = new Keyboard({
-                onChange: input => onKeyboardChange(input),
-                onKeyPress: button => onKeyPress(button),
-                layoutName: "default", // Always start with default layout
-                layout: keyboardLayouts[currentLanguage],
-                display: {
-                    '{next}': '🌐',
-                    '{enter}': 'Send',
-                    '{shift}': 'Shift',
-                    '{space}': ' ',
-                    '{backspace}': '⌫',
-                    '{hide}': 'Done'
+            async function handleSignup(e) {
+                e.preventDefault();
+                showLoader(signupForm.querySelector('button[type="submit"]'));
+                signupError.classList.add('hidden');
+                const name = signupForm.querySelector('#signup-name').value;
+                const email = signupForm.querySelector('#signup-email').value;
+                const password = signupForm.querySelector('#signup-password').value;
+                try {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    await updateProfile(userCredential.user, { displayName: name });
+                    closeModal(signupModal);
+                    signupForm.reset();
+                    // onAuthStateChanged will handle the rest
+                } catch (error) {
+                    console.error("Signup failed:", error.message);
+                    signupError.textContent = "Failed to create account. The email might be in use.";
+                    signupError.classList.remove('hidden');
+                } finally {
+                    hideLoader(signupForm.querySelector('button[type="submit"]'));
+                }
+            }
+
+            function handleLogout() {
+                signOut(auth);
+            }
+            
+            function updateAuthUI() {
+                renderNav(); // Rerender nav on auth change
+                if (isLoggedIn) {
+                    authButtons.classList.add('hidden');
+                    userGreeting.classList.remove('hidden');
+                    userGreeting.classList.add('flex');
+                    userNameEl.textContent = `Welcome, ${auth.currentUser.displayName}!`;
+                } else {
+                    authButtons.classList.remove('hidden');
+                    userGreeting.classList.add('hidden');
+                    userGreeting.classList.remove('flex');
+                }
+            }
+
+
+            async function handleImproveResume() {
+                aiHelperOutput.innerHTML = '<div class="flex justify-center items-center"><div class="loader" style="border-left-color: #8b5cf6;"></div></div>';
+                aiHelperOutput.classList.remove('hidden');
+                const content = resumeContent.value;
+                if (!content.trim()) {
+                    aiHelperOutput.innerHTML = '<p class="text-red-600">Please paste resume content.</p>';
+                    return;
+                }
+                const systemPrompt = "You are a career coach. Analyze the resume and suggest 3-5 improvements for a tech internship. Focus on action verbs and quantifying achievements. Use markdown bullet points.";
+                const suggestions = await callGemini(systemPrompt, content);
+                aiHelperOutput.innerHTML = suggestions.replace(/\n/g, '<br>');
+            }
+             async function handleGenerateCoverLetter() {
+                aiHelperOutput.innerHTML = '<div class="flex justify-center items-center"><div class="loader" style="border-left-color: #8b5cf6;"></div></div>';
+                aiHelperOutput.classList.remove('hidden');
+                const resume = resumeContent.value;
+                const jobTitle = modalJobTitle.textContent;
+                if (!resume.trim()) {
+                    aiHelperOutput.innerHTML = '<p class="text-red-600">Please paste resume content first to generate a cover letter.</p>';
+                    return;
+                }
+                 const systemPrompt = "You are a professional career writer. Based on the provided resume content and the target job title, write a concise, professional, and impactful cover letter. Address it generally (e.g., 'Dear Hiring Manager,'). The tone should be enthusiastic but professional. The letter should be about 3 paragraphs long.";
+                 const userQuery = `Resume Content: ${resume}\n\nTarget Job: ${jobTitle}`;
+                 const coverLetter = await callGemini(systemPrompt, userQuery);
+                 aiHelperOutput.innerHTML = `<h4 class="font-bold mb-2">Suggested Cover Letter:</h4>${coverLetter.replace(/\n/g, '<br>')}`;
+            }
+
+            async function handleGeneratePath() {
+                const goal = careerGoalInput.value;
+                if (!goal.trim()) {
+                    learningPathResult.innerHTML = '<p class="text-red-600">Please enter a career goal.</p>';
+                    learningPathResult.classList.remove('hidden');
+                    return;
+                }
+                showLoader(generatePathBtn);
+                const systemPrompt = "You are an expert curriculum designer. Create a 4-6 step learning path based on the user's career goal. Directly start with the first numbered step. Format each step as a numbered list item, like '1. **Topic Name:** Justification...'. Do not use any other asterisks, introductory sentences, or markdown formatting.";
+                const pathText = await callGemini(systemPrompt, goal);
+
+                const pathHtml = pathText
+                    .split('\n')
+                    .filter(line => line.trim().length > 0)
+                    .map(line => {
+                        const content = line.replace(/^\d+\.\s*/, '');
+                        const formattedContent = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                        return `<li class="mb-3">${formattedContent}</li>`;
+                    })
+                    .join('');
+
+                learningPathResult.innerHTML = `<h4 class="text-2xl font-bold mb-4">Your Custom Path:</h4><ol class="list-decimal list-inside space-y-2">${pathHtml}</ol>`;
+                learningPathResult.classList.remove('hidden');
+                hideLoader(generatePathBtn);
+            }
+            async function handleGetDayInLife(jobTitle, company) {
+                openModal(dayInLifeModal);
+                dayModalJobTitle.textContent = jobTitle;
+                dayInLifeContent.innerHTML = '<div class="flex justify-center items-center h-24"><div class="loader" style="border-left-color: #8b5cf6;"></div></div>';
+                const systemPrompt = "You are a career advisor. In a short, engaging, and optimistic paragraph (around 80 words), describe a typical 'day in the life' for a specific intern role at a tech company. Focus on tasks, collaboration, and learning opportunities.";
+                const userQuery = `Role: ${jobTitle}, Company Type: ${company}`;
+                const description = await callGemini(systemPrompt, userQuery);
+                dayInLifeContent.innerHTML = description.replace(/\n/g, '<br>');
+            }
+
+            function handleSearch(event) {
+                const query = event.target.value.toLowerCase();
+                
+                const filteredInternships = internships.filter(internship => {
+                    const skillsMatch = internship.skills.some(skill => skill.toLowerCase().includes(query));
+                    return (
+                        internship.title.toLowerCase().includes(query) ||
+                        internship.company.toLowerCase().includes(query) ||
+                        internship.location.toLowerCase().includes(query) ||
+                        skillsMatch
+                    );
+                });
+
+                populateAllInternships(filteredInternships);
+                populateCarousel(filteredInternships);
+
+                if (query.length > 0) {
+                    const currentActiveView = document.querySelector('.view-section:not(.hidden)').id;
+                     if (currentActiveView === 'home-view' || currentActiveView === 'dashboard-view') {
+                         switchView('internships-view', true);
+                     }
+                }
+            }
+            
+            // --- VOICE ASSISTANT ---
+            function speak(text) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                window.speechSynthesis.cancel();
+                window.speechSynthesis.speak(utterance);
+            }
+
+            function setupSpeechRecognition() {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognition) {
+                    console.log("Speech Recognition not supported.");
+                    return null;
+                }
+                const rec = new SpeechRecognition();
+                rec.continuous = true;
+                rec.interimResults = true;
+                rec.lang = 'en-US';
+
+                rec.onresult = (event) => {
+                    const answerInput = document.getElementById('answer-input');
+                    if (!answerInput) return;
+                    
+                    let interimTranscript = '';
+                    let finalTranscript = '';
+
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        if (event.results[i].isFinal) {
+                            finalTranscript += event.results[i][0].transcript;
+                        } else {
+                            interimTranscript += event.results[i][0].transcript;
+                        }
+                    }
+                    answerInput.value = finalTranscript + interimTranscript;
+                };
+                return rec;
+            }
+
+            function toggleListening() {
+                const listenBtn = document.getElementById('listen-btn');
+                const listenText = document.getElementById('listen-text');
+                const micIcon = listenBtn.querySelector('i');
+
+                if (recognition && recognition.isListening) {
+                    recognition.stop();
+                    recognition.isListening = false;
+                    listenText.textContent = "Start Listening";
+                    micIcon.classList.remove('fa-stop', 'text-red-500', 'listening-indicator');
+                    micIcon.classList.add('fa-microphone');
+                } else {
+                    if(!recognition) recognition = setupSpeechRecognition();
+                    if(recognition) {
+                         recognition.start();
+                         recognition.isListening = true;
+                         listenText.textContent = "Stop Listening";
+                         micIcon.classList.remove('fa-microphone');
+                         micIcon.classList.add('fa-stop', 'text-red-500', 'listening-indicator');
+                    } else {
+                         listenText.textContent = "Not Supported";
+                         listenBtn.disabled = true;
+                    }
+                }
+            }
+
+            // --- DASHBOARD ---
+            function renderDashboard() {
+                // Render Saved Internships
+                if (savedInternships.length > 0) {
+                    savedInternshipsContainer.innerHTML = savedInternships.map(id => {
+                        const internship = internships.find(i => i.id === id);
+                        return internship ? renderInternshipCard(internship) : '';
+                    }).join('');
+                } else {
+                    savedInternshipsContainer.innerHTML = `<p class="text-slate-500">You haven't saved any internships yet.</p>`;
+                }
+                // Render Application History
+                if (applicationHistoryContainer) {
+                    if(appliedInternships.length > 0) {
+                        applicationHistoryContainer.innerHTML = `
+                            <table class="w-full text-left">
+                                <thead class="border-b">
+                                    <tr><th class="p-2">Role</th><th class="p-2">Company</th><th class="p-2">Status</th></tr>
+                                </thead>
+                                <tbody>
+                                    ${appliedInternships.map(app => `
+                                        <tr class="border-b">
+                                            <td class="p-2 font-semibold">${app.title}</td>
+                                            <td class="p-2">${app.company}</td>
+                                            <td class="p-2"><span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">${app.status}</span></td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        `;
+                    } else {
+                        applicationHistoryContainer.innerHTML = `<p class="text-slate-500 p-2">You haven't applied to any internships yet.</p>`;
+                    }
+                }
+                // Render Badges
+                if (myBadgesContainer) {
+                    if (earnedBadges.length > 0) {
+                        myBadgesContainer.innerHTML = earnedBadges.map(badge => `
+                            <div class="flex items-center gap-2 bg-green-100 text-green-800 font-bold text-sm px-3 py-1.5 rounded-full">
+                                <i class="fas fa-check-circle"></i>
+                                <span>${badge}</span>
+                            </div>
+                        `).join('');
+                    } else {
+                        myBadgesContainer.innerHTML = `<p class="text-slate-500">No badges earned yet. Take a quiz to get your first one!</p>`;
+                    }
+                }
+            }
+
+            async function getAIRecommendations() {
+                showLoader(getRecommendationsBtn);
+                recommendationsResult.classList.remove('hidden');
+                recommendationsResult.innerHTML = '<div class="flex justify-center items-center"><div class="loader" style="border-left-color: #8b5cf6;"></div></div>';
+                
+                const savedTitles = savedInternships.map(id => internships.find(i => i.id === id)?.title).filter(Boolean);
+                const appliedTitles = appliedInternships.map(app => app.title);
+                const interests = [...new Set([...savedTitles, ...appliedTitles])];
+
+                if (interests.length === 0) {
+                    recommendationsResult.innerHTML = `<p>Save or apply to internships to get personalized recommendations!</p>`;
+                    hideLoader(getRecommendationsBtn);
+                    return;
+                }
+                
+                const systemPrompt = "You are a career recommendation engine. Based on the user's saved/applied internship titles, suggest 3 other relevant internship roles. Provide only the titles in a numbered list, without any extra text.";
+                const userQuery = `Interested in: ${interests.join(', ')}`;
+                const recommendations = await callGemini(systemPrompt, userQuery);
+                recommendationsResult.innerHTML = recommendations.replace(/\n/g, '<br>');
+                hideLoader(getRecommendationsBtn);
+            }
+
+            // --- QUIZ ---
+            async function startQuiz() {
+                if (!isLoggedIn) {
+                    showSuccessNotification("Please log in to take a quiz.");
+                    openModal(loginModal);
+                    return;
+                }
+                openModal(quizModal);
+                quizContainer.innerHTML = `<div class="text-center">
+                    <h3 class="text-2xl font-bold text-slate-900 mb-6">Select a Quiz Topic</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        ${[...new Set(learningResources.map(r => r.category))].map(cat => `<button data-topic="${cat}" class="quiz-topic-btn p-4 border rounded-lg hover:bg-slate-100 font-semibold">${cat}</button>`).join('')}
+                    </div>
+                </div>`;
+            }
+            async function generateQuiz(topic) {
+                quizContainer.innerHTML = '<div class="flex justify-center items-center h-48"><div class="loader" style="border-left-color: #8b5cf6; width: 40px; height: 40px;"></div></div>';
+                const systemPrompt = "You are a quiz generator. Create a 3-question multiple-choice quiz on the given topic. For each question, provide 4 options (A, B, C, D). Crucially, after each question's options, you MUST include a line formatted exactly as `Correct: [LETTER]`, for example: `Correct: C`.";
+                const quizText = await callGemini(systemPrompt, topic);
+                renderQuiz(quizText, topic);
+            }
+            function renderQuiz(text, topic) {
+                const questions = text.split('\n\n').filter(q => q.includes('?'));
+                let quizHtml = `<h3 class="text-2xl font-bold text-slate-900 mb-6 text-center">Quiz: ${topic}</h3><form id="quiz-form" data-topic="${topic}" class="space-y-6">`;
+                
+                questions.forEach((q, index) => {
+                    const lines = q.split('\n');
+                    const questionText = lines[0];
+                    const options = lines.slice(1, 5);
+                    const correctLine = lines.find(l => l.startsWith('Correct:'));
+                    const correctAnswer = correctLine ? correctLine.split(': ')[1].trim() : 'A';
+
+                    quizHtml += `
+                        <div>
+                            <p class="font-semibold mb-2">${questionText}</p>
+                            <div class="space-y-2" data-correct="${correctAnswer}">
+                                ${options.map(opt => {
+                                    const letter = opt.substring(0, 1);
+                                    const text = opt.substring(3);
+                                    return `
+                                        <div>
+                                            <input type="radio" name="q${index}" id="q${index}${letter}" value="${letter}" class="mr-2">
+                                            <label for="q${index}${letter}">${text}</label>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                quizHtml += `<div class="text-right"><button type="submit" class="text-white font-bold py-2 px-6 rounded-lg bg-gradient-to-r from-purple-600 to-pink-500">Submit</button></div></form>`;
+                quizContainer.innerHTML = quizHtml;
+            }
+
+            async function handleQuizSubmit(e) {
+                e.preventDefault();
+                const form = e.target;
+                const topic = form.dataset.topic;
+                let score = 0;
+                const questions = form.querySelectorAll('div[data-correct]');
+                questions.forEach((q, index) => {
+                    const selected = form.querySelector(`input[name="q${index}"]:checked`);
+                    if (selected && selected.value === q.dataset.correct) {
+                        score++;
+                    }
+                });
+                
+                let resultHtml = '';
+                if (score >= 2) {
+                    const badgeName = `${topic} Fundamentals`;
+                    if (!earnedBadges.includes(badgeName)) {
+                         try {
+                            const badgeRef = doc(db, `artifacts/${appId}/users/${currentUserId}/earnedBadges`, badgeName);
+                            await setDoc(badgeRef, { name: badgeName, earnedAt: new Date() });
+                            showSuccessNotification("Badge earned and saved!");
+                         } catch (error) {
+                             console.error("Error saving badge:", error);
+                         }
+                    }
+                     resultHtml = `
+                        <div class="text-center">
+                            <i class="fas fa-award text-5xl text-yellow-500 mb-4"></i>
+                            <h3 class="text-2xl font-bold text-slate-900 mb-2">Congratulations!</h3>
+                            <p class="text-slate-600 mb-6">You scored ${score}/3 and earned the <strong>${badgeName}</strong> badge!</p>
+                            <button class="close-quiz-modal-btn bg-slate-200 text-slate-800 font-bold py-2 px-6 rounded-lg">Close</button>
+                        </div>
+                    `;
+                } else {
+                     resultHtml = `
+                        <div class="text-center">
+                            <h3 class="text-2xl font-bold text-slate-900 mb-2">Keep Trying!</h3>
+                            <p class="text-slate-600 mb-6">You scored ${score}/3. Review the learning materials and try again.</p>
+                            <button class="close-quiz-modal-btn bg-slate-200 text-slate-800 font-bold py-2 px-6 rounded-lg">Close</button>
+                        </div>
+                    `;
+                }
+                quizContainer.innerHTML = resultHtml;
+            }
+
+            // --- FIRESTORE ACTIONS ---
+            async function handleSaveInternship(jobId) {
+                 if (!isLoggedIn) {
+                    showSuccessNotification("Please log in to save internships.");
+                    openModal(loginModal);
+                    return;
+                }
+                const savedRef = doc(db, `artifacts/${appId}/users/${currentUserId}/savedInternships`, jobId);
+                if (savedInternships.includes(jobId)) {
+                    await deleteDoc(savedRef);
+                } else {
+                    await setDoc(savedRef, { savedAt: new Date() });
+                }
+                // UI will update via onSnapshot listener
+            }
+
+            // --- EVENT LISTENERS ---
+            function renderNav() {
+                const navItems = [
+                    { name: 'Home', view: 'home-view', loggedIn: 'both' },
+                    { name: 'Dashboard', view: 'dashboard-view', loggedIn: true },
+                    { name: 'Internships', view: 'internships-view', loggedIn: 'both' },
+                    { name: 'Learning Hub', view: 'learning-view', loggedIn: 'both' },
+                    { name: 'Interview Prep', view: 'interview-view', loggedIn: 'both' },
+                    { name: 'For Companies', view: 'company-view', loggedIn: 'both' }
+                ];
+
+                mainNav.innerHTML = navItems
+                    .filter(item => item.loggedIn === 'both' || item.loggedIn === isLoggedIn)
+                    .map(item => `<button data-view="${item.view}" data-nav="${item.view.replace('-view', '')}" class="nav-link">${item.name}</button>`)
+                    .join('');
+                
+                mainNav.querySelectorAll('.nav-link').forEach(link => link.addEventListener('click', () => switchView(link.dataset.view)));
+                
+                // Set active link based on current view
+                const visibleView = document.querySelector('.view-section:not(.hidden)');
+                if (visibleView) {
+                    const activeViewId = visibleView.id;
+                    const activeLink = mainNav.querySelector(`.nav-link[data-view="${activeViewId}"]`);
+                    if(activeLink) {
+                        mainNav.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+                        activeLink.classList.add('active');
+                    }
+                }
+            }
+
+
+            if(internshipPrevBtn) internshipPrevBtn.addEventListener('click', () => internshipCarousel.scrollBy({ left: -344, behavior: 'smooth' }));
+            if(internshipNextBtn) internshipNextBtn.addEventListener('click', () => internshipCarousel.scrollBy({ left: 344, behavior: 'smooth' }));
+            
+            document.addEventListener('click', (e) => { 
+                if (e.target.closest('.apply-btn')) { 
+                    if (!isLoggedIn) {
+                        showSuccessNotification("Please log in to apply.");
+                        openModal(loginModal);
+                        return;
+                    }
+                    openModal(applicationModal);
+                    const jobId = e.target.closest('.apply-btn').dataset.jobId;
+                    modalJobTitle.textContent = internships.find(i => i.id === jobId).title;
+                    modalJobIdInput.value = jobId;
+                }
+                if (e.target.closest('.day-in-life-btn')) {
+                    const btn = e.target.closest('.day-in-life-btn');
+                    handleGetDayInLife(btn.dataset.jobTitle, btn.dataset.company);
+                }
+                if (e.target.closest('.close-modal-btn')) {
+                    closeModal(e.target.closest('.modal-backdrop'));
+                }
+                 if(e.target.closest('.close-quiz-modal-btn')) {
+                    closeModal(quizModal);
+                }
+                if(e.target.closest('.save-btn')) {
+                    const btn = e.target.closest('.save-btn');
+                    handleSaveInternship(btn.dataset.jobId);
+                }
+                if(e.target.closest('#take-quiz-btn')) {
+                    startQuiz();
+                }
+                if(e.target.closest('.quiz-topic-btn')) {
+                    generateQuiz(e.target.closest('.quiz-topic-btn').dataset.topic);
                 }
             });
-        }
-        
-        function onKeyboardChange(input) {
-            messageInput.value = input;
-        }
 
-        function onKeyPress(button) {
-            if (button === "{shift}" || button === "{lock}") handleShift();
-            if (button === "{enter}") sendMessage();
-            if (button === "{next}") handleNextLanguage();
-            if (button === "{hide}") hideKeyboard();
-        }
-
-        function handleShift() {
-            const currentLayout = keyboard.options.layoutName;
-            const newLayoutName = currentLayout === "default" ? "shift" : "default";
-            keyboard.setOptions({
-                layoutName: newLayoutName
+            quizContainer.addEventListener('submit', e => {
+                if(e.target.id === 'quiz-form') {
+                    handleQuizSubmit(e);
+                }
             });
-        }
 
-        function handleNextLanguage() {
-            const currentIndex = languageCycle.indexOf(currentLanguage);
-            const nextIndex = (currentIndex + 1) % languageCycle.length;
-            const nextLang = languageCycle[nextIndex];
-            setLanguage(nextLang);
-        }
 
-        function showKeyboard() {
-            keyboardContainer.classList.add('visible');
-            chatArea.classList.add('chat-area-with-keyboard');
-            keyboardBtn.classList.add('active');
-            chatArea.scrollTop = chatArea.scrollHeight;
-        }
+            if(loginBtnHeader) loginBtnHeader.addEventListener('click', () => openModal(loginModal));
+            if(signupBtnHeader) signupBtnHeader.addEventListener('click', () => openModal(signupModal));
+            if(logoutBtn) logoutBtn.addEventListener('click', handleLogout);
 
-        function hideKeyboard() {
-            keyboardContainer.classList.remove('visible');
-            chatArea.classList.remove('chat-area-with-keyboard');
-            keyboardBtn.classList.remove('active');
-        }
+            if(loginForm) loginForm.addEventListener('submit', handleLogin);
+            if(signupForm) signupForm.addEventListener('submit', handleSignup);
+            
+            document.querySelectorAll('.modal-backdrop').forEach(modalEl => {
+                modalEl.addEventListener('click', e => { if (e.target === modalEl) closeModal(modalEl); });
+            });
 
-        keyboardBtn.addEventListener('click', () => {
-            const isVisible = keyboardContainer.classList.contains('visible');
-            if (isVisible) {
-                hideKeyboard();
-            } else {
-                showKeyboard();
+            if (sortTabsContainer) {
+                sortTabsContainer.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'BUTTON') {
+                        const sortBy = e.target.dataset.sort;
+
+                        sortTabsContainer.querySelectorAll('button').forEach(btn => {
+                            btn.classList.remove('active', 'text-slate-800', 'border-slate-800');
+                            btn.classList.add('text-slate-500');
+                        });
+                        e.target.classList.add('active', 'text-slate-800', 'border-slate-800');
+                        e.target.classList.remove('text-slate-500');
+
+                        let sortedInternships = [...internships];
+
+                        if (sortBy === 'rated') {
+                            sortedInternships.sort((a, b) => b.rating - a.rating);
+                        } else if (sortBy === 'newest') {
+                            sortedInternships.sort((a, b) => new Date(b.postedDate) - new Date(a.postedDate));
+                        } else { // 'popular'
+                            sortedInternships.sort(() => Math.random() - 0.5);
+                        }
+
+                        populateCarousel(sortedInternships);
+                        populateAllInternships(sortedInternships);
+                    }
+                });
             }
-        });
 
+            applicationForm.addEventListener('submit', async e => { 
+                e.preventDefault();
+                const jobId = modalJobIdInput.value;
+                const internship = internships.find(i => i.id === jobId);
+                const applicationData = {
+                    internshipId: jobId,
+                    title: internship.title,
+                    company: internship.company,
+                    status: 'Applied',
+                    appliedAt: new Date()
+                };
+                
+                const collectionRef = collection(db, `artifacts/${appId}/users/${currentUserId}/appliedInternships`);
+                await addDoc(collectionRef, applicationData);
+
+                closeModal(applicationModal); 
+                showSuccessNotification("Application Submitted!"); 
+                // UI will update via onSnapshot
+            });
+
+            improveResumeBtn.addEventListener('click', handleImproveResume);
+            generateCoverLetterBtn.addEventListener('click', handleGenerateCoverLetter);
+            generatePathBtn.addEventListener('click', handleGeneratePath);
+            if(searchBar) searchBar.addEventListener('input', handleSearch);
+            if(getRecommendationsBtn) getRecommendationsBtn.addEventListener('click', getAIRecommendations);
+
+            // --- FIREBASE INITIALIZATION & AUTH STATE HANDLING ---
+            function cleanupFirestoreListeners() {
+                firestoreUnsubscribers.forEach(unsub => unsub());
+                firestoreUnsubscribers = [];
+            }
+            
+            function setupFirestoreListeners(uid) {
+                cleanupFirestoreListeners(); // Clean up previous listeners if any
+
+                const savedRef = collection(db, `artifacts/${appId}/users/${uid}/savedInternships`);
+                const savedUnsub = onSnapshot(savedRef, (snapshot) => {
+                    savedInternships = snapshot.docs.map(doc => doc.id);
+                    populateAllInternships();
+                    populateCarousel();
+                    renderDashboard();
+                });
+
+                const appliedRef = collection(db, `artifacts/${appId}/users/${uid}/appliedInternships`);
+                const appliedUnsub = onSnapshot(appliedRef, (snapshot) => {
+                    appliedInternships = snapshot.docs.map(doc => doc.data());
+                    renderDashboard();
+                });
+                
+                const badgesRef = collection(db, `artifacts/${appId}/users/${uid}/earnedBadges`);
+                const badgesUnsub = onSnapshot(badgesRef, (snapshot) => {
+                    earnedBadges = snapshot.docs.map(doc => doc.data().name);
+                    renderDashboard();
+                });
+
+                firestoreUnsubscribers.push(savedUnsub, appliedUnsub, badgesUnsub);
+            }
+
+            async function initializeFirebase() {
+                 try {
+                    app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+                    setLogLevel('debug');
+
+                    onAuthStateChanged(auth, async (user) => {
+                        if (user) {
+                            isLoggedIn = true;
+                            currentUserId = user.uid;
+                            updateAuthUI();
+                            setupFirestoreListeners(user.uid);
+                            showSuccessNotification(`Welcome, ${user.displayName || user.email}!`);
+                        } else {
+                            isLoggedIn = false;
+                            currentUserId = null;
+                            cleanupFirestoreListeners();
+                            // Clear local data
+                            savedInternships = [];
+                            appliedInternships = [];
+                            earnedBadges = [];
+                            // Update UI for logged-out state
+                            updateAuthUI();
+                            populateAllInternships();
+                            populateCarousel();
+                            renderDashboard();
+                            switchView('home-view');
+                        }
+                    });
+
+                    // Sign in with token if available, otherwise anonymously
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+
+                 } catch (error) {
+                     console.error("Firebase initialization failed:", error);
+                 }
+            }
+
+
+            // --- APP INITIALIZATION ---
+            initializeFirebase();
+            populateAllInternships();
+            populateCarousel();
+            renderLearningResources();
+            renderInterviewUI('selection');
+            renderNav();
+            switchView('home-view');
+        });
     </script>
 </body>
 </html>
